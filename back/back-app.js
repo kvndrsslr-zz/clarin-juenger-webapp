@@ -1,0 +1,1 @@
+module.exports = require('synth')({apiTimeout:9999999});

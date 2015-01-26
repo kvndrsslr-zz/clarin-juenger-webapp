@@ -1,0 +1,59 @@
+mixin feature(fname, version)
+    .row
+        .col-xs-12
+            .page-header
+                != "<h1" + ( block ? " ng-click=\"show('" + fname + "',true)\")>" : ">")
+                    if block
+                        small: span.glyphicon.glyphicon-chevron-down.collapse-indicator(ng-class="!show('#{fname}') ? [] : ['collapse-indicator-rotate']")
+                    | &nbsp;
+                    =fname
+                    small= ' ' + version
+    if block
+        div(collapse="show('#{fname}')")
+            block
+.container
+    +feature('Information Retrieval Praktikum 2015', 'Kookkurrenzen-Matrix')
+        .row
+            .col-xs-3
+                img(src="/images/uni_leipzig.gif", width="100%")
+            .col-xs-7.col-xs-offset-1
+                h2 Motivation
+                p.
+                    Diese Anwendung entstand im Rahmen des Moduls "Fortgeschrittene Methoden des Information Retrieval" an der Universität Leipzig
+                    2015. Das Ziel ist die Untersuchung von Ähnlichkeiten mehrerer Textkorpora aus verschiedenen Quellen, wie z.B. Wikipedia und Nachrichtenseiten.
+                h2 Anwendung
+                p.
+                    Dokumentation lorem ipsum dolores...
+
+    +feature('Korpusauswahl', '')
+        .row
+            form(ng-submit="submit()")
+                .col-xs-12.col-md-8
+                    .form-group
+                        label.control-label(for="") Hier zu vergleichende Korpora auswählen, Filterung nach DB-Bez. oder int. Sprachennamen
+                        ui-select(multiple, searchEnabled="true", close-on-select="false", theme="bootstrap", ng-model="sel.corpora")
+                            ui-select-match(placeholder="Bitte auswählen...") {{$item.name}}
+                            ui-select-choices(repeat="db.name as db in dbs | filter: $select.search | orderBy: 'language' | limitTo: limit", group-by="'language'")
+                                div(ng-bind-html="db.name | highlight: $select.search")
+                .col-xs-12.col-md-4
+                    .form-group
+                        label.control-label(for="wordCount") Länge Wortliste ({{wordCount}})
+                        input(ng-model="wordCount", id="wordCount", type="range", min=100, max=20000, step=100, class="form-control")
+                    .form-group
+                        label.control-label(for="") Vergleichsmaß
+                        ui-select(searchEnabled="true", theme="bootstrap", ng-model="sel.metric")
+                            ui-select-match: div {{$select.selected.title}}
+                            ui-select-choices(repeat="metric.key as metric in metrics", group-by="metricgroup")
+                                div(ng-bind-html="metric.title | highlight: $select.search")
+                    button.col-xs-12.btn(ng-class="[validation() ? 'btn-disabled' : 'btn-primary']", type="submit", popover="{{validation()}}", popover-trigger="mouseenter", popover-placement="right") Abschicken
+    .row
+        .col-xs-12.xloading-widget
+            i.fa.fa-spinner.fa-spin
+            p.estimated-time Geschätzte Antwortzeit: {{estimatedTime}}
+    #matrix(ng-show="show('matrix')")
+        +feature('Matrixdarstellung', 'beta')
+            #dendogram
+            #clustermatrix
+
+    #statistic(ng-show="show('stats')")
+        +feature('Statistik', '{{statistics.pairName}}')

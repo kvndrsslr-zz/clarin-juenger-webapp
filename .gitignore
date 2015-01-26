@@ -1,0 +1,6 @@
+.DS_Store
+.idea/*
+back/node_modules
+back/config.json
+front/bower_components
+data/*
