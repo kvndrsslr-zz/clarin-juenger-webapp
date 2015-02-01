@@ -16,7 +16,7 @@ exports.post = function (workloadManager, matrixWorkload) {
     if (result) {
         return result;
     } else if (typeof result === 'undefined') {
-        workloadManager.enqueue(matrixWorkload());
+        workloadManager.enqueue(matrixWorkload);
         return {requestId: id};
     } else {
         return {requestId: id};

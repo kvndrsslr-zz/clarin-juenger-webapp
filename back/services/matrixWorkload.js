@@ -57,7 +57,7 @@ exports.matrixWorkload = function (params, getWordlists, writeWordlists, spawnLi
             .then(function (distances) {
                 console.log('Calculating clusters...');
                 console.log('Finished.');
-                return clustering(params.corpora, distances);
+                return clustering(params.corpora, distances, params.clusterDepth);
             })
             .fail(function (err) {
                 if (err) {

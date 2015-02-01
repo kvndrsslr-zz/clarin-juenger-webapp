@@ -7,6 +7,7 @@ angular.module('ir-matrix-cooc')
             return {name: x, language: window.languages.get(x.substring(0,3))};
         });
 
+        $scope.clusterDepth = 1;
 
         $scope.limit = Math.pow(2,32) - 1;
         $timeout(function () {$scope.limit = 125}, 200);
@@ -79,7 +80,7 @@ angular.module('ir-matrix-cooc')
                         console.log(data);
                         $scope.drawDendogram(data);
                         show.matrix = true;
-                        show.stats = true;
+                        //show.stats = true;
                     }
                 })
                 .error(function (data, status, header) {
@@ -96,7 +97,7 @@ angular.module('ir-matrix-cooc')
             $http({method: 'post',
                 url: '/api/korpora',
                 timeout: 9999999999,
-                data:{wordCount: $scope.wordCount, corpora: $scope.sel.corpora, metric: $scope.sel.metric}})
+                data:{wordCount: $scope.wordCount, corpora: $scope.sel.corpora, metric: $scope.sel.metric, clusterDepth: $scope.clusterDepth}})
                 .success(function (data) {
                     console.log("Daten:");
                     console.log(data);
@@ -105,7 +106,7 @@ angular.module('ir-matrix-cooc')
                     } else {
                         $scope.drawDendogram(data);
                         show.matrix = true;
-                        show.stats = true;
+                        //show.stats = true;
                     }
                 })
                 .error(function (data, status, header) {

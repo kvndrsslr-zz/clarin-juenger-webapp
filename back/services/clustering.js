@@ -2,7 +2,7 @@ var _ = require('underscore');
 
 exports.clustering = function () {
 
-    return function (entities, distances) {
+    return function (entities, distances, clusterDepth) {
 
         function isClusterEntityEntry(cluster, entity, entry) {
             if (cluster === null) {
@@ -177,8 +177,8 @@ exports.clustering = function () {
             entities: entities.map(function (e) {
                 return {
                     name: e,
-                    group: dianaStack[dianaStack.length-1].clusters
-                        .indexOf(dianaStack[dianaStack.length-1].clusters
+                    group: dianaStack[dianaStack.length-clusterDepth].clusters
+                        .indexOf(dianaStack[dianaStack.length-clusterDepth].clusters
                             .filter(function (x) {
                                 return x.indexOf(e) > -1;
                             })[0])

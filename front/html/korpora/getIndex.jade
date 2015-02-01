@@ -30,6 +30,9 @@ mixin feature(fname, version)
             form(ng-submit="submit()")
                 .col-xs-12.col-md-8
                     .form-group
+                        label.control-label(for="wordCount") Länge Wortliste ({{wordCount}})
+                        input(ng-model="wordCount", id="wordCount", type="range", min=100, max=20000, step=100, class="form-control")
+                    .form-group
                         label.control-label(for="") Hier zu vergleichende Korpora auswählen, Filterung nach DB-Bez. oder int. Sprachennamen
                         ui-select(multiple, searchEnabled="true", close-on-select="false", theme="bootstrap", ng-model="sel.corpora")
                             ui-select-match(placeholder="Bitte auswählen...") {{$item.name}}
@@ -37,8 +40,8 @@ mixin feature(fname, version)
                                 div(ng-bind-html="db.name | highlight: $select.search")
                 .col-xs-12.col-md-4
                     .form-group
-                        label.control-label(for="wordCount") Länge Wortliste ({{wordCount}})
-                        input(ng-model="wordCount", id="wordCount", type="range", min=100, max=20000, step=100, class="form-control")
+                        label.control-label(for="clusterDepth") Clustertiefe ({{clusterDepth}})
+                        input(ng-model="clusterDepth", id="clusterDepth", type="range", min=1, max=10, step=1, class="form-control")
                     .form-group
                         label.control-label(for="") Vergleichsmaß
                         ui-select(searchEnabled="true", theme="bootstrap", ng-model="sel.metric")
@@ -47,9 +50,9 @@ mixin feature(fname, version)
                                 div(ng-bind-html="metric.title | highlight: $select.search")
                     button.col-xs-12.btn(ng-class="[validation() ? 'btn-disabled' : 'btn-primary']", type="submit", popover="{{validation()}}", popover-trigger="mouseenter", popover-placement="right") Abschicken
     .row
-        .col-xs-12.xloading-widget
-            i.fa.fa-spinner.fa-spin
-            p.estimated-time Geschätzte Antwortzeit: {{estimatedTime}}
+        - ;//.col-xs-12.xloading-widget
+        - ;//  i.fa.fa-spinner.fa-spin
+        - ;//  p.estimated-time Geschätzte Antwortzeit: {{estimatedTime}}
     #matrix(ng-show="show('matrix')")
         +feature('Matrixdarstellung', 'beta')
             #dendogram

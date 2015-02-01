@@ -1,28 +1,29 @@
 var crypto = require('crypto');
+var Q = require('q');
 
 var workloads = [];
+var queue = Q();
 
 
 exports.workloadManager = function (params) {
     // create unique request-ID
     function createId () {
         var id = crypto.createHash('sha1');
-        id.update(params.corpora.sort().toString() + ":|" + params.metric + "|:" + params.wordCount.toString() , 'utf8');
+        id.update(params.corpora.sort().toString() + ":|" + params.metric + "|:" + params.wordCount.toString() + "||" + params.clusterDepth, 'utf8');
         return id.digest('hex');
     }
 
     function enqueue (workload) {
+        var qPoint = queue = queue.then(workload);
         var w = {id: createId(), workload: workload, progress: "", result: false};
         if (typeof retrieve(w.id) === 'undefined') {
             workloads.push(w);
-            if (workload.progress) {
-                workload.then(function (data) {
-                    w.result = data;
-                });
-                workload.progress(function (progress) {
-                    w.progress = progress;
-                });
-            }
+            qPoint.then(function (data) {
+                w.result = data;
+            });
+            qPoint.progress(function (progress) {
+                w.progress = progress;
+            });
         }
         return w.id;
     }
