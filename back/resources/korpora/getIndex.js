@@ -14,6 +14,8 @@ exports.post = function (workloadManager, matrixWorkload) {
     var id = workloadManager.id();
     var result = workloadManager.retrieve(id);
     if (result) {
+        result.resolved = true
+        result.requestId = id;
         return result;
     } else if (typeof result === 'undefined') {
         workloadManager.enqueue(matrixWorkload);
@@ -26,6 +28,7 @@ exports.post = function (workloadManager, matrixWorkload) {
 exports.postRequest = function (params, workloadManager) {
     var result = workloadManager.retrieve(params.requestId);
     if (result) {
+        console.log(result);
         return result;
     } else {
         return {progress: workloadManager.progress(params.requestId)};

@@ -18,6 +18,7 @@ h1 {
 }
 
 .page-header h1 {
+  text-align: left;
   cursor: pointer;
 }
 
@@ -68,7 +69,6 @@ line {
   stroke: #fff;
 }
 
-
 text {
   font-size: 0.7em;
 }
@@ -80,3 +80,53 @@ text.active {
 .btn span {
   text-align: left;
 }
+
+
+#jobs ul li {
+  display: inline-block;
+}
+
+samp {
+  display: block;
+  text-align: right;
+  font-size: 0.8rem;
+}
+
+samp.left {
+  text-align: left;
+}
+
+a.list-group-item {
+  height: 14rem;
+}
+
+.axis path {
+  fill: none;
+  stroke: none;
+}
+
+.axis line {
+  fill: none;
+  stroke: black;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  font-family: sans-serif;
+  font-size: 11px;
+}
+
+rect.cell:hover, rect.cell + text:hover, rect.cell + text + text:hover  {
+  cursor: pointer;
+}
+
+rect.cell:hover + text, rect.cell + text:hover {
+  font-weight: bolder;
+  fill: #fff !important;
+}
+
+rect.cell:hover + text + text, rect.cell + text + text:hover {
+
+}
+
+#dendogram {min-height: 650px}

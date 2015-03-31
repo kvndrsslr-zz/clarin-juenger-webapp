@@ -1,5 +1,6 @@
 var crypto = require('crypto');
 var Q = require('q');
+var _ = require('underscore');
 
 var workloads = [];
 var queue = Q();
@@ -9,15 +10,22 @@ exports.workloadManager = function (params) {
     // create unique request-ID
     function createId () {
         var id = crypto.createHash('sha1');
-        id.update(params.corpora.sort().toString() + ":|" + params.metric + "|:" + params.wordCount.toString() + "||" + params.clusterDepth, 'utf8');
+        id.update(params.corpora.sort().toString() + ":|" + params.metric + "|:" + params.wordCount.toString(), 'utf8');
         return id.digest('hex');
     }
 
     function enqueue (workload) {
-        var qPoint = queue = queue.then(workload);
-        var w = {id: createId(), workload: workload, progress: "", result: false};
+        console.log(params);
+        var w = {id: createId(), request: _.clone(params), workload: workload, progress: "", result: false};
         if (typeof retrieve(w.id) === 'undefined') {
+            var qPoint;
             workloads.push(w);
+            // when all result files are cached, launch workload instantly
+            if (workload.isCached()) {
+                qPoint = Q().then(workload);
+            } else {
+                qPoint = queue = queue.then(workload);
+            }
             qPoint.then(function (data) {
                 w.result = data;
             });

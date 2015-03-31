@@ -9,23 +9,13 @@ var Q = require('q');
 var fs = require('fs');
 
 
-exports.matrixWorkload = function (params, getWordlists, writeWordlists, spawnListdif, clustering, workloadManager) {
-    return function () {
+exports.matrixWorkload = function (params, getWordlists, writeWordlists, spawnListdif, clustering) {
+
+    var matrixWorkload = function () {
         return Q()
             // Step 0: Utilize Cached files
             .then(function () {
-                console.log('Trying to find cached results...');
-                var corpora = params.corpora.slice();
-                params.missingLinks = [];
-                for (var i = corpora.length - 1; i >= 0; i--) {
-                    var corpusA = corpora.splice(i, 1)[0];
-                    corpora.forEach(function (corpusB) {
-                        if (!fs.existsSync('data/result_' + params.wordCount + '_' + params.metric + '_' + corpusA + '_' + corpusB + '.txt') &&
-                            !fs.existsSync('data/result_' + params.wordCount + '_' + params.metric + '_' + corpusB + '_' + corpusA + '.txt'))
-                            params.missingLinks.push([corpusA, corpusB]);
-                    });
-                }
-                if (params.missingLinks.length === 0) {
+                if (isCached()) {
                     console.log("Nothing to do, all result files present!");
                 } else {
                     // Step 1: fetch data from MySQL over ssh tunnel
@@ -66,6 +56,23 @@ exports.matrixWorkload = function (params, getWordlists, writeWordlists, spawnLi
                     return {failure: true, error: err};
                 }
             });
-    }
+    };
 
+    matrixWorkload.isCached = isCached;
+    return matrixWorkload;
+
+    function isCached () {
+        console.log('Trying to find cached results...');
+        var corpora = params.corpora.slice();
+        params.missingLinks = [];
+        for (var i = corpora.length - 1; i >= 0; i--) {
+            var corpusA = corpora.splice(i, 1)[0];
+            corpora.forEach(function (corpusB) {
+                if (!fs.existsSync('data/result_' + params.wordCount + '_' + params.metric + '_' + corpusA + '_' + corpusB + '.txt') &&
+                    !fs.existsSync('data/result_' + params.wordCount + '_' + params.metric + '_' + corpusB + '_' + corpusA + '.txt'))
+                    params.missingLinks.push([corpusA, corpusB]);
+            });
+        }
+        return params.missingLinks.length === 0;
+    }
 };

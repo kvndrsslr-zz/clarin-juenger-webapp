@@ -1,0 +1,26 @@
+include ../mixins.jade
+
+.container
+    +feature('Parameter', '')
+        .row
+            +info('Länge Wortliste').
+                Bestimmen Sie, wie lang die zur Ähnlichkeitsanalyse benutzten Wortlisten sein sollen.
+            +info('Korpusauswahl').
+                Welche Textkörper sollen verglichen werden? Filtern Sie die Vorauswahl durch Eingabe
+                von Datenbank- oder Sprachennamen.
+            +info('Anfragebezeichner').
+                Vergeben Sie Namen um schneller zwischen Jobansichten wechseln zu können.
+            .clearfix.visible-md-block.visible-lg-block
+            +info('Metrik').
+                Wählen Sie die zur Ähnlichkeitsanalyse verwendete Metrik aus.
+    +feature('Jobs', '')
+        .row
+            +info('Auswählen').
+                Klicken Sie auf einen Job in der Liste um das Ergebnis in der Matrix zu sehen.
+            +info('Konfiguration kopieren').
+                Doppelklicken Sie auf einen Job in der Liste um die Konfiguration des Jobs
+                als Grundlage für einen neuen zu laden.
+    +feature('Matrix', '')
+        +info('Farben').
+        +info('Cluster-Schwellwert').
+            Ab welcher Mindestähnlichkeit untereinander wird eine Untermenge von Korpora als Cluster angesehen?

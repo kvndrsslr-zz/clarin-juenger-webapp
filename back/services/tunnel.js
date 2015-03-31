@@ -10,8 +10,6 @@ exports.config = function () {
     portfinder.basePort = Math.floor((Math.random() * 6000) + 3000);
     portfinder.getPort(function(err, port) {
         config.tunnel.tunnelPort = port;
-        //config.tunnel.tunnelPort = 8080;
-        //console.log('Tunneling MySQL traffic through :' + port);
         deferred.resolve(config);
     });
     return deferred.promise;

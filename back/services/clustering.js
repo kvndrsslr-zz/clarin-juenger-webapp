@@ -6,9 +6,9 @@ exports.clustering = function () {
 
         function isClusterEntityEntry(cluster, entity, entry) {
             if (cluster === null) {
-                return entry == entity;
+                return entry === entity;
             } else {
-                return cluster.indexOf(entry) > -1 && entry == entity;
+                return cluster.indexOf(entry) > -1 && entry === entity;
 
             }
         }
@@ -133,7 +133,8 @@ exports.clustering = function () {
             if (typeof oldH.name === 'undefined') {
                 oldH.name = oldC.toString();
                 oldH.diameter = diameter(oldC);
-                oldH.children = newC.map(function (c) {return {name: c.toString(), diameter: diameter(c), root: true}});
+                oldH.root = true;
+                oldH.children = newC.map(function (c) {return {name: c.toString(), diameter: diameter(c)}});
             } else {
                 var stack = oldH.children.slice();
                 var current;
@@ -150,7 +151,6 @@ exports.clustering = function () {
             }
         }
 
-        var dianaStack = [];
         var clusters = [];
         var next = nextCluster([entities.slice()]);
         var hierarchy = {},
@@ -163,25 +163,18 @@ exports.clustering = function () {
             division = split(next.cluster.slice(), splitCore(next.cluster.slice()));
             clusters = clusters.concat(division.slice());
             makeHierarchy(hierarchy, next.cluster, division.slice());
-            dianaStack.push({lastSplit: next.cluster.slice(), clusters: clusters.slice(), breakpoint: next.diameter});
             next = nextCluster(clusters);
         }
 
         return {
             hierarchy: hierarchy,
-            clusters: clusters,
-            dianaStack: dianaStack,
             distances: distances.map(function (d) {
                 return [entities.indexOf(d[0]), entities.indexOf(d[1]), d[2]];
             }),
             entities: entities.map(function (e) {
                 return {
                     name: e,
-                    group: dianaStack[dianaStack.length-clusterDepth].clusters
-                        .indexOf(dianaStack[dianaStack.length-clusterDepth].clusters
-                            .filter(function (x) {
-                                return x.indexOf(e) > -1;
-                            })[0])
+                    group: 0
                 };
             })
         };

@@ -1,22 +1,37 @@
 doctype html
 html(ng-app="ir-matrix-cooc")
-  head
-    base(href='/')
-    meta(charset='utf-8')
-    meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
-    meta(name='viewport', content='width=device-width, initial-scale=1.0')
-    title= appName
+    head
+        base(href='/')
+        meta(charset='utf-8')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+        meta(name='viewport', content='width=device-width, initial-scale=1.0')
+        title= appName
 
-    for cssFile in cssFiles
-      link(rel="stylesheet", href=cssFile)
+        for cssFile in cssFiles
+            link(rel="stylesheet", href=cssFile)
 
-    // Preloaded Data
-    script.
-      var preloadedData = !{data};
-    for jsFile in jsFiles
-      script(src=jsFile)
-  body
-    div(ng-view)
-    if preloadHTML
-      script(type="text/ng-template", id="#{preloadHTMLPath}")
-        != preloadHTML
+        // Preloaded Data
+        script.
+            var preloadedData = !{data};
+        for jsFile in jsFiles
+            script(src=jsFile)
+    body
+        nav.navbar.navbar-default(role='navigation', ng-controller="headerController")
+            .container-fluid
+                .navbar-header
+                    a.navbar-brand(href='#')
+                        kbd Kookkorpora
+
+                ul.nav.navbar-nav
+                    li(ng-class="getClass('/korpora')")
+                        a(href='/korpora') Tool
+                    li(ng-class="getClass('/manual')")
+                        a(href='/manual') Manual
+                ul.nav.navbar-nav.navbar-right
+                    li: a: small Visualisierung von Korpus-Ähnlichkeiten
+        div(ng-view)
+        if preloadHTML
+            script(type="text/ng-template", id="#{preloadHTMLPath}")
+                != preloadHTML
+
+

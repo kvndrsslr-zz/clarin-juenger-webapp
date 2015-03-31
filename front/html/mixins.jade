@@ -1,0 +1,22 @@
+mixin feature(fname, version)
+    .row
+        .col-xs-12
+            .page-header
+                != "<h1" + ( block ? " ng-click=\"show('" + fname + "',true)\")>" : ">")
+                if block
+                    small
+                        span.glyphicon.glyphicon-chevron-down.collapse-indicator(
+                        ng-class="!show('#{fname}') ? [] : ['collapse-indicator-rotate']"
+                        )
+                | &nbsp;
+                =fname
+                small= ' ' + version
+    if block
+        div(collapse="show('#{fname}')")
+            block
+mixin info(title)
+    .col-xs-6.col-sm-4.col-md-3: .panel.panel-info
+        .panel-heading: h2.panel-title #{title}
+        .panel-body
+            if block
+                block
