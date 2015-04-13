@@ -10,7 +10,6 @@ include ../mixins.jade
                 von Datenbank- oder Sprachennamen.
             +info('Anfragebezeichner').
                 Vergeben Sie Namen um schneller zwischen Jobansichten wechseln zu können.
-            .clearfix.visible-md-block.visible-lg-block
             +info('Metrik').
                 Wählen Sie die zur Ähnlichkeitsanalyse verwendete Metrik aus.
     +feature('Jobs', '')
@@ -21,6 +20,17 @@ include ../mixins.jade
                 Doppelklicken Sie auf einen Job in der Liste um die Konfiguration des Jobs
                 als Grundlage für einen neuen zu laden.
     +feature('Matrix', '')
-        +info('Farben').
-        +info('Cluster-Schwellwert').
-            Ab welcher Mindestähnlichkeit untereinander wird eine Untermenge von Korpora als Cluster angesehen?
+        +info('Farbskala').
+            Manche Unterschiede lassen sich besser mit besonderen Farbskalen beobachten.
+        +info('Maximaler Clusterdurchmesser').
+            Der Durchmesser eines Clusters entspricht der größten Unähnlichkeit zweier Korpora aus dem Cluster.
+            Wählen Sie den maximalen Clusterdurchmesser aus, um unterschiedlich granulare Cluster zu sehen.
+            Sie können den Clusterdurchmesser auch durch Klick auf einen Cluster-Punkt
+            in der Dendogram-Ansicht auswählen.
+        +info('Dendogram').
+            Das Dendogram zeigt die Hierarchie der Cluster an. Die Knotenpunkte werden entsprechend eingefärbt,
+            durch Klick auf einen Knotenpunkt wird der Durchmesser des dem Punkt zugeordneten Clusters als maximaler
+            Clusterdurchmesser benutzt.
+        +info('Matrix').
+            Die Felder der Matrix werden entsprechend der ausgewählten Farbskala und dem Ähnlichkeitswert des Feldes
+            dargestellt. Cluster werden in der Clusterfarbe umrandet.

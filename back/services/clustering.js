@@ -95,7 +95,24 @@ exports.clustering = function () {
                         return entry.entity;
                     });
             }
-            return [cluster, splinterGroup];
+            var clusterDistancesToAll = meanDistancesBetween(cluster, entities);
+            clusterDistancesToAll = clusterDistancesToAll
+                .map(function (a) {
+                    return a.distance;
+                })
+                .reduce(function (a, b) {
+                return a + b;
+            }, 0.0) / clusterDistancesToAll.length;
+            var splinterGroupDistancesToAll = meanDistancesBetween(splinterGroup, entities);
+            splinterGroupDistancesToAll = splinterGroupDistancesToAll
+                .map(function (a) {
+                    return a.distance;
+                })
+                .reduce(function (a, b) {
+                return a + b;
+            }, 0.0) / splinterGroupDistancesToAll.length;
+            return clusterDistancesToAll > splinterGroupDistancesToAll ?
+                [cluster, splinterGroup] : [splinterGroup, cluster];
         }
 
         function diameter(cluster) {

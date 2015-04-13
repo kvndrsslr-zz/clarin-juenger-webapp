@@ -15,7 +15,7 @@ exports.workloadManager = function (params) {
     }
 
     function enqueue (workload) {
-        console.log(params);
+        //console.log(params);
         var w = {id: createId(), request: _.clone(params), workload: workload, progress: "", result: false};
         if (typeof retrieve(w.id) === 'undefined') {
             var qPoint;

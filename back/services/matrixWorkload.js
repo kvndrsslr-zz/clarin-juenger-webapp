@@ -35,10 +35,10 @@ exports.matrixWorkload = function (params, getWordlists, writeWordlists, spawnLi
                 for (var i = corpora.length - 1; i >= 0; i--) {
                     var corpusA = corpora.splice(i, 1)[0];
                     corpora.forEach(function (corpusB) {
-                        if (fs.existsSync('data/result_' + params.wordCount + '_' + params.metric + '_' + corpusA + '_' + corpusB + '.txt'))
-                            distances.push([corpusA, corpusB, parseFloat(fs.readFileSync('data/result_' + params.wordCount + '_' + params.metric + '_' + corpusA + '_' + corpusB + '.txt', {encoding: 'utf-8'}))]);
+                        if (fs.existsSync('front/misc/data/result_' + params.wordCount + '_' + params.metric + '_' + corpusA + '_' + corpusB + '.txt'))
+                            distances.push([corpusA, corpusB, parseFloat(fs.readFileSync('front/misc/data/result_' + params.wordCount + '_' + params.metric + '_' + corpusA + '_' + corpusB + '.txt', {encoding: 'utf-8'}))]);
                         else
-                            distances.push([corpusA, corpusB, parseFloat(fs.readFileSync('data/result_' + params.wordCount + '_' + params.metric + '_' + corpusB + '_' + corpusA + '.txt', {encoding: 'utf-8'}))]);
+                            distances.push([corpusA, corpusB, parseFloat(fs.readFileSync('front/misc/data/result_' + params.wordCount + '_' + params.metric + '_' + corpusB + '_' + corpusA + '.txt', {encoding: 'utf-8'}))]);
                     });
                 }
                 return distances;
@@ -68,8 +68,8 @@ exports.matrixWorkload = function (params, getWordlists, writeWordlists, spawnLi
         for (var i = corpora.length - 1; i >= 0; i--) {
             var corpusA = corpora.splice(i, 1)[0];
             corpora.forEach(function (corpusB) {
-                if (!fs.existsSync('data/result_' + params.wordCount + '_' + params.metric + '_' + corpusA + '_' + corpusB + '.txt') &&
-                    !fs.existsSync('data/result_' + params.wordCount + '_' + params.metric + '_' + corpusB + '_' + corpusA + '.txt'))
+                if (!fs.existsSync('front/misc/data/result_' + params.wordCount + '_' + params.metric + '_' + corpusA + '_' + corpusB + '.txt') &&
+                    !fs.existsSync('front/misc/data/result_' + params.wordCount + '_' + params.metric + '_' + corpusB + '_' + corpusA + '.txt'))
                     params.missingLinks.push([corpusA, corpusB]);
             });
         }

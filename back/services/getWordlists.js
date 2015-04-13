@@ -9,9 +9,11 @@ exports.getWordlists = function (params, db, tunnel, corporaSchemes) {
                 console.log('Connecting to DB...');
                 var wordlists = [];
                 var deferred = Q.defer();
-                params.corpora.forEach(function (corpus) {
+                var queryQ = Q();
+                var getWordlist = function (corpus) {
+                    var wordlistRetrieved = Q.defer();
                     var cache = globalWordlists.filter(function(x) {
-                       return x.id === corpus && parseFloat(x.count) >= parseFloat(params.wordCount);
+                        return x.id === corpus && parseFloat(x.count) >= parseFloat(params.wordCount);
                     });
                     if (cache.length !== 0) {
                         cache = cache[0].list.slice(0, params.wordCount);
@@ -46,22 +48,32 @@ exports.getWordlists = function (params, db, tunnel, corporaSchemes) {
                                         if (wordlists.length === params.corpora.length) {
                                             deferred.resolve(wordlists);
                                         }
+                                        wordlistRetrieved.resolve();
                                         db.release();
                                     })
                                     .fail(function (error) {
                                         console.log(error);
                                         db.release();
                                         deferred.reject(error);
+                                        wordlistRetrieved.resolve();
                                     });
                             })
                             .fail(function (error) {
                                 console.log(error);
                                 deferred.reject(error);
+                                wordlistRetrieved.resolve();
                             }
                         );
                     }
+                    return wordlistRetrieved.promise;
+                };
+                params.corpora.forEach(function (corpus) {
+                    queryQ = queryQ.then(getWordlist.bind(null, corpus));
                 });
                 return deferred.promise;
             });
     });
+
+
+
 };

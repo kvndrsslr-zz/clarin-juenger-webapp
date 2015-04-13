@@ -31,10 +31,9 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
     })
     .service('dataLoader', function ($location, $http) {
         return function () {
-            if (preloadedData) {
+            if (typeof preloadedData !== "undefined" && preloadedData) {
                 var data = preloadedData;
                 preloadedData = null;
-                console.log(data);
                 return data;
             } else {
                 return $http.get( '/api' + $location.path() ).then(function (res) {

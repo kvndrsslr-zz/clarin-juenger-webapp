@@ -63,27 +63,29 @@ include ../mixins.jade
                             br
                         | {{jobdata.corpora.length-3}} weitere
 
-    #matrix(ng-show="show('matrix')")
-        +feature('Matrixdarstellung', 'beta')
-            .row
-                form
-                    .col-xs-12.col-md-6
-                        .form-group
-                            label.control-label(for="maxClusterDiameter") Maximaler Clusterdurchmesser ({{maxClusterDiameter | rounded: 3}})
-                            input.form-control(ng-model="maxClusterDiameter", id="maxClusterDiameter",
-                            type="range", min=0, max=1, step=0.001)
-                    .col-xs-12.col-md-6
-                        .form-group
-                            label.control-label(for="heatMapColors") Farbskala
-                            ui-select(searchEnabled="true", theme="bootstrap", ng-model="sel.colors")
-                                ui-select-match: div {{$select.selected}}
-                                ui-select-choices(repeat="color in heatMapColors")
-                                    div(ng-bind-html="color | highlight: $select.search")
 
-            #visualization
+    +feature('Visualisierung', 'Matrixdarstellung')
+        .row
+            form
+                .col-xs-12.col-md-6
+                    .form-group
+                        label.control-label(for="maxClusterDiameter") Maximaler Clusterdurchmesser ({{maxClusterDiameter | rounded: 3}})
+                        input.form-control(ng-model="maxClusterDiameter", id="maxClusterDiameter",
+                        type="range", min=0, max=1, step=0.001)
+                .col-xs-12.col-md-6
+                    .form-group
+                        label.control-label(for="heatMapColors") Farbskala
+                        ui-select(searchEnabled="true", theme="bootstrap", ng-model="sel.colors")
+                            ui-select-match: div {{$select.selected}}
+                            ui-select-choices(repeat="color in heatMapColors")
+                                div(ng-bind-html="color | highlight: $select.search")
+        #visualization
 
-    #statistic(ng-show="show('stats')")
-        +feature('Statistik', '{{statistics.pairName}}')
+    +feature('Statistik', '{{statistics.pairName}}')
+        .row
+            img.col-xs-6(src="../data/{{statistic.graphA}}")
+            img.col-xs-6(src="../data/{{statistic.graphB}}")
+
     // Padding nach unten
     .row
         p

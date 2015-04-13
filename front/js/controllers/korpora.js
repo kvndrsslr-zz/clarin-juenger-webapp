@@ -37,6 +37,11 @@ angular.module('ir-matrix-cooc')
             return ( x.key < 5 ? "Versch." : "Gleiche" ) + " Listenlängen";
         };
 
+        $scope.statistics = {
+            graphA: "",
+            graphB: ""
+        };
+
         $scope.requestName = "";
         $scope.wordCount = 10000;
         $scope.heatMapColors = matrixVisualization.heatMap.colors();
@@ -50,10 +55,10 @@ angular.module('ir-matrix-cooc')
         $scope.limit = 125;
 
         // feature display toggle
-        var showFeature = {};
+        var showFeature = {'Konfiguration' : false};
         $scope.show = function (id, write) {
             if (typeof showFeature[id] === 'undefined') {
-                showFeature[id] = false;
+                showFeature[id] = true;
             }
             if (typeof write !== undefined && write) {
                 showFeature[id] = !showFeature[id];
@@ -81,7 +86,7 @@ angular.module('ir-matrix-cooc')
             };
             if (!$scope.validation()) {
                 jobManager.issueJob(job).then(function (data) {
-                    showFeature.matrix = true;
+                    showFeature.Visualisierung = true;
                     $scope.draw(data);
                     jobManager.currentJob(job);
                 });
@@ -106,7 +111,7 @@ angular.module('ir-matrix-cooc')
 
         $scope.selectJob = function (j) {
             jobManager.issueJob(j).then(function (data) {
-                showFeature.matrix = true;
+                showFeature.Visualisierung = false;
                 $scope.draw(data);
                 jobManager.currentJob(j);
                 jobManager.markJob(j, true);
@@ -128,13 +133,17 @@ angular.module('ir-matrix-cooc')
                 $scope.draw(jobManager.data());
         }, true);
 
+        //$scope.$watch(matrixVisualization.currentPair, function (x) {
+        //   $scope.statistics.graphA = 'frequency_ratio_plot_without_repetition'x[0] x[1];
+        //}, true);
+
         // Draw Visualization
         $scope.draw = function (data) {matrixVisualization.draw(data, $scope.maxClusterDiameter)};
 
         // Draw current job on controller instantiation
         jobManager.jobs().forEach(function (j) {
             if (jobManager.currentJob() === j.requestId){
-                showFeature.matrix = true;
+                showFeature.Visualisierung = true;
                 $scope.selectJob(j);
             }
         });

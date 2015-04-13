@@ -11,7 +11,7 @@ exports.writeWordlists = function (tunnel) {
             for (var i = 0; i < wordlist.length; i++) {
                 file += wordlist[i].word + "\t" + wordlist[i].freq + '\n';
             }
-            fs.writeFileSync("data/" + wordlist.corpus + ".txt", file);
+            fs.writeFileSync("front/misc/data/" + wordlist.corpus + ".txt", file);
         });
     });
 };

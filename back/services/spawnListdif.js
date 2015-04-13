@@ -10,12 +10,12 @@ exports.spawnListdif = function (params, workloadManager) {
             var deferred = Q.defer();
             var listdif = spawn('java',
                 [
-                    '-jar', '../back/listdif.jar', corpusA + '.txt', corpusB + '.txt',
+                    '-jar', '../../../back/listdif.jar', corpusA + '.txt', corpusB + '.txt',
                     params.metric, params.wordCount,
                     params.wordCount + '_' + params.metric + '_' + corpusA + '_' + corpusB + '.txt'
                 ],
                 {
-                    cwd: process.cwd() + '/data/'
+                    cwd: process.cwd() + '/front/misc/data/'
                 });
             listdif.on('close', function (code) {
                 console.log('Success: "' + corpusA + '", "' + corpusB + '"');
