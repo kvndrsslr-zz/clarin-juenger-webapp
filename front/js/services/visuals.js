@@ -4,6 +4,7 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
     var c = d3.scale.category10().domain(d3.range(10));
     var maxClusterDiameter = 0.25;
     var scope;
+    var currentPair;
 
     var heatMap = {
         colorMap: [],
@@ -92,6 +93,10 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
         maxClusterDiameter: function (s) {
             scope = s;
             return maxClusterDiameter;
+        },
+        currentPair : function (s) {
+            scope = s;
+            return currentPair;
         }
     };
 
@@ -233,7 +238,8 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
                     //return d3.rgb(nodes[d.x].group == nodes[d.y].group ? c(nodes[d.x].group) : '#000');
                 })
                 .on("mouseover", mouseover)
-                .on("mouseout", mouseout);
+                .on("mouseout", mouseout)
+                .on("click", click);
             cell.append("text")
                 .attr("x", function (d) {
                     return x(d.x) + x.rangeBand() / 2 + 1;
@@ -247,7 +253,8 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
                     return (d.z / 1000).toFixed(3);
                 })
                 .on("mouseover", mouseover)
-                .on("mouseout", mouseout);
+                .on("mouseout", mouseout)
+                .on("click", click);
             cell
                 .append("text")
                 .attr("x", function (d) {
@@ -262,7 +269,14 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
                     return (d.z / 1000).toFixed(3);
                 })
                 .on("mouseover", mouseover)
-                .on("mouseout", mouseout);
+                .on("mouseout", mouseout)
+                .on("click", click);
+        }
+
+        function click(p) {
+            currentPair = [data.nodes[p.x].name, data.nodes[p.y].name];
+            //console.log(data.nodes[p.x].name + "_" + data.nodes[p.y].name);
+            scope.$apply();
         }
 
         function mouseover(p) {

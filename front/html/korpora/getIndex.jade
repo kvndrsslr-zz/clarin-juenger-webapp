@@ -83,8 +83,10 @@ include ../mixins.jade
 
     +feature('Statistik', '{{statistics.pairName}}')
         .row
-            img.col-xs-6(src="../data/{{statistic.graphA}}")
-            img.col-xs-6(src="../data/{{statistic.graphB}}")
+            div.col-xs-6(ng-repeat="file in statistic.files")
+                small: {{file}}
+                a(href="/data/{{file}}", target="statistics")
+                    img.col-xs-12(src="/data/{{file}}")
 
     // Padding nach unten
     .row

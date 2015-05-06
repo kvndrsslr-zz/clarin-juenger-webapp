@@ -1,5 +1,5 @@
 angular.module('ir-matrix-cooc')
-    .controller('korporaController', function ($scope, $timeout, data, jobManager, matrixVisualization) {
+    .controller('korporaController', function ($scope, $timeout, $http, data, jobManager, matrixVisualization) {
         // debug
         $scope.alert = window.alert.bind(window);
 
@@ -37,9 +37,8 @@ angular.module('ir-matrix-cooc')
             return ( x.key < 5 ? "Versch." : "Gleiche" ) + " Listenlängen";
         };
 
-        $scope.statistics = {
-            graphA: "",
-            graphB: ""
+        $scope.statistic = {
+            files: []
         };
 
         $scope.requestName = "";
@@ -125,7 +124,7 @@ angular.module('ir-matrix-cooc')
         });
 
         $scope.$watch(matrixVisualization.maxClusterDiameter, function (x) {
-                $scope.maxClusterDiameter = x;
+            $scope.maxClusterDiameter = x;
         }, true);
 
         $scope.$watch('maxClusterDiameter', function (x) {
@@ -133,9 +132,27 @@ angular.module('ir-matrix-cooc')
                 $scope.draw(jobManager.data());
         }, true);
 
-        //$scope.$watch(matrixVisualization.currentPair, function (x) {
-        //   $scope.statistics.graphA = 'frequency_ratio_plot_without_repetition'x[0] x[1];
-        //}, true);
+        $scope.$watch(matrixVisualization.currentPair, function (x) {
+            if (x) {
+                var currentRequest = jobManager.jobs().filter(function (j) {
+                    return j.requestId === jobManager.currentJob()
+                })[0];
+                var regex = currentRequest.wordCount + "_" + currentRequest.metric + "_" + "(" + x[0] + "_" + x[1] + "|"
+                    + x[1] + "_" + x[0] + "){1}\\.jpg";
+                $http({
+                    method: 'post',
+                    url: '/api/korpora/images',
+                    timeout: 9999999999,
+                    data: {regex: regex}
+                })
+                    .success(function (data) {
+                        if (typeof data.files !== 'undefined') {
+                            $scope.statistic.files = data.files;
+                            showFeature['Statistik'] = false;
+                        }
+                    })
+            }
+        }, true);
 
         // Draw Visualization
         $scope.draw = function (data) {matrixVisualization.draw(data, $scope.maxClusterDiameter)};

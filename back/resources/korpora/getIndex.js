@@ -1,4 +1,6 @@
 var Q = require('q');
+var filter = require('filter-files');
+var filename = require('filename-regex');
 
 exports.getIndex = function (corporaSchemes) {
     var noSuffixSchemes = [];
@@ -33,4 +35,16 @@ exports.postRequest = function (params, workloadManager) {
     } else {
         return {progress: workloadManager.progress(params.requestId)};
     }
+};
+
+exports.postImages = function (params) {
+
+    console.log(new RegExp(params.regex));
+    var list = filter.sync('front/misc/data', function (x) {
+        return new RegExp(params.regex).test(x);
+    }).map(function (x) {
+        var match = x.match(filename());
+        return match[0];
+    });
+    return {'files': list};
 };
