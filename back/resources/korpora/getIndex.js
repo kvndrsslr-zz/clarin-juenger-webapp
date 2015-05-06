@@ -39,7 +39,6 @@ exports.postRequest = function (params, workloadManager) {
 
 exports.postImages = function (params) {
 
-    console.log(new RegExp(params.regex));
     var list = filter.sync('front/misc/data', function (x) {
         return new RegExp(params.regex).test(x);
     }).map(function (x) {

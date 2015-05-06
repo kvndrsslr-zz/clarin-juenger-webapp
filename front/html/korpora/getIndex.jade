@@ -84,7 +84,7 @@ include ../mixins.jade
     +feature('Statistik', '{{statistics.pairName}}')
         .row
             div.col-xs-6(ng-repeat="file in statistic.files")
-                small: {{file}}
+                small {{file}}
                 a(href="/data/{{file}}", target="statistics")
                     img.col-xs-12(src="/data/{{file}}")
 
