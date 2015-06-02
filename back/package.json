@@ -16,6 +16,7 @@
     "portfinder": "0.3.0",
     "q": "1.1.2",
     "q-orm": "0.0.1",
+    "request": "^2.57.0",
     "synth": "0.6.0",
     "tunnel-ssh": "0.0.5",
     "underscore": "1.7.0"

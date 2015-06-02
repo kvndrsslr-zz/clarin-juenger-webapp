@@ -70,6 +70,7 @@ exports.getWordlists = function (params, db, tunnel, corporaSchemes) {
                 params.corpora.forEach(function (corpus) {
                     queryQ = queryQ.then(getWordlist.bind(null, corpus));
                 });
+                tunnel.close();
                 return deferred.promise;
             });
     });

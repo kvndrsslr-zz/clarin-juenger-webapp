@@ -162,7 +162,7 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
             })
         };
         // The default sort order.
-        x.domain(orders.sortOrder);
+        x.domain(orders.name);
 
         var row = svg.selectAll(".row")
             .data(matrix)
