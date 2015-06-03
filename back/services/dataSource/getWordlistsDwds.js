@@ -21,7 +21,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                 for (var y = yMin; y <= yMax; y++) {
                     predicates.forEach(function (p) {
                         for (var i = 0; i <= maxSize; i += sliceSize) {
-                            var url = baseUrl + p + " #asc_date[" + y + "-00-00, " + y + "-99-99]&start="+(i+1)+"&limit="+(i+sliceSize);
+                            var url = encodeURIComponent(baseUrl + p + " #asc_date[" + y + "-00-00, " + y + "-99-99]&start="+(i+1)+"&limit="+(i+sliceSize));
                             console.log("chaining " + url);
                             chain = chain.then(retrieveText.bind(null, url));//.then(Q().delay(timeoutInterval));
                         }
