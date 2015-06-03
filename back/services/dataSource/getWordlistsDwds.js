@@ -44,6 +44,8 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                         // Möglichkeit 2: Wenn Ergebnisse von DWDS bereits geordnet sind wird obiger Ansatz
                         //          trivialerweise zum Anhängen des Textes in eine einzige Datei
                         console.log("retrieved:" + typeof data);
+                        data = JSON.parse(data);
+                        console.log("transformed:" + typeof data);
                         var hits = data.hits_.map(function (hit) {
                             var hash = crypto.createHash('sha1');
                             var meta = {
