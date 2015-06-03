@@ -73,6 +73,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                             }
                             lHash = hit.hash;
                         }
+                        return true;
                     });
                 }
 
