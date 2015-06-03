@@ -63,7 +63,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                             };
                         });
                         var lHash = "";
-                        //console.log(hits);
+                        console.log(hits);
                         // iteriere durch hits
                         var wstream = fs.createWriteStream('front/misc/data/dwds/' + hits[0].meta.date + '.xml');
                         hits.forEach(function (hit) {
