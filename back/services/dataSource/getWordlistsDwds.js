@@ -6,7 +6,6 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
     return (function () {
         return tunnel.qConnect()
             .then(function () {
-
                 var chain = Q(),
                     baseUrl = "http://kaskade.dwds.de/dstar/kern/query?q=",
                     yMin = 1919,
@@ -14,15 +13,16 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                     predicates = ['#has[textClass,/^Zeitung/]'],
                     sliceSize = 1000,
                     maxSize = 1000000,
-                    timeoutInterval = 10*1000;
+                    timeoutInterval = 10*1000,
+                    lHash = "";
                 // timeoutEach = 5000;
 
                 for (var y = yMin; y <= yMax; y++) {
                     predicates.forEach(function (p) {
                         for (var i = 0; i <= maxSize - sliceSize; i += sliceSize) {
-                            var url = baseUrl + encodeURIComponent("* " + p + " #asc_date[" + y + "-00-00, " + y + "-99-99]")+"&start="+(i+1)+"&limit="+(sliceSize);
+                            var url = baseUrl + encodeURIComponent("* " + p + " #asc_date[" + y + "-00-00, " + y + "-99-99]")+"&limit="+(sliceSize)+"&start="+(i+1);
                             console.log("chaining " + url);
-                            chain = chain.then(retrieveText.bind(null, url)).then(Q().delay(timeoutInterval));
+                            chain = chain.then(retrieveText.bind(null, url))
                         }
                     })
                 }
@@ -40,9 +40,14 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                         //          Vorteil: Metadaten nur beim ersten Finden eines Titels interessant.
                         // Möglichkeit 2: Wenn Ergebnisse von DWDS bereits geordnet sind wird obiger Ansatz
                         //          trivialerweise zum Anhängen des Textes in eine einzige Datei
-                        console.log("retrieved:" + typeof data);
+                        console.log("retrieved: " + typeof data);
                         data = JSON.parse(data);
-                        console.log("transformed:" + typeof data);
+                        console.log("transformed: " + typeof data);
+                        console.log("expected total hits: " + data.nhits_);
+                        if (data.nhits_ < url.substring(url.lastIndexOf('=')+1)) {
+                            console.log('skipping... (nhits<start)');
+                            return true;
+                        }
                         var hits = data.hits_.map(function (hit) {
                             var hash = crypto.createHash('sha1');
                             var meta = {
@@ -62,7 +67,6 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                                     },"")
                             };
                         });
-                        var lHash = "";
                         // iteriere durch hits
                         if (hits.length > 0) {
                             var y = hits[0].meta.date.substring(0, hits[0].meta.date.indexOf('-'));
@@ -73,7 +77,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                                 if (hit.hash !== lHash) {
                                     // write meta heading
                                     wstream.write('\n <source><location>' + hit.meta.author+ ':' + hit.meta.title +
-                                    '</location><date>' + hit.meta.date + '</date></source>');
+                                    '</location><date>' + hit.meta.date + '</date></source>\n');
                                 }
                                 //append text
                                 wstream.write(hit.text);
@@ -81,7 +85,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                             });
                             wstream.end();
                         }
-                        return true;
+                        return Q().delay(timeoutInterval);
                     }).fail(function (error) {
                         console.log("error:" + error);
                     });
