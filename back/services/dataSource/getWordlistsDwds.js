@@ -63,12 +63,10 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                             };
                         });
                         var lHash = "";
-                        console.log(hits);
                         // iteriere durch hits
                         var y = hits[0].meta.date.substring(0, hits[0].meta.date.indexOf('-'));
                         var wstream = fs.createWriteStream('front/misc/data/dwds/' + y + '.xml');
                         hits.forEach(function (hit) {
-                            console.log("hit:" + hit.hash);
                             if (hit.hash !== lHash) {
                                 // write meta heading
                                 wstream.write('\n <source><location>' + hit.meta.author+ ':' + hit.meta.title +
