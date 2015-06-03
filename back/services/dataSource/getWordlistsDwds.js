@@ -68,6 +68,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                             };
                         });
                         var lHash = "";
+                        console.log(hits);
                         // iteriere durch hits
                         for (var hit in hits) {
                             console.log("hit:" + hit.hash);
