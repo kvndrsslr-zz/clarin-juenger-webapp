@@ -67,7 +67,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                         if (hits.length > 0) {
                             var y = hits[0].meta.date.substring(0, hits[0].meta.date.indexOf('-'));
                             var wstream = fs.createWriteStream('front/misc/data/dwds/' + y + '.xml', {
-                                flags: "r+"
+                                flags: "a+"
                             });
                             hits.forEach(function (hit) {
                                 if (hit.hash !== lHash) {
