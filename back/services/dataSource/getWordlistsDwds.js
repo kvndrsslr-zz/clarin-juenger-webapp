@@ -32,6 +32,8 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                     fs.writeFileSync("front/misc/data/dwds_test.json", JSON.stringify(x));
                  });
 
+                return chain;
+
                 function retrieveText (url) {
                     console.log("retrieving: " + url);
                     return Q().then(qRequest.bind(null, url)).then(function (data) {
