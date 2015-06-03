@@ -10,11 +10,11 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                 var chain = Q(),
                     baseUrl = "http://kaskade.dwds.de/dstar/kern/query?q=",
                     yMin = 1919,
-                    yMax = 1919,//yMax = 1933,
+                    yMax = 1933,
                     predicates = ['#has[textClass,/^Zeitung/]'],
-                    sliceSize = 10,
-                    maxSize = 20,
-                    timeoutInterval = 2*1000;
+                    sliceSize = 1000,
+                    maxSize = 1000000,
+                    timeoutInterval = 10*1000;
                 // timeoutEach = 5000;
 
                 for (var y = yMin; y <= yMax; y++) {
