@@ -68,9 +68,9 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                             };
                         });
                         var lHash = "";
-                        console.log(hits);
+                        //console.log(hits);
                         // iteriere durch hits
-                        for (var hit in hits) {
+                        hits.forEach(function (hit) {
                             console.log("hit:" + hit.hash);
                             if (x[hit.hash] || hit.hash === lHash) {
                                 x[hit.hash].text += " " + hit.text;
@@ -78,7 +78,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                                 x[hit.hash] = hit;
                             }
                             lHash = hit.hash;
-                        }
+                        });
                         return true;
                     });
                 }
