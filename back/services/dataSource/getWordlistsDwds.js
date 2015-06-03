@@ -14,7 +14,8 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                     sliceSize = 1000,
                     maxSize = 1000000,
                     timeoutInterval = 1*1000,
-                    lHash = "";
+                    lHash = "",
+                    expectedMatches = 10000000;
                 // timeoutEach = 5000;
 
                 for (var y = yMin; y <= yMax; y++) {
@@ -31,6 +32,12 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
 
                 function retrieveText (url) {
                     console.log("retrieving: " + url);
+
+                    if (expectedMatches < url.substring(url.lastIndexOf('=')+1)) {
+                        console.log('skipping... (nhits < start)');
+                        return Q();
+                    }
+
                     return Q().then(qRequest.bind(null, url)).then(function (data) {
                         // Extrahiere Klartext
                         // Schreibe in Array dies Objekt: {text: text, titel: titel, date: date, hash: sha1(autor + titel + jahr)}
@@ -43,11 +50,9 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                         console.log("retrieved: " + typeof data);
                         data = JSON.parse(data);
                         console.log("transformed: " + typeof data);
+                        expectedMatches = data.nhits_;
                         console.log("expected total hits: " + data.nhits_);
-                        if (data.nhits_ < url.substring(url.lastIndexOf('=')+1)) {
-                            console.log('skipping... (nhits<start)');
-                            return true;
-                        }
+
                         var hits = data.hits_.map(function (hit) {
                             var hash = crypto.createHash('sha1');
                             var meta = {
