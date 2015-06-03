@@ -48,7 +48,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                             var meta = {
                                 author: hit.meta_.author,
                                 title: hit.meta_.title,
-                                date: hit.meta_.date
+                                date: hit.meta_.date_
                             };
                             hash.update(JSON.stringify(meta), 'utf8');
                             return {
