@@ -43,7 +43,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                         //          Vorteil: Metadaten nur beim ersten Finden eines Titels interessant.
                         // Möglichkeit 2: Wenn Ergebnisse von DWDS bereits geordnet sind wird obiger Ansatz
                         //          trivialerweise zum Anhängen des Textes in eine einzige Datei
-                        console.log(data);
+                        console.log("retrieved:" + typeof data);
                         var hits = data.hits_.map(function (hit) {
                             var hash = crypto.createHash('sha1');
                             var meta = {
@@ -66,6 +66,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                         var lHash = "";
                         // iteriere durch hits
                         for (var hit in hits) {
+                            console.log("hit:" + hit.hash);
                             if (x[hit.hash] || hit.hash === lHash) {
                                 x[hit.hash].text += " " + hit.text;
                             } else {
