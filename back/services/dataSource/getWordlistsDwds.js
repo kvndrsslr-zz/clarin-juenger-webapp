@@ -80,6 +80,8 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                             lHash = hit.hash;
                         });
                         return true;
+                    }).fail(function (error) {
+                        console.log("error:" + error);
                     });
                 }
 
