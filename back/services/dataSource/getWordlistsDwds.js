@@ -7,8 +7,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
         return tunnel.qConnect()
             .then(function () {
 
-                var x = {},
-                    chain = Q(),
+                var chain = Q(),
                     baseUrl = "http://kaskade.dwds.de/dstar/kern/query?q=",
                     yMin = 1919,
                     yMax = 1919,//yMax = 1933,
@@ -27,10 +26,6 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                         }
                     })
                 }
-
-                chain = chain.then(function () {
-                    fs.writeFileSync("front/misc/data/dwds/test.json", JSON.stringify(x));
-                 });
 
                 return chain;
 
@@ -70,15 +65,19 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                         var lHash = "";
                         //console.log(hits);
                         // iteriere durch hits
+                        var wstream = fs.createWriteStream('front/misc/data/dwds/' + hits[0].meta.date + '.xml');
                         hits.forEach(function (hit) {
                             console.log("hit:" + hit.hash);
-                            if (x[hit.hash] || hit.hash === lHash) {
-                                x[hit.hash].text += " " + hit.text;
-                            } else {
-                                x[hit.hash] = hit;
+                            if (hit.hash !== lHash) {
+                                // write meta heading
+                                wstream.write('\n <source><location>' + hit.meta.author+ ':' + hit.meta.title +
+                                '</location><date>' + hit.meta.date + '</date></source>');
                             }
+                            //append text
+                            wstream.write(hit.text);
                             lHash = hit.hash;
                         });
+                        wstream.end();
                         return true;
                     }).fail(function (error) {
                         console.log("error:" + error);
