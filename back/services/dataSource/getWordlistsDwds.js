@@ -13,7 +13,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                     predicates = ['#has[textClass,/^Zeitung/]'],
                     sliceSize = 1000,
                     maxSize = 1000000,
-                    timeoutInterval = 10*1000,
+                    timeoutInterval = 1*1000,
                     lHash = "";
                 // timeoutEach = 5000;
 
