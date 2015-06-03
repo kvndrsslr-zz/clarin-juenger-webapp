@@ -64,19 +64,23 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                         });
                         var lHash = "";
                         // iteriere durch hits
-                        var y = hits[0].meta.date.substring(0, hits[0].meta.date.indexOf('-'));
-                        var wstream = fs.createWriteStream('front/misc/data/dwds/' + y + '.xml');
-                        hits.forEach(function (hit) {
-                            if (hit.hash !== lHash) {
-                                // write meta heading
-                                wstream.write('\n <source><location>' + hit.meta.author+ ':' + hit.meta.title +
-                                '</location><date>' + hit.meta.date + '</date></source>');
-                            }
-                            //append text
-                            wstream.write(hit.text);
-                            lHash = hit.hash;
-                        });
-                        wstream.end();
+                        if (hits.length > 0) {
+                            var y = hits[0].meta.date.substring(0, hits[0].meta.date.indexOf('-'));
+                            var wstream = fs.createWriteStream('front/misc/data/dwds/' + y + '.xml', {
+                                flags: "r+"
+                            });
+                            hits.forEach(function (hit) {
+                                if (hit.hash !== lHash) {
+                                    // write meta heading
+                                    wstream.write('\n <source><location>' + hit.meta.author+ ':' + hit.meta.title +
+                                    '</location><date>' + hit.meta.date + '</date></source>');
+                                }
+                                //append text
+                                wstream.write(hit.text);
+                                lHash = hit.hash;
+                            });
+                            wstream.end();
+                        }
                         return true;
                     }).fail(function (error) {
                         console.log("error:" + error);
