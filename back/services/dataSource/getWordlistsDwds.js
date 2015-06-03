@@ -13,17 +13,17 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                     yMin = 1919,
                     yMax = 1919,//yMax = 1933,
                     predicates = ['#has[textClass,/^Zeitung/]'],
-                    sliceSize = 100,
-                    maxSize = 300,
+                    sliceSize = 10,
+                    maxSize = 20,
                     timeoutInterval = 2*1000;
                 // timeoutEach = 5000;
 
                 for (var y = yMin; y <= yMax; y++) {
                     predicates.forEach(function (p) {
-                        for (var i = 0; i <= maxSize; i += sliceSize) {
+                        for (var i = 0; i <= maxSize - sliceSize; i += sliceSize) {
                             var url = baseUrl + encodeURIComponent("* " + p + " #asc_date[" + y + "-00-00, " + y + "-99-99]")+"&start="+(i+1)+"&limit="+(sliceSize);
                             console.log("chaining " + url);
-                            chain = chain.then(retrieveText.bind(null, url));//.then(Q().delay(timeoutInterval));
+                            chain = chain.then(retrieveText.bind(null, url)).then(Q().delay(timeoutInterval));
                         }
                     })
                 }
