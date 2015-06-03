@@ -58,7 +58,8 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                             var meta = {
                                 author: hit.meta_.author,
                                 title: hit.meta_.title,
-                                date: hit.meta_.date_
+                                date: hit.meta_.date_,
+                                source: hit.meta_.biblLex
                             };
                             hash.update(JSON.stringify(meta), 'utf8');
                             return {
@@ -81,7 +82,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                             hits.forEach(function (hit) {
                                 if (hit.hash !== lHash) {
                                     // write meta heading
-                                    wstream.write('\n <source><location>' + hit.meta.author+ ':' + hit.meta.title +
+                                    wstream.write('\n <source><location>' + hit.meta.source +
                                     '</location><date>' + hit.meta.date + '</date></source>\n');
                                 }
                                 //append text
