@@ -36,7 +36,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
 
                 function retrieveText (url) {
                     console.log("retrieving: " + url);
-                    return Q().then(qRequest.bind(null, encodeURIComponent(url))).then(function (data) {
+                    return Q().then(qRequest.bind(null, url)).then(function (data) {
                         // Extrahiere Klartext
                         // Schreibe in Array dies Objekt: {text: text, titel: titel, date: date, hash: sha1(autor + titel + jahr)}
                         // Wenn Hash schon in Array vorhanden wird text nur angehängt.
