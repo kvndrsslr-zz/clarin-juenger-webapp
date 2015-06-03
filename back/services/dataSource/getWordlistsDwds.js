@@ -9,7 +9,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
 
                 var x = {},
                     chain = Q(),
-                    baseUrl = "http://kaskade.dwds.de/dstar/kern/query?q=* ",
+                    baseUrl = "http://kaskade.dwds.de/dstar/kern/query?",
                     yMin = 1919,
                     yMax = 1919,//yMax = 1933,
                     predicates = ['#has[textClass,/^Zeitung/]'],
@@ -21,7 +21,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                 for (var y = yMin; y <= yMax; y++) {
                     predicates.forEach(function (p) {
                         for (var i = 0; i <= maxSize; i += sliceSize) {
-                            var url = encodeURIComponent(baseUrl + p + " #asc_date[" + y + "-00-00, " + y + "-99-99]&start="+(i+1)+"&limit="+(i+sliceSize));
+                            var url = baseUrl + encodeURIComponent("q=* " + p + " #asc_date[" + y + "-00-00, " + y + "-99-99]")+"&start="+(i+1)+"&limit="+(i+sliceSize);
                             console.log("chaining " + url);
                             chain = chain.then(retrieveText.bind(null, url));//.then(Q().delay(timeoutInterval));
                         }
