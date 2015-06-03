@@ -10,10 +10,10 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                     baseUrl = "http://kaskade.dwds.de/dstar/kern/query?q=",
                     yMin = 1919,
                     yMax = 1933,
-                    predicates = ['#has[textClass,/^Zeitung/]'],
+                    predicates = ['Zeitung', 'Belletristik', 'Wissenschaft', 'Gebrauchsliteratur'],
                     sliceSize = 1000,
                     maxSize = 1000000,
-                    timeoutInterval = 1*1000,
+                    timeoutInterval = 10*1000,
                     lHash = "",
                     expectedMatches = 10000000;
                 // timeoutEach = 5000;
@@ -21,16 +21,16 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                 for (var y = yMin; y <= yMax; y++) {
                     predicates.forEach(function (p) {
                         for (var i = 0; i <= maxSize - sliceSize; i += sliceSize) {
-                            var url = baseUrl + encodeURIComponent("* " + p + " #asc_date[" + y + "-00-00, " + y + "-99-99]")+"&limit="+(sliceSize)+"&start="+(i+1);
+                            var url = baseUrl + encodeURIComponent("* #has[textClass,/^" + p + "/] #asc_date[" + y + "-00-00, " + y + "-99-99]")+"&limit="+(sliceSize)+"&start="+(i+1);
                             console.log("chaining " + url);
-                            chain = chain.then(retrieveText.bind(null, url))
+                            chain = chain.then(retrieveText.bind(null, url, p))
                         }
                     })
                 }
 
                 return chain;
 
-                function retrieveText (url) {
+                function retrieveText (url, p) {
                     console.log("retrieving: " + url);
 
                     if (expectedMatches < url.substring(url.lastIndexOf('=')+1)) {
@@ -75,7 +75,7 @@ exports.getWordlistsDwds = function (params, tunnel, qRequest) {
                         // iteriere durch hits
                         if (hits.length > 0) {
                             var y = hits[0].meta.date.substring(0, hits[0].meta.date.indexOf('-'));
-                            var wstream = fs.createWriteStream('front/misc/data/dwds/' + y + '.xml', {
+                            var wstream = fs.createWriteStream('../dwds-korpora/' + p + y + '.xml', {
                                 flags: "a+"
                             });
                             hits.forEach(function (hit) {
