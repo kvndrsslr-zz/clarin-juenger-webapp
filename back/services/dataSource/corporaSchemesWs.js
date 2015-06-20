@@ -13,14 +13,17 @@ exports.corporaSchemesWs = function (tunnel, qRequest) {
                 console.log(response);
                 var lines = response.split('\n');
                 lines.forEach(function (line) {
-                    var i = line.indexOf('\t');
-                    var name = line.substring(0, i);
-                    var description = line.substring(i+1);
-                    schemes.push(name);
+                    var fields = line.split('\t');
+                    schemes.push({
+                        name :        fields[0],
+                        displayName:  fields[1],
+                        description:  fields[2],
+                        date:         fields[3],
+                        genre:        fields[4]
+                    });
                 });
                 return schemes;
             });
-
     } else {
         return schemes;
     }
