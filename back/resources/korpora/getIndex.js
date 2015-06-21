@@ -2,21 +2,11 @@ var Q = require('q');
 var filter = require('filter-files');
 var filename = require('filename-regex');
 
-exports.getIndex = function (corporaSchemes, corporaSchemesWs) {
-    var noSuffixSchemes = [];
-    var schemes = [];
-    schemes = schemes.concat(corporaSchemesWs);
-    schemes.forEach(function (scheme) {
-        if (!/_[0-9]{3}K$/.test(scheme)) {
-            noSuffixSchemes.push(scheme);
-        }
-    });
-    return {corpora: uniq(noSuffixSchemes)};
-    function uniq(a) {
-        return a.sort().filter(function(item, pos, ary) {
-            return !pos || item != ary[pos - 1];
-        })
-    }
+exports.getIndex = function (resourceManager) {
+    return resourceManager.action('corpora')
+        .then(function (corpora) {
+            return {'corpora' : corpora};
+        });
 };
 
 exports.post = function (workloadManager, matrixWorkload) {
