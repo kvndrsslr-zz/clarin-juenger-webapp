@@ -3,7 +3,8 @@ var Q = require('q');
 exports.resourceManager = function () {
     var resources = [];
     return {
-        register : register
+        register : register,
+        action : action
     };
 
     function register (resource) {
