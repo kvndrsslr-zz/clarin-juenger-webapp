@@ -8,11 +8,12 @@ angular.module('ir-matrix-cooc')
             $scope.jobs = newValue;
         }, true);
 
-        $scope.dbs = data.dbs.map(function(x) {
-            return {name: x, language: window.languages.get(x.substring(0,3))};
+        $scope.corpora = data.corpora.map(function(c) {
+            c['language'] = window.languages.get(c.name.substring(0,3));
+            return c;
         });
 
-        $scope.languages = $scope.dbs.reduce(function (prev, curr, i) {
+        $scope.languages = $scope.corpora.reduce(function (prev, curr, i) {
             if (i == 0) {
                 return prev.concat([curr.language]);
             } else if (prev.indexOf(curr.language) == -1) {

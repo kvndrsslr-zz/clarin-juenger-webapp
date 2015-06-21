@@ -5,5 +5,5 @@ exports.getIndex = function (corporaSchemes) {
             noSuffixSchemes.push(scheme);
         }
     });
-    return {dbs: noSuffixSchemes};
+    return {corpora: noSuffixSchemes};
 };

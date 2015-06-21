@@ -11,7 +11,7 @@ exports.getIndex = function (corporaSchemes, corporaSchemesWs) {
             noSuffixSchemes.push(scheme);
         }
     });
-    return {dbs: uniq(noSuffixSchemes)};
+    return {corpora: uniq(noSuffixSchemes)};
     function uniq(a) {
         return a.sort().filter(function(item, pos, ary) {
             return !pos || item != ary[pos - 1];
