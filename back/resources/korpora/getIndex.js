@@ -6,6 +6,7 @@ exports.getIndex = function (resourceManager) {
     return Q()
         .then(resourceManager.action('corpora'))
         .then(function (corpora) {
+            console.log(JSON.stringify({'corpora' : corpora}));
             return {'corpora' : corpora};
         });
 };
