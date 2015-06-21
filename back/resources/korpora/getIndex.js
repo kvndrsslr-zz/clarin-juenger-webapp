@@ -3,7 +3,8 @@ var filter = require('filter-files');
 var filename = require('filename-regex');
 
 exports.getIndex = function (resourceManager) {
-    return resourceManager.action('corpora')
+    return Q()
+        .then(resourceManager.action('corpora'))
         .then(function (corpora) {
             return {'corpora' : corpora};
         });
