@@ -29,6 +29,7 @@ var cache = {
  */
 exports.uniLeipzigClarinWs = function (tunnel, qRequest, injectObjectToString, params, resourceManager) {
 
+    var baseUrl = 'http://clarinws.informatik.uni-leipzig.de:8080/wordlistwebservice/wordlist';
     var resource =
         /*
         Use this interface for new resource adapters
@@ -37,10 +38,10 @@ exports.uniLeipzigClarinWs = function (tunnel, qRequest, injectObjectToString, p
         'id': 'uniLeipzigClarinWs',
         'name': 'Clarin Wordlist Webservice @ Uni Leipzig',
         'url' : {
-            'base' : 'http://clarinws.informatik.uni-leipzig.de:8080/wordlistwebservice/wordlist',
-            'corpora' : this.base + '/availableWordlists',
-            'wordList' : this.base + '/{{corpusId}}/wordlisttext?limit={{wordCount}}',
-            'wordFrequency' : this.base + '/{{corpusId}}/wordfrequencytext/{{word}}'
+            '' : 'http://clarinws.informatik.uni-leipzig.de:8080/wordlistwebservice/wordlist',
+            'corpora' : baseUrl + '/availableWordlists',
+            'wordList' : baseUrl + '/{{corpusId}}/wordlisttext?limit={{wordCount}}',
+            'wordFrequency' : baseUrl + '/{{corpusId}}/wordfrequencytext/{{word}}'
         },
         'action' : {
             'corpora' : corpora,
@@ -49,6 +50,7 @@ exports.uniLeipzigClarinWs = function (tunnel, qRequest, injectObjectToString, p
         }
     };
 
+    console.log('Attempting to register to resourceManager (' + resource.id + ')');
     resourceManager.register(resource);
 
     return resource;

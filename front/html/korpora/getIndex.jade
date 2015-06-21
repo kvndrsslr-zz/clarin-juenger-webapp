@@ -16,10 +16,10 @@ include ../mixins.jade
                                   theme="bootstrap", ng-model="sel.corpora")
                             ui-select-match(placeholder="Bitte auswählen...") {{$item.name}}
                             ui-select-choices(
-                                repeat="db.name as db in dbs | filter: $select.search | orderBy: 'language' | limitTo: limit",
+                                repeat="corpus.name as corpus in corpora | filter: $select.search | orderBy: 'language' | limitTo: limit",
                                 group-by="'language'"
                             )
-                                div(ng-bind-html="db.name | highlight: $select.search")
+                                div(ng-bind-html="corpus.name | highlight: $select.search")
                 .col-xs-12.col-md-4
                     .form-group
                         label.control-label(for="requestName") Anfragebezeichner

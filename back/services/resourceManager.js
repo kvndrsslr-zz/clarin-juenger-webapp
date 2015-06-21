@@ -8,7 +8,8 @@ exports.resourceManager = function () {
     };
 
     function register (resource) {
-        if (resources.filter(function (r) {return r.id === resource.id}).length)
+        console.log('Registered resource: ' + resource.id);
+        if (resources.filter(function (r) {return r.id === resource.id}).length || resources.length === 0)
             resources.push(resource);
     }
 
@@ -16,15 +17,19 @@ exports.resourceManager = function () {
         return function () {
             var rQ = Q();
             var results = [];
+            console.log('r:' + resources.length);
             resources.forEach(function (r) {
-                if (typeof r.action[name] === 'function')
+                if (typeof r.action[name] === 'function') {
                     rQ = rQ
                         .then(r.action[name])
                         .then(function (result) {
-                            results.concat(result)
+                            results = results.concat(result);
                         });
+                }
             });
-            return rQ.then(results);
+            return rQ.then(function () {
+                return results;
+            });
         }
     }
 

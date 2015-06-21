@@ -8,6 +8,7 @@ angular.module('ir-matrix-cooc')
             $scope.jobs = newValue;
         }, true);
 
+        console.log(data);
         $scope.corpora = data.corpora.map(function(c) {
             c['language'] = window.languages.get(c.name.substring(0,3));
             return c;
