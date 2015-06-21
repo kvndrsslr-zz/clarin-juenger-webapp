@@ -9,7 +9,7 @@ var Q = require('q');
 var fs = require('fs');
 
 
-exports.matrixWorkload = function (params, getWordlistsWs, writeWordlists, spawnListdif, clustering) {
+exports.matrixWorkload = function (params, resourceManager, writeWordlists, spawnListdif, clustering) {
 
     var matrixWorkload = function () {
         return Q()
@@ -22,7 +22,7 @@ exports.matrixWorkload = function (params, getWordlistsWs, writeWordlists, spawn
                     // Step 2: write data to files
                     // Step 3: pairwise compare files using listdif.jar
                     console.log("Got " + params.missingLinks.length + " missing results, resolving...");
-                    return Q().then(getWordlistsWs).then(writeWordlists).then(spawnListdif);
+                    return Q().then(resourceManager.action('wordList')).then(writeWordlists).then(spawnListdif);
                 }
             })
             // Step 4: read files, parse to json, return json object
