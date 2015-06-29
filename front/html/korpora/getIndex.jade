@@ -91,6 +91,7 @@ include ../mixins.jade
     +feature('Statistik', '{{statistics.pairName}}')
         .row
             div.col-xs-4(ng-repeat="result in statistic.resultLists['bothLists']")
+                b {{result.name}}
                 table.table.table-bordered.table-striped(st-table="rowCollection")
                     thead: tr
                         th Wort
@@ -105,6 +106,7 @@ include ../mixins.jade
                             td {{word.logRatioNormalized}}
                             .row
             div.col-xs-4(ng-repeat="result in statistic.resultLists['oneList']")
+                b {{result.name}}
                 table.table.table-bordered.table-striped(st-table="rowCollection")
                     thead: tr
                         th Wort
