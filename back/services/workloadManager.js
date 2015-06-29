@@ -8,15 +8,14 @@ var queue = Q();
 
 exports.workloadManager = function (params) {
     // create unique request-ID
-    function createId () {
+    function createId (workload) {
         var id = crypto.createHash('sha1');
-        id.update(params.corpora.sort().toString() + ":|" + params.metric + "|:" + params.wordCount.toString(), 'utf8');
+        id.update(workload.id, 'utf8');
         return id.digest('hex');
     }
 
     function enqueue (workload) {
-        //console.log(params);
-        var w = {id: createId(), request: _.clone(params), workload: workload, progress: "", result: false};
+        var w = {id: createId(workload), request: _.clone(params), workload: workload, progress: "", result: false};
         if (typeof retrieve(w.id) === 'undefined') {
             var qPoint;
             workloads.push(w);

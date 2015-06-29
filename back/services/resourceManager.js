@@ -1,11 +1,14 @@
 var Q = require('q');
 
-exports.resourceManager = function () {
+exports.resourceManager = function (uniLeipzigClarinWs) {
     var resources = [];
-    return {
+
+    resourceManager = {
         register : register,
         action : action
     };
+    resourceManager.register(uniLeipzigClarinWs);
+    return resourceManager;
 
     function register (resource) {
         console.log('Registered resource: ' + resource.id);
@@ -17,7 +20,6 @@ exports.resourceManager = function () {
         return function () {
             var rQ = Q();
             var results = [];
-            console.log('r:' + resources.length);
             resources.forEach(function (r) {
                 if (typeof r.action[name] === 'function') {
                     rQ = rQ

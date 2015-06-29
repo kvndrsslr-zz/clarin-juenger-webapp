@@ -14,12 +14,12 @@ include ../mixins.jade
                             | Hier zu vergleichende Korpora auswählen, Filterung nach DB-Bez. oder int. Sprachennamen
                         ui-select(multiple, searchEnabled="true", close-on-select="false",
                                   theme="bootstrap", ng-model="sel.corpora")
-                            ui-select-match(placeholder="Bitte auswählen...") {{$item.name}}
+                            ui-select-match(placeholder="Bitte auswählen...") {{$item.displayName}}
                             ui-select-choices(
                                 repeat="corpus.name as corpus in corpora | filter: $select.search | orderBy: 'language' | limitTo: limit",
                                 group-by="'language'"
                             )
-                                div(ng-bind-html="corpus.name | highlight: $select.search")
+                                div(ng-bind-html="corpus.displayName | highlight: $select.search")
                 .col-xs-12.col-md-4
                     .form-group
                         label.control-label(for="requestName") Anfragebezeichner
@@ -59,7 +59,7 @@ include ../mixins.jade
                     h4 {{jobdata.requestName}}
                     samp
                         span(ng-repeat="corpus in jobdata.corpora | limitTo: 3")
-                            | {{corpus}},
+                            | {{corpus.displayName}},
                             br
                         | {{jobdata.corpora.length-3}} weitere
 
@@ -67,26 +67,52 @@ include ../mixins.jade
     +feature('Visualisierung', 'Matrixdarstellung')
         .row
             form
-                .col-xs-12.col-md-6
+                .col-xs-12.col-md-4
                     .form-group
                         label.control-label(for="maxClusterDiameter") Maximaler Clusterdurchmesser ({{maxClusterDiameter | rounded: 3}})
                         input.form-control(ng-model="maxClusterDiameter", id="maxClusterDiameter",
                         type="range", min=0, max=1, step=0.001)
-                .col-xs-12.col-md-6
+                .col-xs-12.col-md-4
                     .form-group
                         label.control-label(for="heatMapColors") Farbskala
                         ui-select(searchEnabled="true", theme="bootstrap", ng-model="sel.colors")
                             ui-select-match: div {{$select.selected}}
                             ui-select-choices(repeat="color in heatMapColors")
                                 div(ng-bind-html="color | highlight: $select.search")
-        #visualization
+                .col-xs-12.col-md-4
+                    .form-group
+                        label.control-label(for="") Sortierung
+                        ui-select(searchEnabled="true", theme="bootstrap", ng-model="sel.sorting")
+                            ui-select-match: div {{$select.selected.title}}
+                            ui-select-choices(repeat="sorting.key as sorting in sortings")
+                                div(ng-bind-html="sorting.title | highlight: $select.search")
+            #visualization
 
     +feature('Statistik', '{{statistics.pairName}}')
         .row
-            div.col-xs-6(ng-repeat="file in statistic.files")
-                small {{file}}
-                a(href="/data/{{file}}", target="statistics")
-                    img.col-xs-12(src="/data/{{file}}")
+            div.col-xs-4(ng-repeat="result in statistic.resultLists['bothLists']")
+                table.table.table-bordered.table-striped(st-table="rowCollection")
+                    thead: tr
+                        th Wort
+                        th Häufigkeit in X
+                        th Häufigkeit in Y
+                        th Logarithmus des Verhältnisses
+                    tbody
+                        tr(ng-repeat="word in result.list | limitTo: 10")
+                            td {{word.word}}
+                            td {{word.freq1}}
+                            td {{word.freq2}}
+                            td {{word.logRatioNormalized}}
+                            .row
+            div.col-xs-4(ng-repeat="result in statistic.resultLists['oneList']")
+                table.table.table-bordered.table-striped(st-table="rowCollection")
+                    thead: tr
+                        th Wort
+                        th Häufigkeit
+                    tbody
+                        tr(ng-repeat="word in result.list | limitTo: 10")
+                            td {{word.word}}
+                            td {{word.freq}}
 
     // Padding nach unten
     .row

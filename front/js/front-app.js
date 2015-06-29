@@ -6,12 +6,19 @@ var dataLoaderRunner = [
 ];
 
 angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
-    'ui.select', 'ui.keypress', 'ui.bootstrap', 'LocalStorageModule'])
+    'ui.select', 'ui.keypress', 'ui.bootstrap', 'LocalStorageModule', 'smart-table'])
     .config(function ($routeProvider, $locationProvider, localStorageServiceProvider) {
         $routeProvider
             .when('/korpora/', {
                 templateUrl: '/html/korpora/getIndex.html',
                 controller: 'korporaController',
+                resolve: {
+                    data: dataLoaderRunner
+                }
+            })
+            .when('/words/', {
+                templateUrl: '/html/words/getIndex.html',
+                controller: 'wordsController',
                 resolve: {
                     data: dataLoaderRunner
                 }

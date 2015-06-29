@@ -130,3 +130,20 @@ rect.cell:hover + text + text, rect.cell + text + text:hover {
 }
 
 #dendogram {min-height: 850px}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}

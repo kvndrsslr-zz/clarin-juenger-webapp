@@ -1,0 +1,47 @@
+include ../mixins.jade
+
+.container
+    +feature('Konfiguration', 'Neue Anfragen erstellen')
+        .row
+            form(ng-submit="submit()")
+                .col-xs-12.col-md-8
+                    .form-group
+                        label.control-label(for="words") Wörter
+                            small  (Mehrere mit Komma trennen)
+                        input.form-control(ng-model="words", id="words", type="text")
+                    .form-group
+                        label.control-label(for="")
+                            | Zu vergleichende Korpora
+                        ui-select(multiple, searchEnabled="true", close-on-select="false",
+                        theme="bootstrap", ng-model="sel.corpora")
+                            ui-select-match(placeholder="Bitte auswählen...") {{$item.displayName}}
+                            ui-select-choices(
+                            repeat="corpus.name as corpus in corpora | filter: $select.search | orderBy: 'language'"
+                            )
+                                div(ng-bind-html="corpus.displayName | highlight: $select.search")
+                .col-xs-12.col-md-4
+                    .form-group
+                        label.control-label(for="minYear") Startjahr ({{minYear}})
+                        input(ng-model="minYear", id="minYear", type="range",
+                        min="{{minYearScale}}", max="{{maxYearScale}}", step="1", class="form-control")
+                    .form-group
+                        label.control-label(for="maxYear") Endjahr ({{maxYear}})
+                        input(ng-model="maxYear", id="maxYear", type="range",
+                        min="{{minYearScale}}", max="{{maxYearScale}}", step="1", class="form-control")
+                    button.col-xs-12.btn(
+                        ng-class="[validation() ? 'btn-disabled' : 'btn-primary']",
+                        type="submit",
+                        popover="{{validation()}}",
+                        popover-trigger="mouseenter",
+                        popover-placement="left"
+                    ) Abschicken
+
+    +feature('Visualisierung', 'Liniendiagramm')
+        .row
+            form
+                .col-xs-12.col-md-4
+            #visualization
+
+    // Padding nach unten
+    .row
+        p

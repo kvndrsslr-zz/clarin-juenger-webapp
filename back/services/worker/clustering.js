@@ -1,6 +1,6 @@
 var _ = require('underscore');
 
-exports.clustering = function () {
+exports.clustering = function (params) {
 
     return function (entities, distances, clusterDepth) {
 
@@ -189,10 +189,9 @@ exports.clustering = function () {
                 return [entities.indexOf(d[0]), entities.indexOf(d[1]), d[2]];
             }),
             entities: entities.map(function (e) {
-                return {
-                    name: e,
-                    group: 0
-                };
+                var c = params.corpora.filter(function (c) { return c.name === e})[0];
+                c.group = 0;
+                return c;
             })
         };
     }

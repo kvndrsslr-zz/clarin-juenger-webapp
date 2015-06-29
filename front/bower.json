@@ -13,7 +13,8 @@
     "font-awesome": "~4.2.0",
     "nsPopover": "~0.6.7",
     "angular-local-storage": "~0.1.5",
-    "underscore": "~1.8.2"
+    "underscore": "~1.8.2",
+    "angular-smart-table": "~2.1.0"
   },
   "resolutions": {
     "angular": ">= 1.0.2"

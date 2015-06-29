@@ -11,8 +11,13 @@ var fs = require('fs');
 
 exports.matrixWorkload = function (params, resourceManager, writeWordlists, spawnListdif, clustering) {
 
+    function resultFile (a, b) {
+        return 'front/misc/data/result_' + params.wordCount + '_' + params.metric + '_' + a.name + '_' + b.name + '.txt';
+    }
+
     var matrixWorkload = function () {
-        return Q()
+        var workloadContext = Q.defer();
+        Q()
             // Step 0: Utilize Cached files
             .then(function () {
                 if (isCached()) {
@@ -35,10 +40,8 @@ exports.matrixWorkload = function (params, resourceManager, writeWordlists, spaw
                 for (var i = corpora.length - 1; i >= 0; i--) {
                     var corpusA = corpora.splice(i, 1)[0];
                     corpora.forEach(function (corpusB) {
-                        if (fs.existsSync('front/misc/data/result_' + params.wordCount + '_' + params.metric + '_' + corpusA + '_' + corpusB + '.txt'))
-                            distances.push([corpusA, corpusB, parseFloat(fs.readFileSync('front/misc/data/result_' + params.wordCount + '_' + params.metric + '_' + corpusA + '_' + corpusB + '.txt', {encoding: 'utf-8'}))]);
-                        else
-                            distances.push([corpusA, corpusB, parseFloat(fs.readFileSync('front/misc/data/result_' + params.wordCount + '_' + params.metric + '_' + corpusB + '_' + corpusA + '.txt', {encoding: 'utf-8'}))]);
+                        var f = fs.existsSync(resultFile(corpusA, corpusB)) ? resultFile(corpusA, corpusB) : resultFile(corpusB, corpusA);
+                            distances.push([corpusA.name, corpusB.name, parseFloat(fs.readFileSync(f, {encoding: 'utf-8'}))]);
                     });
                 }
                 return distances;
@@ -47,18 +50,23 @@ exports.matrixWorkload = function (params, resourceManager, writeWordlists, spaw
             .then(function (distances) {
                 console.log('Calculating clusters...');
                 console.log('Finished.');
-                return clustering(params.corpora, distances, params.clusterDepth);
+                workloadContext.resolve(clustering(params.corpora.map(function (c) {return c.name;}), distances, params.clusterDepth));
+                //return clustering(params.corpora, distances, params.clusterDepth);
             })
             .fail(function (err) {
                 if (err) {
                     console.log(err);
                     console.log(err.stack);
-                    return {failure: true, error: err};
+                    workloadContext.reject({failure: true, error: err});
+                    //return {failure: true, error: err};
                 }
             });
+        return workloadContext.promise;
     };
 
     matrixWorkload.isCached = isCached;
+    matrixWorkload.id = params.corpora.map(function (c) {return c.name}).sort().toString() + ":|" + params.metric + "|:" + params.wordCount.toString();
+    params.workload = matrixWorkload;
     return matrixWorkload;
 
     function isCached () {
@@ -68,9 +76,10 @@ exports.matrixWorkload = function (params, resourceManager, writeWordlists, spaw
         for (var i = corpora.length - 1; i >= 0; i--) {
             var corpusA = corpora.splice(i, 1)[0];
             corpora.forEach(function (corpusB) {
-                if (!fs.existsSync('front/misc/data/result_' + params.wordCount + '_' + params.metric + '_' + corpusA + '_' + corpusB + '.txt') &&
-                    !fs.existsSync('front/misc/data/result_' + params.wordCount + '_' + params.metric + '_' + corpusB + '_' + corpusA + '.txt'))
+                if (!fs.existsSync(resultFile(corpusA, corpusB)) && !fs.existsSync(resultFile(corpusB, corpusA))) {
                     params.missingLinks.push([corpusA, corpusB]);
+                    console.log(corpusA);
+                }
             });
         }
         return params.missingLinks.length === 0;

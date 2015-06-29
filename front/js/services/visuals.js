@@ -19,22 +19,28 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
             node.append('rect')
                 .style("stroke-width", 1)
                 .style("stroke", "#000")
-                .attr("width", 30)
-                .attr("height", height)
-                .attr("fill", "url(/korpora/#" + id + ")");
+                .attr({
+                    "width": 30,
+                    "height" : height,
+                    "fill": "url(/korpora/#" + id + ")"
+                });
         },
         appendDefs: function (node, id) {
             var g = node.append('defs')
                 .append('linearGradient')
-                .attr('id', id)
-                .attr('x1', "0%")
-                .attr('x2', "0%")
-                .attr('y1', "100%")
-                .attr('y2', "0%");
+                .attr({
+                    'id': id,
+                    'x1' : '0%',
+                    'x2' : '0%',
+                    'y1' : '100%',
+                    'y2' : '0%'
+                });
             this.colorMap.forEach(function (x) {
                 g.append('stop')
-                    .attr('offset', (x[0]*100)+'%')
-                    .attr('stop-color', 'rgb(' + x[1][0] + ',' + x[1][1] + ',' + x[1][2] + ')');
+                    .attr({
+                        'offset': (x[0]*100)+'%',
+                        'stop-color': 'rgb(' + x[1][0] + ',' + x[1][1] + ',' + x[1][2] + ')'
+                    });
             });
         },
         get : function (d) {
@@ -87,9 +93,16 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
         }
     };
 
+    var sortings = [{ key: 'name', title: 'Namen'}, {key: 'group', title: 'Gruppe'}, {key: 'sortOrder', title: 'Cluster'}];
+    var sorting = sortings[2].key;
+
     var matrixVisualization = {
         draw: draw,
         heatMap: heatMap,
+        sortings: sortings,
+        setSorting: function (s) {
+            sorting = s;
+        },
         maxClusterDiameter: function (s) {
             scope = s;
             return maxClusterDiameter;
@@ -162,7 +175,7 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
             })
         };
         // The default sort order.
-        x.domain(orders.name);
+        x.domain(orders[sorting]);
 
         var row = svg.selectAll(".row")
             .data(matrix)
@@ -185,7 +198,7 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
             .attr("class", "label")
             .attr("text-anchor", "start")
             .text(function (d, i) {
-                return nodes[i].name;
+                return nodes[i].displayName;
             });
         //wrap(labels, 100);
         var column = svg.selectAll(".column")
@@ -208,7 +221,7 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
             .attr("text-anchor", "start")
             .attr("class", "label")
             .text(function (d, i) {
-                return nodes[i].name;
+                return nodes[i].displayName;
             });
         //wrap(labels, 100);
         function row(row) {
@@ -296,6 +309,7 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
 
     function draw (data, threshold) {
         data = transform(data, threshold);
+        root = d3.select('#visualization');
         root.html('');
         dendogram(data);
         matrix({nodes: data.entities, links: data.distances});
@@ -313,6 +327,7 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
         return data;
 
         function treeSearch (stack, cb) {
+            console.log(stack);
             while (stack.length > 0) {
                 var node = stack.pop();
                 var leaf = typeof node.children === "undefined";
@@ -328,9 +343,9 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
             var i = 0;
             return function (node, leaf, stack) {
                 data.entities.forEach(function (e) {
-                   if (e.name === node.name) {
-                       e.sortOrder = i;
-                   }
+                    if (e.name === node.name) {
+                        e.sortOrder = i;
+                    }
                 });
                 node.sortOrder = i;
                 i++;
@@ -415,7 +430,7 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
                 return selectColor(d.name, data.entities);
             })
             .text(function (d) {
-                return d.children ? "" : d.name;
+                return d.children ? "" : data.entities.filter(function (e) {return d.name === e.name})[0]['displayName'];
             });
         texts.call(wrap, 100);
 

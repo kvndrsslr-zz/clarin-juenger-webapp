@@ -40,7 +40,8 @@ angular.module('ir-matrix-cooc')
         };
 
         $scope.statistic = {
-            files: []
+            files: [],
+            resultLists : []
         };
 
         $scope.requestName = "";
@@ -49,8 +50,10 @@ angular.module('ir-matrix-cooc')
         $scope.sel = {
             corpora: [],
             metric: 3,
-            colors: 'Standard'
+            colors: 'Standard',
+            sorting: 'sortOrder'
         };
+        $scope.sortings = matrixVisualization.sortings;
 
         $scope.maxClusterDiameter = matrixVisualization.maxClusterDiameter();
         $scope.limit = 125;
@@ -81,13 +84,19 @@ angular.module('ir-matrix-cooc')
         $scope.submit = function () {
             var job = {
                 wordCount: $scope.wordCount,
-                corpora: $scope.sel.corpora,
+                corpora: $scope.corpora.filter(function (c) {
+                    var filter = false;
+                    $scope.sel.corpora.forEach(function (s) {
+                        if (s === c.name) filter = true;
+                    });
+                    return filter;
+                }),
                 metric: $scope.sel.metric,
                 requestName: $scope.requestName === "" ? "Unbenannt" : $scope.requestName
             };
             if (!$scope.validation()) {
                 jobManager.issueJob(job).then(function (data) {
-                    showFeature.Visualisierung = true;
+                    showFeature.Visualisierung = false;
                     $scope.draw(data);
                     jobManager.currentJob(job);
                 });
@@ -125,6 +134,12 @@ angular.module('ir-matrix-cooc')
                 $scope.draw(jobManager.data());
         });
 
+        $scope.$watch('sel.sorting', function (name) {
+            matrixVisualization.setSorting(name);
+            if (jobManager.data())
+                $scope.draw(jobManager.data());
+        });
+
         $scope.$watch(matrixVisualization.maxClusterDiameter, function (x) {
             $scope.maxClusterDiameter = x;
         }, true);
@@ -140,19 +155,27 @@ angular.module('ir-matrix-cooc')
                     return j.requestId === jobManager.currentJob()
                 })[0];
                 var regex = currentRequest.wordCount + "_" + currentRequest.metric + "_" + "(" + x[0] + "_" + x[1] + "|"
-                    + x[1] + "_" + x[0] + "){1}\\.jpg";
+                    + x[1] + "_" + x[0] + "){1}\\.txt";
+                regex = ["list[1,2]{1}_" + regex, "both_lists_" + regex];
+                showFeature['Statistik'] = true;
                 $http({
                     method: 'post',
-                    url: '/api/korpora/images',
+                    url: '/api/korpora/resultlists',
                     timeout: 9999999999,
-                    data: {regex: regex}
-                })
-                    .success(function (data) {
-                        if (typeof data.files !== 'undefined') {
-                            $scope.statistic.files = data.files;
-                            showFeature['Statistik'] = false;
-                        }
-                    })
+                    data: {requests : [{regex: regex[0], listType: 'oneList'}, {regex: regex[1], listType: 'bothLists'}]}
+                }).success(function (data) {
+                    if (typeof data.resultlists !== 'undefined') {
+                        //data.resultlists.bothLists = data.resultlists.bothLists.map(function (r) {
+                        //    var x = [r,r];
+                        //    x[0].list = x[0].list.slice().filter(function (f) {return parseFloat(f.logRatioNormalized) >= 0});
+                        //    x[1].list = x[1].list.filter(function (f) {return parseFloat(f.logRatioNormalized) < 0});
+                        //    return x;
+                        //}).reduce(function (l,r) {return l.concat(r)}, []);
+                        $scope.statistic.resultLists = data.resultlists;
+                        console.log(data.resultlists);
+                        showFeature['Statistik'] = false;
+                    }
+                });
             }
         }, true);
 
