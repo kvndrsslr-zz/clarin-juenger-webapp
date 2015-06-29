@@ -82,6 +82,10 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
                 [0.65, [128, 128, 255]],
                 [0.85, [255, 255, 0]],
                 [1.0, [255, 0, 0]]
+            ],
+            "Cluster": [
+                [0.0, [50, 50, 50]],
+                [1.0, [200, 200, 200]]
             ]
         },
         colors : function () {
