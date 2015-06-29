@@ -70,11 +70,11 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, params, d
                              Use this interface for corporas when writing further resource adapters
                              */
                             {
-                                'name' : fields[0],
-                                'displayName' : fields[1],
-                                'description' : fields[2],
-                                'date' : fields[3],
-                                'genre' : fields[4],
+                                'name' : fields[0].trim(),
+                                'displayName' : fields[1].trim(),
+                                'description' : fields[2].trim(),
+                                'date' : fields[3].trim(),
+                                'genre' : fields[4].trim(),
                                 'resourceId' : resource.id
                             });
                 });
