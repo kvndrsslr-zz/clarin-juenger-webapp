@@ -62,14 +62,15 @@ include ../mixins.jade
                             | {{corpus.displayName}},
                             br
                         | {{jobdata.corpora.length-3}} weitere
-
+            .col-xs-4.col-xs-offset-8
+                form: .form-group: button.col-xs-12.btn.btn-info(type="button", ng-click="resetJobs()") Reset
 
     +feature('Visualisierung', 'Matrixdarstellung')
         .row
             form
                 .col-xs-12.col-md-4
                     .form-group
-                        label.control-label(for="maxClusterDiameter") Maximaler Clusterdurchmesser ({{maxClusterDiameter | rounded: 3}})
+                        label.control-label(for="maxClusterDiameter") Clusterschwellwert ({{maxClusterDiameter * 100 | rounded: 2}}%)
                         input.form-control(ng-model="maxClusterDiameter", id="maxClusterDiameter",
                         type="range", min=0, max=1, step=0.001)
                 .col-xs-12.col-md-4

@@ -60,11 +60,15 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
         },
         predefined : {
             "Standard": [
+                [0.0, [50, 50, 50]],
+                [1.0, [200, 200, 200]]
+            ],
+            "Rötlich": [
                 [0.0, [128, 128, 255]],
                 [0.5, [255, 255, 0]],
                 [1.0, [255, 0, 0]]
             ],
-            "Blue-ish": [
+            "Bläulich": [
                 [0.0, [255,255,204]],
                 [0.25, [161,218,180]],
                 [0.5, [65,182,196]],
@@ -82,10 +86,6 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
                 [0.65, [128, 128, 255]],
                 [0.85, [255, 255, 0]],
                 [1.0, [255, 0, 0]]
-            ],
-            "Cluster": [
-                [0.0, [50, 50, 50]],
-                [1.0, [200, 200, 200]]
             ]
         },
         colors : function () {

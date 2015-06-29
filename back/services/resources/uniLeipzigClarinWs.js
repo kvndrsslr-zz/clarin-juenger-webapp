@@ -139,16 +139,20 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, params, d
                             'corpusId' : corpus.name, 'wordCount' : params.wordCount
                         })))
                     .then(function (response) {
-                        var lines = response.split('\n');
                         var wordList = [];
-                        lines.forEach(function (line) {
-                            var data = line.split('\t');
-                            wordList.push({word: data[1], freq: data[2]});
-                        });
-                        console.log('Retrieved wordlists from "' + corpus.name + '"...');
+                        if (response.indexOf('<html>') !== 0) {
+                            var lines = response.split('\n');
+                            lines.forEach(function (line) {
+                                var data = line.split('\t');
+                                wordList.push({word: data[1], freq: data[2]});
+                            });
+                        } else {
+                            wordList = [];
+                        }
                         wordList = {corpus: corpus, wordCount: params.wordCount, list: wordList};
                         cache.wordList.push(wordList);
                         wordlists.push(wordList);
+                        console.log('Retrieved wordlists from "' + corpus.name + '"...');
                         wordlistRetrieved.resolve();
                     })
                     .fail(function (error) {

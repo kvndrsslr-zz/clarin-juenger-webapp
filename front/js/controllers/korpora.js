@@ -59,7 +59,10 @@ angular.module('ir-matrix-cooc')
         $scope.limit = 125;
 
         // feature display toggle
-        var showFeature = {'Konfiguration' : false};
+        var showFeature = {
+            'Konfiguration' : false,
+            'Jobauswahl' : false
+        };
         $scope.show = function (id, write) {
             if (typeof showFeature[id] === 'undefined') {
                 showFeature[id] = true;
@@ -105,6 +108,9 @@ angular.module('ir-matrix-cooc')
 
         $scope.deleteJob = jobManager.deleteJob;
         $scope.currentJob = jobManager.currentJob;
+        $scope.resetJobs = function () {
+            jobManager.clearJobs();
+        };
 
         $scope.setConfig = function (j) {
             if ($scope.sel.corpora.length === 0) {
