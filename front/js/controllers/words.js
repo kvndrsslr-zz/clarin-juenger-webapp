@@ -94,7 +94,7 @@ angular.module('ir-matrix-cooc')
             console.log(dates);
             console.log(charts);
 
-            var margin = {top: 20, right: 80, bottom: 30, left: 50},
+            var margin = {top: 20, right: 280, bottom: 30, left: 50},
                 width = 960 - margin.left - margin.right,
                 height = 500 - margin.top - margin.bottom;
 
@@ -115,7 +115,7 @@ angular.module('ir-matrix-cooc')
                 .orient("left");
 
             var line = d3.svg.line()
-                .interpolate("step")
+                .interpolate("linear")
                 .x(function(d) { return x(d.date); })
                 .y(function(d) { return y(d.relativeFreq); });
 
