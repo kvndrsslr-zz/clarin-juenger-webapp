@@ -53,6 +53,13 @@ angular.module('ir-matrix-cooc')
 
             };
 
+            $scope.heatMapColors = matrixVisualization.heatMap.colors().map(function (x) {
+                return {
+                    key : x,
+                    name : $translate.instant('COLORSCALE_' + x)
+                };
+            });
+
             // Submit Job Request and queue up jobs
             $scope.submit = function () {
                 var job = {
@@ -88,11 +95,10 @@ angular.module('ir-matrix-cooc')
 
         $scope.requestName = "";
         $scope.wordCount = 10000;
-        $scope.heatMapColors = matrixVisualization.heatMap.colors();
         $scope.sel = {
             corpora: [],
             metric: 3,
-            colors: 'Standard',
+            colors: 'REDDISH',
             sorting: 'sortOrder'
         };
         $scope.sortings = matrixVisualization.sortings;

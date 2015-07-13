@@ -78,16 +78,16 @@ include ../mixins.jade
                     .form-group
                         label.control-label(for="heatMapColors") {{ 'SEC_VIS_COLORSCALE' | translate }}
                         ui-select(searchEnabled="true", theme="bootstrap", ng-model="sel.colors")
-                            ui-select-match: div {{$select.selected}}
-                            ui-select-choices(repeat="color in heatMapColors")
-                                div(ng-bind-html="color | highlight: $select.search")
+                            ui-select-match: div {{$select.selected.name}}
+                            ui-select-choices(repeat="color.key as color in heatMapColors")
+                                div(ng-bind-html="color.name | highlight: $select.search")
                 .col-xs-12.col-md-4
                     .form-group
                         label.control-label(for="") {{ 'SEC_VIS_SORTING' | translate }}
                         ui-select(searchEnabled="true", theme="bootstrap", ng-model="sel.sorting")
-                            ui-select-match: div {{$select.selected.title}}
+                            ui-select-match: div {{$select.selected.title | translate }}
                             ui-select-choices(repeat="sorting.key as sorting in sortings")
-                                div(ng-bind-html="sorting.title | highlight: $select.search")
+                                div(ng-bind-html="sorting.title | translate | highlight: $select.search")
             #visualization
 
     +feature('Statistik', 'SEC_STATS')

@@ -74,9 +74,16 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
             'CON_VALIDATIONMSG' : 'Please choose 2 corpora minimum!',
             'CON_METRIC1' : 'Cosine - based on rank',
             'CON_METRIC2' : 'Cosine - based on frequency',
-            'CON_METRIC3' : 'Cosine - based on logarithm of frequency'
-        });
-        $translateProvider.translations('de', {
+            'CON_METRIC3' : 'Cosine - based on logarithm of frequency',
+            'COLORSCALE_REDDISH' : 'Reddish (default)',
+            'COLORSCALE_REDDISH_FOR_LOW' : 'Reddish (low similarity)',
+            'COLORSCALE_REDDISH_FOR_HIGH' : 'Reddish (high similarity)',
+            'COLORSCALE_BLUEISH' : 'Blueish',
+            'COLORSCALE_GREY' : 'Gray (cluster clarity)',
+            'SORT_ORDER_NAME' : 'Name',
+            'SORT_ORDER_GROUP' : 'Group',
+            'SORT_ORDER_CLUSTER' : 'Cluster'
+        }).translations('de', {
             'APP_TITLE' : 'Kookkorpora',
             'NAV_CORPORA' : 'Ähnlichkeitsmatrix',
             'NAV_WORDS' : 'Worthäufigkeitsanalyse',
@@ -111,9 +118,13 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
             'CON_VALIDATIONMSG' : 'Bitte mindestens 2 Korpora auswählen!',
             'CON_METRIC1' : 'Cosinus - basierend auf Rang',
             'CON_METRIC2' : 'Cosinus - basierend auf Freq.',
-            'CON_METRIC3' : 'Cosinus - basierend auf Logarithmus d. Freq.'
-        });
-        $translateProvider.preferredLanguage('en');
+            'CON_METRIC3' : 'Cosinus - basierend auf Logarithmus d. Freq.',
+            'SORT_ORDER_NAME' : 'Name',
+            'SORT_ORDER_GROUP' : 'Gruppe',
+            'SORT_ORDER_CLUSTER' : 'Cluster'
+        })
+            .preferredLanguage('en')
+            .fallbackLanguage('en');
     })
     .service('dataLoader', function ($location, $http) {
         return function () {

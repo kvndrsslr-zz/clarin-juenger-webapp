@@ -59,29 +59,29 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
             return score;
         },
         predefined : {
-            "Standard": [
-                [0.0, [50, 50, 50]],
-                [1.0, [200, 200, 200]]
-            ],
-            "Rötlich": [
+            "REDDISH": [
                 [0.0, [128, 128, 255]],
                 [0.5, [255, 255, 0]],
                 [1.0, [255, 0, 0]]
             ],
-            "Bläulich": [
+            "GREY": [
+                [0.0, [50, 50, 50]],
+                [1.0, [200, 200, 200]]
+            ],
+            "BLUEISH": [
                 [0.0, [255,255,204]],
                 [0.25, [161,218,180]],
                 [0.5, [65,182,196]],
                 [0.75, [44,127,184]],
                 [1.0, [37,52,148]]
             ],
-            "Niedrige Ähnlichkeit": [
+            "REDDISH_FOR_LOW": [
                 [0.0, [128, 128, 255]],
                 [0.2, [255, 255, 0]],
                 [0.6, [255, 0, 0]],
                 [1.0, [255, 0, 0]]
             ],
-            "Hohe Ähnlichkeit": [
+            "REDDISH_FOR_HIGH": [
                 [0.0, [0, 0, 128]],
                 [0.65, [128, 128, 255]],
                 [0.85, [255, 255, 0]],
@@ -97,7 +97,7 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
         }
     };
 
-    var sortings = [{ key: 'name', title: 'Namen'}, {key: 'group', title: 'Gruppe'}, {key: 'sortOrder', title: 'Cluster'}];
+    var sortings = [{ key: 'name', title: 'SORT_ORDER_NAME'}, {key: 'group', title: 'SORT_ORDER_GROUP'}, {key: 'sortOrder', title: 'SORT_ORDER_CLUSTER'}];
     var sorting = sortings[2].key;
 
     var matrixVisualization = {
