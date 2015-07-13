@@ -145,7 +145,7 @@ include ../mixins.jade
                             tfoot
                                 tr
                                     td.text-center(colspan="2")
-                                        div(st-pagination="", st-items-by-page="paginationSize", st-displayed-pages="7" st-template="template/smart-table/pagination2.html")
+                                        div(st-pagination="", st-items-by-page="parseFloat(paginationSize)", st-displayed-pages="7" st-template="template/smart-table/pagination2.html")
 
     // Padding nach unten
     .row
