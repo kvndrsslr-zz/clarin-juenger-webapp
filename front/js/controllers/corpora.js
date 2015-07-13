@@ -87,6 +87,11 @@ angular.module('ir-matrix-cooc')
         $rootScope.$on('$translateChangeSuccess', assignTranslations);
         assignTranslations();
 
+        $scope.paginationSize = 10;
+        $scope.setPaginationSize = function (s) {
+            $scope.paginationSize = s;
+        };
+        window.setPaginationSize = $scope.setPaginationSize;
 
         $scope.statistic = {
             files: [],
@@ -172,6 +177,7 @@ angular.module('ir-matrix-cooc')
                 $scope.draw(jobManager.data());
         }, true);
 
+        $scope.parseFloat = parseFloat;
         $scope.$watch(matrixVisualization.currentPair, function (x) {
             if (x) {
                 $scope.statsEmpty = x[0]===x[1];
@@ -202,7 +208,13 @@ angular.module('ir-matrix-cooc')
                             //    x[1].list = x[1].list.filter(function (f) {return parseFloat(f.logRatioNormalized) < 0});
                             //    return x;
                             //}).reduce(function (l,r) {return l.concat(r)}, []);
+                            console.log($scope.paginationSize);
+
+                            console.log($scope.paginationSize);
                             $scope.statistic.resultLists = data.resultlists;
+                            console.log($scope.paginationSize);
+
+                            console.log($scope.paginationSize);
                             console.log(data.resultlists);
                             showFeature['Statistik'] = false;
                         }
