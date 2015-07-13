@@ -102,7 +102,7 @@ include ../mixins.jade
                         label.control-label(for="paginationSize")
                             | {{ 'SEC_STATS_PAGINATIONSIZE' | translate : { x : paginationSize} }}
                         input.form-control(ng-model="paginationSize", id="paginationSize",
-                        type="range", min=10, max=100, step=10)
+                        type="range", min=10, max=100, step=5)
         .row(ng-hide="statsEmpty")
             div.col-xs-6(ng-repeat="result in statistic.resultLists['bothLists']")
                 .panel.panel-info
