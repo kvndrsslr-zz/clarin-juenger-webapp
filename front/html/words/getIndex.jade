@@ -1,31 +1,31 @@
 include ../mixins.jade
 
 .container
-    +feature('Konfiguration', 'Neue Anfragen erstellen')
+    +feature('Konfiguration', 'SEC_WCONF')
         .row
             form(ng-submit="submit()")
                 .col-xs-12.col-md-8
                     .form-group
-                        label.control-label(for="words") Wörter
-                            small  (Mehrere mit Komma trennen)
+                        label.control-label(for="words") {{ 'SEC_WCONF_WORDS' | translate }}
+                            small  {{ 'SEC_WCONF_WORDSHINT' | translate }}
                         input.form-control(ng-model="words", id="words", type="text")
                     .form-group
                         label.control-label(for="")
-                            | Zu vergleichende Korpora
+                            | {{ 'SEC_CONFIG_CORPUSSELECTION_TEXT' | translate }}
                         ui-select(multiple, searchEnabled="true", close-on-select="false",
                         theme="bootstrap", ng-model="sel.corpora")
-                            ui-select-match(placeholder="Bitte auswählen...") {{$item.displayName}}
+                            ui-select-match(placeholder="{{'SEC_CONFIG_CORPUSSELECTION_FILLIN' | translate }}") {{$item.displayName}}
                             ui-select-choices(
                             repeat="corpus.name as corpus in corpora | filter: $select.search | orderBy: 'language'"
                             )
                                 div(ng-bind-html="corpus.displayName | highlight: $select.search")
                 .col-xs-12.col-md-4
                     .form-group
-                        label.control-label(for="minYear") Startjahr ({{minYear}})
+                        label.control-label(for="minYear") {{ 'SEC_WCONF_FIRSTY' | translate : {year : minYear} }}
                         input(ng-model="minYear", id="minYear", type="range",
                         min="{{minYearScale}}", max="{{maxYearScale}}", step="1", class="form-control")
                     .form-group
-                        label.control-label(for="maxYear") Endjahr ({{maxYear}})
+                        label.control-label(for="maxYear") {{ 'SEC_WCONF_LASTY' | translate : {year : maxYear} }}
                         input(ng-model="maxYear", id="maxYear", type="range",
                         min="{{minYearScale}}", max="{{maxYearScale}}", step="1", class="form-control")
                     button.col-xs-12.btn(
@@ -34,9 +34,9 @@ include ../mixins.jade
                         popover="{{validation()}}",
                         popover-trigger="mouseenter",
                         popover-placement="left"
-                    ) Abschicken
+                    ) {{ 'SEC_CONFIG_SEND' | translate }}
 
-    +feature('Visualisierung', 'Liniendiagramm')
+    +feature('Visualisierung', 'SEC_WORDS')
         .row
             form
                 .col-xs-12.col-md-4

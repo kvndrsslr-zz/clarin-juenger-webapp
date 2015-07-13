@@ -1,4 +1,4 @@
-mixin feature(fname, version)
+mixin feature(fname, tId)
     .row
         .col-xs-12
             .page-header
@@ -9,7 +9,7 @@ mixin feature(fname, version)
                         ng-class="!show('#{fname}') ? [] : ['collapse-indicator-rotate']"
                         )
                 | &nbsp;
-                =fname
+                ="{{'"+tId+"' | translate}}"
                 //small= ' ' + version
     if block
         div(collapse="show('#{fname}')")

@@ -94,8 +94,8 @@ angular.module('ir-matrix-cooc')
             console.log(dates);
             console.log(charts);
 
-            var margin = {top: 20, right: 280, bottom: 30, left: 50},
-                width = 960 - margin.left - margin.right,
+            var margin = {top: 20, right: 200, bottom: 30, left: 50},
+                width = 1160 - margin.left - margin.right,
                 height = 500 - margin.top - margin.bottom;
 
             var x = d3.time.scale()

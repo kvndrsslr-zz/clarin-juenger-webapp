@@ -1,20 +1,20 @@
 include ../mixins.jade
 
 .container
-    +feature('Konfiguration', 'Neue Anfragen erstellen')
+    +feature('Configuration', 'SEC_CONFIG')
         .row
             form(ng-submit="submit()")
                 .col-xs-12.col-md-8
                     .form-group
-                        label.control-label(for="wordCount") Länge Wortliste ({{wordCount}})
+                        label.control-label(for="wordCount") {{ 'SEC_CONFIG_WORDLISTLENGTH' | translate: {'wordlistLength' : wordCount} }}
                         input(ng-model="wordCount", id="wordCount", type="range",
                               min=100, max=20000, step=100, class="form-control")
                     .form-group
                         label.control-label(for="")
-                            | Hier zu vergleichende Korpora auswählen, Filterung nach DB-Bez. oder int. Sprachennamen
+                            | {{ 'SEC_CONFIG_CORPUSSELECTION_TEXT' | translate }}
                         ui-select(multiple, searchEnabled="true", close-on-select="false",
                                   theme="bootstrap", ng-model="sel.corpora")
-                            ui-select-match(placeholder="Bitte auswählen...") {{$item.displayName}}
+                            ui-select-match(placeholder="{{ 'SEC_CONFIG_CORPUSSELECTION_FILLIN' | translate}}") {{$item.displayName}}
                             ui-select-choices(
                                 repeat="corpus.name as corpus in corpora | filter: $select.search | orderBy: 'language' | limitTo: limit",
                                 group-by="'language'"
@@ -22,10 +22,10 @@ include ../mixins.jade
                                 div(ng-bind-html="corpus.displayName | highlight: $select.search")
                 .col-xs-12.col-md-4
                     .form-group
-                        label.control-label(for="requestName") Anfragebezeichner
+                        label.control-label(for="requestName") {{ 'SEC_CONFIG_REQUESTNAME' | translate }}
                         input.form-control(ng-model="requestName", id="requestName", type="text")
                     .form-group
-                        label.control-label(for="") Vergleichsmaß
+                        label.control-label(for="") {{ 'SEC_CONFIG_SIMMEASURE' | translate }}
                         ui-select(searchEnabled="true", theme="bootstrap", ng-model="sel.metric")
                             ui-select-match: div {{$select.selected.title}}
                             ui-select-choices(repeat="metric.key as metric in metrics", group-by="metricgroup")
@@ -36,15 +36,15 @@ include ../mixins.jade
                         popover="{{validation()}}",
                         popover-trigger="mouseenter",
                         popover-placement="left"
-                    ) Abschicken
+                    ) {{ 'SEC_CONFIG_SEND' | translate }}
 
-    +feature('Jobauswahl', 'Liste Ihrer Anfragen')
+    +feature('Jobauswahl', 'SEC_JOBS')
         .row#jobs
             .col-xs-12: .list-group
-                a.list-group-item.list-group-item-warning(href="./korpora/#", ng-show="jobs.length === 0")
-                    | Bisher wurden keine Anfragen in dieser Session getätigt.
+                a.list-group-item.list-group-item-warning(href="./corpora/#", ng-show="jobs.length === 0")
+                    | {{ 'SEC_JOBS_NOJOBS' | translate }}
                 a.list-group-item.col-xs-6.col-sm-4.col-lg-3(
-                href="./korpora/#",
+                href="./corpora/#",
                 ng-repeat="(jobid, jobdata) in jobs",
                 ng-click="selectJob(jobdata)",
                 ng-dblclick="setConfig(jobdata)",
@@ -61,61 +61,78 @@ include ../mixins.jade
                         span(ng-repeat="corpus in jobdata.corpora | limitTo: 3")
                             | {{corpus.displayName}},
                             br
-                        | {{jobdata.corpora.length-3}} weitere
+                        | {{ 'SEC_JOBS_MORE' | translate: {count:jobdata.corpora.length-3} }}
             .col-xs-3.col-xs-offset-9
-                form: .form-group: button.col-xs-12.btn.btn-info(type="button", ng-click="resetJobs()") Reset
+                form: .form-group: button.col-xs-12.btn.btn-info(type="button", ng-click="resetJobs()") {{ 'SEC_JOBS_RESET' | translate}}
 
-    +feature('Visualisierung', 'Matrixdarstellung')
+    +feature('Visualisierung', 'SEC_VIS')
         .row
             form
                 .col-xs-12.col-md-4
                     .form-group
-                        label.control-label(for="maxClusterDiameter") Clusterschwellwert ({{maxClusterDiameter * 100 | rounded: 2}}%)
+                        label.control-label(for="maxClusterDiameter")
+                            | {{ 'SEC_VIS_CLUSTERTHRESHHOLD' | translate : { threshold :  (maxClusterDiameter * 100).toFixed(2)+'%'} }}
                         input.form-control(ng-model="maxClusterDiameter", id="maxClusterDiameter",
                         type="range", min=0, max=1, step=0.001)
                 .col-xs-12.col-md-4
                     .form-group
-                        label.control-label(for="heatMapColors") Farbskala
+                        label.control-label(for="heatMapColors") {{ 'SEC_VIS_COLORSCALE' | translate }}
                         ui-select(searchEnabled="true", theme="bootstrap", ng-model="sel.colors")
                             ui-select-match: div {{$select.selected}}
                             ui-select-choices(repeat="color in heatMapColors")
                                 div(ng-bind-html="color | highlight: $select.search")
                 .col-xs-12.col-md-4
                     .form-group
-                        label.control-label(for="") Sortierung
+                        label.control-label(for="") {{ 'SEC_VIS_SORTING' | translate }}
                         ui-select(searchEnabled="true", theme="bootstrap", ng-model="sel.sorting")
                             ui-select-match: div {{$select.selected.title}}
                             ui-select-choices(repeat="sorting.key as sorting in sortings")
                                 div(ng-bind-html="sorting.title | highlight: $select.search")
             #visualization
 
-    +feature('Statistik', '{{statistics.pairName}}')
-        .row
-            div.col-xs-4(ng-repeat="result in statistic.resultLists['bothLists']")
-                b {{result.name}}
-                table.table.table-bordered.table-striped(st-table="rowCollection")
-                    thead: tr
-                        th Wort
-                        th Häufigkeit in X
-                        th Häufigkeit in Y
-                        th Logarithmus des Verhältnisses
+    +feature('Statistik', 'SEC_STATS')
+        .row(ng-show="statsEmpty")
+            div.col-xs-12
+                h4 Please select two distinct corpora!
+        .row(ng-hide="statsEmpty")
+            div.col-xs-6(ng-repeat="result in statistic.resultLists['bothLists']")
+                h4 {{ 'SEC_STATS_TITLEBOTH' | translate : {corpus : result.corpora[$index]} }}
+                table.table.table-bordered.table-striped(st-table="result.list")
+                    thead
+                        tr
+                            th.col-xs-6(st-sort="word") {{ 'SEC_STATS_WORD' | translate }}
+                            th.col-xs-3(st-sort="freq1") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[0]} }}
+                            th.col-xs-3(st-sort="freq2") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[1]} }}
+                        tr
+                            th(colspan="3"): input(st-search="word", placeholder="Search for word...", class="input-sm form-control", type="search")
                     tbody
                         tr(ng-repeat="word in result.list | limitTo: 10")
                             td {{word.word}}
                             td {{word.freq1}}
                             td {{word.freq2}}
-                            td {{word.logRatioNormalized}}
                             .row
-            div.col-xs-4(ng-repeat="result in statistic.resultLists['oneList']")
-                b {{result.name}}
-                table.table.table-bordered.table-striped(st-table="rowCollection")
-                    thead: tr
-                        th Wort
-                        th Häufigkeit
+                    tfoot
+                        tr
+                            td.text-center(colspan="3")
+                                div(st-pagination="", st-items-by-page="10", st-displayed-pages="7" st-template="template/smart-table/pagination2.html")
+
+            div.col-xs-6(ng-repeat="result in statistic.resultLists['oneList']")
+                h4 {{ 'SEC_STATS_TITLEONLY' | translate : {corpus : result.corpora[$index]} }}
+                table.table.table-bordered.table-striped(st-table="result.list")
+                    thead
+                        tr
+                            th.col-xs-11(st-sort="word") {{ 'SEC_STATS_WORD' | translate }}
+                            th.col-xs-1(st-sort="freq") {{ 'SEC_STATS_COUNT' | translate }}
+                        tr
+                            th(colspan="2"): input(st-search="word", placeholder="Search for word...", class="input-sm form-control", type="search")
                     tbody
-                        tr(ng-repeat="word in result.list | limitTo: 10")
+                        tr(ng-repeat="word in result.list")
                             td {{word.word}}
                             td {{word.freq}}
+                    tfoot
+                        tr
+                            td.text-center(colspan="2")
+                                div(st-pagination="", st-items-by-page="10", st-displayed-pages="7" st-template="template/smart-table/pagination2.html")
 
     // Padding nach unten
     .row

@@ -63,44 +63,55 @@ exports.postResultlists = function (params) {
 
     function getResultList (request) {
         var files = filter.sync('front/misc/data', function (x) {
-            return new RegExp(request.regex).test(x);
+            return new RegExp(request.regex).exec(x);
         }).map(function (x) {
             var match = x.match(filename());
-            return match[0];
+            return {
+                file : match[0],
+                corpora : typeof x[1] === 'undefined' ? request.corpora.reverse() : request.corpora
+            };
         });
         files.forEach(function (f) {
-            var file = fs.readFileSync('front/misc/data/' + f, {encoding: 'utf-8'});
+            var file = fs.readFileSync('front/misc/data/' + f.file, {encoding: 'utf-8'});
             var lines = file.split('\n');
             var words = [];
             lines.forEach(listAdapter[request.listType].bind(null, words));
-            var x = {
-                'name' : f,
-                'type' : request.listType,
-                'list' : words
-            };
-            resultlists[request.listType] = resultlists[request.listType] && resultlists[request.listType].length ? resultlists[request.listType].concat([x]) : [x];
+            var x = words.map(function (w) {
+                return {
+                    'name' : f.file,
+                    'type' : request.listType,
+                    'corpora' : f.corpora,
+                    'list' : w
+                };
+            });
+            resultlists[request.listType] = resultlists[request.listType] && resultlists[request.listType].length ? resultlists[request.listType].concat(x) : x;
         });
     }
 
     function bothListsAdapter (words, l, i) {
+        if (!Array.isArray(words[0])) {
+            words[0] = [];
+            words[1] = [];
+        }
         if (i > 1 && l.trim()) {
             var data = l.split('\t');
-            words.push({
+            words[(data[3] < 0)+0].push({
                 'word': data[0],
-                'freq1': data[1],
-                'freq2': data[2],
-                'logRatioNormalized' : data[3]
+                'freq1': parseFloat(data[1]),
+                'freq2': parseFloat(data[2]),
+                'logRatioNormalized' : parseFloat(data[3])
             });
         }
-
     }
 
     function oneListAdapter (words, l, i) {
+        if (!Array.isArray(words[0]))
+            words[0] = [];
         if (i > 1 && l.trim()) {
             var data = l.split('\t');
-            words.push({
+            words[0].push({
                 'word': data[0],
-                'freq': data[1]
+                'freq': parseFloat(data[1])
             });
         }
     }

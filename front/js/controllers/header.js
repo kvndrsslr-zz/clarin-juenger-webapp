@@ -1,10 +1,14 @@
-angular.module('ir-matrix-cooc').controller('headerController',function($scope, $location) {
+angular.module('ir-matrix-cooc').controller('headerController',function($scope, $location, $translate) {
     $scope.getClass = function (path) {
         if ($location.path().substr(0, path.length) === path) {
             return "active";
         } else {
             return "";
         }
+    };
+
+    $scope.setLang = function (lang) {
+        $translate.use(lang);
     };
 
     var showFeature = {};

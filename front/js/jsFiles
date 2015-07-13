@@ -1,4 +1,5 @@
 ../bower_components/angular/angular.js
+../bower_components/angular-translate/angular-translate.js
 ../bower_components/angular-smart-table/dist/smart-table.js
 ../bower_components/d3/d3.js
 ../bower_components/angular-sanitize/angular-sanitize.js
@@ -16,7 +17,7 @@
 
 languages.js
 front-app.js
-controllers/korpora.js
+controllers/corpora.js
 controllers/header.js
 controllers/words.js
 services/jobs.js

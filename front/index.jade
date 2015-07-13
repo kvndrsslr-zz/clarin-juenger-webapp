@@ -21,17 +21,19 @@ html(ng-app="ir-matrix-cooc")
             .container-fluid
                 .navbar-header
                     a.navbar-brand(href='#')
-                        kbd Corpus Comparison
+                        kbd {{ 'APP_TITLE' | translate}}
 
                 ul.nav.navbar-nav
-                    li(ng-class="getClass('/korpora')")
-                        a(href='/korpora') Ähnlichkeitsmatrix
+                    li(ng-class="getClass('/corpora')")
+                        a(href='/corpora', translate='NAV_CORPORA')
                     li(ng-class="getClass('/words')")
-                        a(href='/words') Worthäufigkeitsanalyse
+                        a(href='/words', translate='NAV_WORDS')
                     li(ng-class="getClass('/manual')")
-                        a(href='/manual') Hilfe
+                        a(href='/manual', translate='NAV_HELP')
                 ul.nav.navbar-nav.navbar-right
-                    img(src="/images/ClarinD-Logo_140.jpg", title="", height="50px")
+                    li: a: span(ng-click="setLang('en')") en
+                    li: a: span(ng-click="setLang('de')") de
+                    img(style="position:relative;top:77px;left:-25px" src="/images/ClarinD-Logo_140.jpg", title="", height="50px")
         div(ng-view)
         if preloadHTML
             script(type="text/ng-template", id="#{preloadHTMLPath}")

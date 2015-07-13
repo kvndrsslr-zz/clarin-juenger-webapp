@@ -35,7 +35,7 @@ angular.module('ir-matrix-cooc').factory('jobManager', function ($q, $http, $tim
         function tryRequest (id) {
             $http({
                 method: 'post',
-                url: '/api/korpora/request',
+                url: '/api/corpora/request',
                 timeout: 9999999999,
                 data: {requestId: id}
             })
@@ -54,7 +54,7 @@ angular.module('ir-matrix-cooc').factory('jobManager', function ($q, $http, $tim
         }
         $http({
             method: 'post',
-            url: '/api/korpora',
+            url: '/api/corpora',
             timeout: 9999999999,
             data: j
         }).success(function (data) {

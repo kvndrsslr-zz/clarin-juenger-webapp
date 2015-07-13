@@ -6,12 +6,13 @@ var dataLoaderRunner = [
 ];
 
 angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
-    'ui.select', 'ui.keypress', 'ui.bootstrap', 'LocalStorageModule', 'smart-table'])
-    .config(function ($routeProvider, $locationProvider, localStorageServiceProvider) {
+    'ui.select', 'ui.keypress', 'ui.bootstrap', 'LocalStorageModule', 'smart-table',
+    'pascalprecht.translate'])
+    .config(function ($routeProvider, $locationProvider, $translateProvider, localStorageServiceProvider) {
         $routeProvider
-            .when('/korpora/', {
-                templateUrl: '/html/korpora/getIndex.html',
-                controller: 'korporaController',
+            .when('/corpora/', {
+                templateUrl: '/html/corpora/getIndex.html',
+                controller: 'corporaController',
                 resolve: {
                     data: dataLoaderRunner
                 }
@@ -31,10 +32,88 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
                 }
             })
             .otherwise({
-                redirectTo: '/korpora/'
+                redirectTo: '/corpora/'
             });
         $locationProvider.html5Mode(true);
         localStorageServiceProvider.setPrefix('ir-matrix-cooc');
+        $translateProvider.translations('en', {
+            'APP_TITLE' : 'Corpus Comparison',
+            'NAV_CORPORA' : 'Similarity Matrix',
+            'NAV_WORDS' : 'Word Frequency Analysis',
+            'NAV_HELP' : 'Help',
+            'SEC_CONFIG' : 'Configuration',
+            'SEC_CONFIG_WORDLISTLENGTH' : 'Length of Wordlist ({{wordlistLength}})',
+            'SEC_CONFIG_REQUESTNAME' : 'Request title',
+            'SEC_CONFIG_CORPUSSELECTION_TEXT' : 'Coropora',
+            'SEC_CONFIG_CORPUSSELECTION_FILLIN' : 'Please choose...',
+            'SEC_CONFIG_SIMMEASURE' : 'Similarity measure',
+            'SEC_CONFIG_SEND' : 'Compute',
+            'SEC_JOBS' : 'Job Selection',
+            'SEC_JOBS_NOJOBS' : 'No jobs yet in this session.',
+            'SEC_JOBS_MORE' : '{{count}} more',
+            'SEC_JOBS_RESET' : 'Reset',
+            'SEC_JOBS_UNTITLED' : 'Untitled',
+            'SEC_VIS' : 'Visualization',
+            'SEC_VIS_CLUSTERTHRESHHOLD' : 'Cluster threshold ({{threshold}})',
+            'SEC_VIS_COLORSCALE' : 'Color scale',
+            'SEC_VIS_SORTING' : 'Sorting',
+            'SEC_STATS' : 'Word statistics',
+            'SEC_STATS_TITLEBOTH' : 'More frequent in {{corpus}}',
+            'SEC_STATS_TITLEONLY' : 'Only in {{corpus}}',
+            'SEC_STATS_WORD' : 'Word',
+            'SEC_STATS_COUNT' : 'Frequency',
+            'SEC_STATS_COUNTINX' : 'Frequency in {{x}}',
+            'SEC_WCONF' : 'Configuration',
+            'SEC_WCONF_WORDS' : 'Words',
+            'SEC_WCONF_WORDSHINT' : '(point off multiple words)',
+            'SEC_WCONF_FIRSTY' : 'First year ({{year}})',
+            'SEC_WCONF_LASTY' : 'Last year ({{year}})',
+            'SEC_WORDS' : 'Visualization',
+            'SEC_WORDS_LABELGLUE' : '"{{label}}" in {{corpus}}',
+            'SEC_WORDS_YLABEL' : 'Relative frequency',
+            'CON_VALIDATIONMSG' : 'Please choose 2 corpora minimum!',
+            'CON_METRIC1' : 'Cosine - based on rank',
+            'CON_METRIC2' : 'Cosine - based on frequency',
+            'CON_METRIC3' : 'Cosine - based on logarithm of frequency'
+        });
+        $translateProvider.translations('de', {
+            'APP_TITLE' : 'Kookkorpora',
+            'NAV_CORPORA' : 'Ähnlichkeitsmatrix',
+            'NAV_WORDS' : 'Worthäufigkeitsanalyse',
+            'NAV_HELP' : 'Hilfe',
+            'SEC_CONFIG' : 'Konfiguration',
+            'SEC_CONFIG_WORDLISTLENGTH' : 'Länge Wortliste ({{wordlistLength}})',
+            'SEC_CONFIG_REQUESTNAME' : 'Anfragebezeichner',
+            'SEC_CONFIG_CORPUSSELECTION_TEXT' : 'Hier zu vergleichende Korpora auswählen, Filterung nach DB-Bez. oder int. Sprachennamen',
+            'SEC_CONFIG_CORPUSSELECTION_FILLIN' : 'Bitte auswählen...',
+            'SEC_CONFIG_SIMMEASURE' : 'Vergleichsmaß',
+            'SEC_CONFIG_SEND' : 'Abschicken',
+            'SEC_JOBS' : 'Jobauswahl',
+            'SEC_JOBS_NOJOBS' : 'Bisher wurden keine Anfragen in dieser Session getätigt.',
+            'SEC_JOBS_MORE' : '{{count}} weitere',
+            'SEC_JOBS_RESET' : 'Zurücksetzen',
+            'SEC_VIS' : 'Visualisierung',
+            'SEC_VIS_CLUSTERTHRESHHOLD' : 'Clusterschwellwert ({{threshold}})',
+            'SEC_VIS_COLORSCALE' : 'Farbskala',
+            'SEC_VIS_SORTING' : 'Sortierung',
+            'SEC_STATS' : 'Statistik',
+            'SEC_STATS_TITLEBOTH' : 'Öfter in {{corpus}}',
+            'SEC_STATS_TITLEONLY' : 'Nur in {{corpus}}',
+            'SEC_STATS_WORD' : 'Wort',
+            'SEC_STATS_COUNT' : 'Häufigkeit',
+            'SEC_STATS_COUNTINX' : 'Häufigkeit in {{x}}',
+            'SEC_WCONF_WORDS' : 'Wörter (Mehrere mit Komma trennen)',
+            'SEC_WCONF_FIRSTY' : 'Startjahr ({{year}})',
+            'SEC_WCONF_LASTY' : 'Endjahr ({{year}})',
+            'SEC_WORDS' : 'Liniendiagramm',
+            'SEC_WORDS_LABELGLUE' : '"{{label}}" bei {{corpus}}',
+            'SEC_WORDS_YLABEL' : 'Relative Häufigkeit',
+            'CON_VALIDATIONMSG' : 'Bitte mindestens 2 Korpora auswählen!',
+            'CON_METRIC1' : 'Cosinus - basierend auf Rang',
+            'CON_METRIC2' : 'Cosinus - basierend auf Freq.',
+            'CON_METRIC3' : 'Cosinus - basierend auf Logarithmus d. Freq.'
+        });
+        $translateProvider.preferredLanguage('en');
     })
     .service('dataLoader', function ($location, $http) {
         return function () {
@@ -152,8 +231,30 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
         });
 
     })
+    .directive('pageSelect', function() {
+        return {
+            restrict: 'E',
+            template: '<input type="text" class="select-page" ng-model="inputPage" ng-change="selectPage(inputPage)">',
+            link: function(scope, element, attrs) {
+                scope.$watch('currentPage', function(c) {
+                    scope.inputPage = c;
+                });
+            }
+        }
+    })
     .filter("rounded",function(){
         return function(val,to){
             return parseFloat(val).toFixed(to || 0);
         }
-    });
+    }).run(['$templateCache', function ($templateCache) {
+        $templateCache.put('template/smart-table/pagination2.html',
+            '<nav ng-if="pages.length >= 2">' +
+            '<ul class="pagination">' +
+            '<li><a ng-click="selectPage(1)">First</a>' +
+            '</li><li><a ng-click="selectPage(currentPage - 1)">&lt;</a>' +
+            '</li><li><a><page-select></page-select> of {{numPages}}</a>' +
+            '</li><li><a ng-click="selectPage(currentPage + 1)">&gt;</a>' +
+            '</li><li><a ng-click="selectPage(numPages)">Last</a></li>' +
+            '</ul>' +
+            '</nav>');
+    }]);

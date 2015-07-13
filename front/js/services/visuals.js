@@ -22,7 +22,7 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
                 .attr({
                     "width": 30,
                     "height" : height,
-                    "fill": "url(/korpora/#" + id + ")"
+                    "fill": "url(/corpora/#" + id + ")"
                 });
         },
         appendDefs: function (node, id) {
@@ -291,7 +291,7 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
         }
 
         function click(p) {
-            currentPair = [data.nodes[p.x].name, data.nodes[p.y].name];
+            currentPair = [data.nodes[p.x].name, data.nodes[p.y].name, data.nodes[p.x].displayName, data.nodes[p.y].displayName];
             //console.log(data.nodes[p.x].name + "_" + data.nodes[p.y].name);
             scope.$apply();
         }

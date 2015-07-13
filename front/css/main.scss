@@ -147,3 +147,41 @@ rect.cell:hover + text + text, rect.cell + text + text:hover {
   stroke: steelblue;
   stroke-width: 1.5px;
 }
+.select-page {
+  width: 50px;
+  text-align: center;
+}
+.pagination li a input {
+  padding: 0;
+  margin: -5px 0;
+}
+
+.st-sort-ascent:after {
+
+  content: '\25B2';
+
+}
+
+
+.st-sort-descent:after {
+
+  content: '\25BC';
+
+}
+
+
+.lr-drop-target-before{
+
+  border-left: 2px solid orange;
+
+}
+
+
+.lr-drop-target-after{
+
+  border-right: 2px solid orange;
+
+}
+
+
+
