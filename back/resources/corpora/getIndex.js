@@ -95,7 +95,7 @@ exports.postResultlists = function (params) {
         }
         if (i > 1 && l.trim()) {
             var data = l.split('\t');
-            words[(data[1] < data[2])+0].push({
+            words[(parseFloat(data[1]) < parseFloat(data[2])+0)].push({
                 'word': data[0],
                 'freq1': parseFloat(data[1]),
                 'freq2': parseFloat(data[2]),
