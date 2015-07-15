@@ -28,6 +28,12 @@ include ../mixins.jade
                         label.control-label(for="maxYear") {{ 'SEC_WCONF_LASTY' | translate : {year : maxYear} }}
                         input(ng-model="maxYear", id="maxYear", type="range",
                         min="{{minYearScale}}", max="{{maxYearScale}}", step="1", class="form-control")
+                    .checkbox
+                        label.control-label(for="logSwitch")
+                            input(ng-model="logSwitch", id="logSwitch", type="checkbox")
+                            b {{ 'SEC_WCONF_LOGSWITCH' | translate}}
+
+
                     button.col-xs-12.btn(
                         ng-class="[validation() ? 'btn-disabled' : 'btn-primary']",
                         type="submit",

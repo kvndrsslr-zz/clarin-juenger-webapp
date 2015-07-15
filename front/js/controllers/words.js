@@ -1,6 +1,7 @@
 angular.module('ir-matrix-cooc')
-    .controller('wordsController', function ($scope, $timeout, $http, data) {
+    .controller('wordsController', function ($scope, $timeout, $http, $translate, data) {
 
+        $scope.logSwitch = false;
         // feature display toggle
         var showFeature = {'Konfiguration' : false};
         $scope.show = function (id, write) {
@@ -65,19 +66,20 @@ angular.module('ir-matrix-cooc')
                 console.log('success!');
                 console.log(data);
                 showFeature.Visualisierung = false;
-                $scope.draw(data);
+                $scope.draw(data, $scope.logSwitch);
             }).error(function (data, status, header) {
                 console.log('error retrieving wordfrequencies!');
             });
         };
 
-        $scope.draw = function (xdata) {
 
+
+        $scope.draw = function (xdata, logSwitch) {
             var charts = [];
             var dates = [];
             var cdata = [];
             xdata.forEach(function (x, i) {
-                var chartName = '"' + x.word + '" bei ' + x.corpus.displayName;
+                var chartName = $translate.instant('SEC_WORDS_LABELGLUE', {label: x.word, corpus : x.corpus.displayName});
                 var yearDate = new Date(x.year,0,1,1,0);
                 if (charts.indexOf(chartName) === -1) {
                     charts.push(chartName);
@@ -101,8 +103,10 @@ angular.module('ir-matrix-cooc')
             var x = d3.time.scale()
                 .range([0, width]);
 
-            var y = d3.scale.linear()
-                .range([height, 0]);
+            var y = (!logSwitch ? d3.scale.linear() : d3.scale.log());
+                y = y.range([height, 0])
+                .clamp(true);
+            window.yscale = y;
 
             var color = d3.scale.category10();
 
@@ -134,7 +138,12 @@ angular.module('ir-matrix-cooc')
             x.domain([d3.min(dates), d3.max(dates)]);
 
             y.domain([
-                d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.relativeFreq; }); }),
+                Math.max(0.0000000001, d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.relativeFreq; }); })),
+                d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.relativeFreq; }); })
+            ]);
+
+            console.log([
+                Math.max(0.0000000001,d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.relativeFreq; }); })),
                 d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.relativeFreq; }); })
             ]);
 
@@ -151,7 +160,7 @@ angular.module('ir-matrix-cooc')
                 .attr("y", 6)
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
-                .text("Relative Häufigkeit");
+                .text($translate.instant('SEC_WORDS_YLABEL'));
 
             var city = svg.selectAll(".city")
                 .data(cities)
@@ -165,7 +174,7 @@ angular.module('ir-matrix-cooc')
 
             city.append("text")
                 .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
-                .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.relativeFreq) + ")"; })
+                .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(parseFloat(d.value.relativeFreq)+0.0000000001) + ")"; })
                 .attr("x", 3)
                 .attr("dy", ".35em")
                 .text(function(d) { return d.name; });
