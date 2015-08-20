@@ -102,7 +102,7 @@ exports.postResultlists = function (params, resourceManager) {
                    var tmp = taggedWords.filter(function (w) {
                        return w.word === word.word;
                    })[0];
-                   word.pos = tmp.pos ? tmp.pos : 'N/A';
+                   word.pos = tmp && tmp.pos ? tmp.pos : 'N/A';
                    return word;
                });
             });
