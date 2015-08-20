@@ -1,16 +1,22 @@
 var Q = require('q');
-
+//@todo: Never use params as inter-application glue. params need to be only used at starting points of incoming requests!
 /**
  * Global Cache for running application. Stores data to minimize number of necessary requests.
  * @todo implement cache flushing every X hours
  * @todo maybe make cache an own module?
  * @type {{corpora: Array, wordList: Array, wordFrequency: {}}}
  */
-var cache = {
-    'corpora' : [],
-    'wordList' : [],
-    'wordFrequency' : {}
+var cache;
+var cacheRefreshInterval = 4 * 60 * 60 * 1000; //ms
+var cacheRefresh = function () {
+    cache = {
+       'corpora' : [],
+       'wordList' : [],
+       'wordFrequency' : {}
+    };
 };
+cacheRefresh();
+setInterval(cacheRefresh, cacheRefreshInterval);
 
 /**
  * Resource Url
@@ -27,7 +33,7 @@ var cache = {
  * @param injectObjectToString
  * @returns {{corpora: corpora, wordList: wordList, wordFrequency: wordFrequency}}
  */
-exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, params, deep) {
+exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
 
     var baseUrl = 'http://clarinws.informatik.uni-leipzig.de:8080/wordlistwebservice/wordlist';
     var resource =
@@ -85,15 +91,14 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, params, d
     /**
      * Return the wordLists as specified by request params
      */
-    function wordList () {
-
+    function wordList (params) {
         var wordlists = [];
         //var deferred = Q.defer();
         var queryQ = Q();
-        var requested = params.missingLinks
-            .reduce(function (a, b) { return a.concat(b);}, [])
-            .sort(function (a, b) { return a.name > b.name})
-            .reduce(function (a, b) {return a.name === b.name ? a :a.concat([b]);}, []);
+        var requested = !params.missingLinks ? params.corpora : params.missingLinks
+            .reduce(function (a, b) { return a.concat(b); }, [])
+            .sort(function (a, b) { return a.name > b.name })
+            .reduce(function (a, b) { return a.name === b.name ? a : a.concat([b]); }, []);
 
         console.log('trying wordlist retrieval :' + JSON.stringify(params.corpora));
 
@@ -144,7 +149,7 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, params, d
                             var lines = response.split('\n');
                             lines.forEach(function (line) {
                                 var data = line.split('\t');
-                                wordList.push({word: data[1], freq: data[2]});
+                                wordList.push({w_id: data[0], word: data[1], freq: data[2], pos: data[3]});
                             });
                         } else {
                             wordList = [];
@@ -168,7 +173,7 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, params, d
     /**
      * Return the wordFrequencies as specified by request params
      */
-    function wordFrequency () {
+    function wordFrequency (params) {
         var words = [];
         var queryQ = Q();
         //console.log('entering wf');
@@ -213,6 +218,7 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, params, d
                             'word' : data[0],
                             'corpus' : corpus,
                             'year' : year,
+                            'pos' : data[3],
                             'freq' : {
                                 total: parseFloat(data[1]),
                                 relative: parseFloat(data[2])

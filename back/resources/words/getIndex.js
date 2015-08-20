@@ -3,9 +3,9 @@ var filter = require('filter-files');
 var filename = require('filename-regex');
 var fs = require('fs');
 
-exports.getIndex = function (resourceManager) {
+exports.getIndex = function (resourceManager, params) {
     return Q()
-        .then(resourceManager.action('corpora'))
+        .then(resourceManager.action('corpora', params))
         .then(function (corpora) {
             var corporä = [];
             var minYear = 9999, maxYear = 0;

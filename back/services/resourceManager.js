@@ -16,14 +16,14 @@ exports.resourceManager = function (uniLeipzigClarinWs) {
             resources.push(resource);
     }
 
-    function action (name) {
+    function action (name, args) {
         return function () {
             var rQ = Q();
             var results = [];
             resources.forEach(function (r) {
                 if (typeof r.action[name] === 'function') {
                     rQ = rQ
-                        .then(r.action[name])
+                        .then(r.action[name].bind(r, args))
                         .then(function (result) {
                             results = results.concat(result);
                         });

@@ -75,6 +75,13 @@ angular.module('ir-matrix-cooc')
 
 
         $scope.draw = function (xdata, logSwitch) {
+            var formatNumber = d3.format(",.2f");
+//var formatNumber = d3.format(".2s");
+
+            var tickFormatForLogScale = function(d) { return "$" + formatNumber(d) };
+
+            var logBase = 2;
+
             var charts = [];
             var dates = [];
             var cdata = [];
@@ -103,31 +110,13 @@ angular.module('ir-matrix-cooc')
             var x = d3.time.scale()
                 .range([0, width]);
 
-            var y = (!logSwitch ? d3.scale.linear() : d3.scale.log());
+            var y = (!logSwitch ? d3.scale.linear() : d3.scale.log().base(logBase).nice());
                 y = y.range([height, 0])
                 .clamp(true);
             window.yscale = y;
 
             var color = d3.scale.category10();
 
-            var xAxis = d3.svg.axis()
-                .scale(x)
-                .orient("bottom");
-
-            var yAxis = d3.svg.axis()
-                .scale(y)
-                .orient("left");
-
-            var line = d3.svg.line()
-                .interpolate("linear")
-                .x(function(d) { return x(d.date); })
-                .y(function(d) { return y(d.relativeFreq); });
-
-            var svg = d3.select("#visualization").append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             // domain muss zahl aller combis aus corpoa + wort sein (vorher berechnen!)
             color.domain(charts);
@@ -146,6 +135,31 @@ angular.module('ir-matrix-cooc')
                 Math.max(0.0000000001,d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.relativeFreq; }); })),
                 d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.relativeFreq; }); })
             ]);
+
+
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom");
+
+            var superscript = "⁰¹²³⁴⁵⁶⁷⁸⁹",
+                formatPower = function(d) { console.log("exp:"+d); return (d + "").split("").map(function(c) { return c==='-'?'-':superscript[c]; }).join(""); };
+
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .tickFormat(function(d) { return "" + logBase + formatPower(Math.round(Math.log(d)/Math.log(logBase))); })
+                .ticks(10)
+            .orient("left");
+
+            var line = d3.svg.line()
+                .interpolate("linear")
+                .x(function(d) { return x(d.date); })
+                .y(function(d) { return y(d.relativeFreq); });
+
+            var svg = d3.select("#visualization-words").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             svg.append("g")
                 .attr("class", "x axis")

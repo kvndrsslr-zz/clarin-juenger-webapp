@@ -27,7 +27,7 @@ exports.matrixWorkload = function (params, resourceManager, writeWordlists, spaw
                     // Step 2: write data to files
                     // Step 3: pairwise compare files using listdif.jar
                     console.log("Got " + params.missingLinks.length + " missing results, resolving...");
-                    return Q().then(resourceManager.action('wordList')).then(writeWordlists).then(spawnListdif);
+                    return Q().then(resourceManager.action('wordList', params)).then(writeWordlists).then(spawnListdif);
                 }
             })
             // Step 4: read files, parse to json, return json object

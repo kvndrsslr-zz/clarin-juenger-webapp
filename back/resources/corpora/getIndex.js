@@ -47,44 +47,77 @@ exports.postImages = function (params) {
     return {'files': list};
 };
 
-exports.postResultlists = function (params) {
-
-    var listAdapter = {
-        'bothLists' : bothListsAdapter,
-        'oneList' : oneListAdapter
-    };
+exports.postResultlists = function (params, resourceManager) {
 
     var resultlists = {};
+    var req = params.request;
+    var regex = req.wordCount + "_" +
+        req.metric + "_" +
+        "(("  + req.corpora[0].name + "_" + req.corpora[1].name +
+        ")|(" + req.corpora[1].name + "_" + req.corpora[0].name + ")){1}\\.txt";
+    var listDefs = [
+        {
+            'name' : 'oneList',
+            'use' : oneListAdapter,
+            'regex' : "list[1,2]{1}_" + regex
+        },
+        {
+            'name' : 'bothLists',
+            'use' : bothListsAdapter,
+            'regex' : "both_lists_" + regex
+        }
+    ];
 
-    params.requests.forEach(getResultList);
+    return Q().then(resourceManager.action('wordList', req))
+        .then(function (wordlists) {
+            var taggedWords = wordlists.reduce(function (a, b) {
+                return a.concat(b.list);
+            }, []);
+            listDefs.forEach(function (listDef) {
+                getResultList(listDef, taggedWords);
+            });
+            return {'resultlists': resultlists};
+        });
 
-    return {'resultlists': resultlists};
+    function getResultList (listDef, taggedWords) {
 
-
-    function getResultList (request) {
-        var files = filter.sync('front/misc/data', function (x) {
-            return new RegExp(request.regex).exec(x);
-        }).map(function (x) {
-            var match = x.match(filename());
+        var fileDefs = filter.sync('front/misc/data', function (x) {
+            return new RegExp(listDef.regex).exec(x);
+        }).map(function (file) {
+            var match = file.match(filename());
             return {
                 file : match[0],
-                corpora : typeof x[1] === 'undefined' ? request.corpora.reverse() : request.corpora
+                swapCorpora : typeof file[1] === 'undefined'
             };
         });
-        files.forEach(function (f) {
-            var file = fs.readFileSync('front/misc/data/' + f.file, {encoding: 'utf-8'});
-            var lines = file.split('\n');
-            var words = [];
-            lines.forEach(listAdapter[request.listType].bind(null, words));
-            var x = words.map(function (w) {
+
+        fileDefs.forEach(function (fileDef) {
+            var wordLists = [];
+            var file = fs.readFileSync('front/misc/data/' + fileDef.file, {encoding: 'utf-8'});
+            // execute list adapter
+            file.split('\n').forEach(listDef.use.bind(null, wordLists));
+            // enrich words with POS tags
+            wordLists = wordLists.map(function (wordList) {
+               return wordList.map(function (word) {
+                   var tmp = taggedWords.filter(function (w) {
+                       return w.word === word.word;
+                   })[0];
+                   word.pos = tmp.pos ? tmp.pos : 'N/A';
+                   return word;
+               });
+            });
+            // enrich wordlists with information
+            var result = wordLists.map(function (wordList) {
                 return {
-                    'name' : f.file,
-                    'type' : request.listType,
-                    'corpora' : f.corpora,
-                    'list' : w
+                    'name' : fileDef.file,
+                    'type' : listDef.name,
+                    'corpora' : fileDef.swapCorpora ? req.corpora.reverse : req.corpora,
+                    'list' : wordList
                 };
             });
-            resultlists[request.listType] = resultlists[request.listType] && resultlists[request.listType].length ? resultlists[request.listType].concat(x) : x;
+            // append to resultlist
+            resultlists[listDef.name] = (resultlists[listDef.name] && resultlists[listDef.name].length)
+                ? resultlists[listDef.name].concat(result) : result;
         });
     }
 

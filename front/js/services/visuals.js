@@ -166,10 +166,11 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
             nodes[link[0]].count += link[2] * 10;
             nodes[link[1]].count += link[2] * 10;
         });
+        console.log(nodes);
         // Precompute the orders.
         var orders = {
             name: d3.range(n).sort(function (a, b) {
-                return d3.ascending(nodes[a].name, nodes[b].name);
+                return d3.ascending(nodes[a].displayName, nodes[b].displayName);
             }),
             group: d3.range(n).sort(function (a, b) {
                 return nodes[b].group - nodes[a].group;

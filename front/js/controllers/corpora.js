@@ -178,49 +178,28 @@ angular.module('ir-matrix-cooc')
         }, true);
 
         $scope.parseFloat = parseFloat;
-        $scope.$watch(matrixVisualization.currentPair, function (x) {
-            if (x) {
-                $scope.statsEmpty = x[0]===x[1];
-                if (!$scope.statsEmpty) {
-                    var currentRequest = jobManager.jobs().filter(function (j) {
-                        return j.requestId === jobManager.currentJob()
-                    })[0];
-                    var regex = currentRequest.wordCount + "_" + currentRequest.metric + "_" + "((" + x[0] + "_" + x[1] + ")|("
-                        + x[1] + "_" + x[0] + ")){1}\\.txt";
-                    regex = ["list[1,2]{1}_" + regex, "both_lists_" + regex];
-                    showFeature['Statistik'] = true;
-                    $http({
-                        method: 'post',
-                        url: '/api/corpora/resultlists',
-                        timeout: 9999999999,
-                        data: {
-                            requests: [{
-                                regex: regex[0],
-                                listType: 'oneList',
-                                corpora: [x[2], x[3]]
-                            }, {regex: regex[1], listType: 'bothLists', corpora: [x[2], x[3]]}]
-                        }
-                    }).success(function (data) {
-                        if (typeof data.resultlists !== 'undefined') {
-                            //data.resultlists.bothLists = data.resultlists.bothLists.map(function (r) {
-                            //    var x = [r,r];
-                            //    x[0].list = x[0].list.slice().filter(function (f) {return parseFloat(f.logRatioNormalized) >= 0});
-                            //    x[1].list = x[1].list.filter(function (f) {return parseFloat(f.logRatioNormalized) < 0});
-                            //    return x;
-                            //}).reduce(function (l,r) {return l.concat(r)}, []);
-                            console.log($scope.paginationSize);
-
-                            console.log($scope.paginationSize);
-                            $scope.statistic.resultLists = data.resultlists;
-                            console.log($scope.paginationSize);
-
-                            console.log($scope.paginationSize);
-                            console.log(data.resultlists);
-                            showFeature['Statistik'] = false;
-                        }
-                    });
-                }
+        $scope.$watch(matrixVisualization.currentPair, function (currentPair) {
+            if (currentPair && !($scope.statsEmpty = currentPair[0] === currentPair[1])) {
+                var currentRequest = jobManager.jobs().filter(function (j) {
+                    return j.requestId === jobManager.currentJob()
+                })[0];
+                currentRequest.corpora = currentRequest.corpora.filter(function (c) {
+                    return c.name === currentPair[0] || c.name === currentPair[1];
+                });
+                $http({
+                    method: 'post',
+                    url: '/api/corpora/resultlists',
+                    timeout: 9999999999,
+                    data: {'request' : currentRequest}
+                }).success(function (data) {
+                    if (typeof data.resultlists !== 'undefined') {
+                        showFeature['Statistik'] = true;
+                        $scope.statistic.resultLists = data.resultlists;
+                        showFeature['Statistik'] = false;
+                    }
+                });
             }
+
         }, true);
 
         // Draw Visualization

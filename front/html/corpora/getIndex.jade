@@ -106,45 +106,51 @@ include ../mixins.jade
         .row(ng-hide="statsEmpty")
             div.col-xs-6(ng-repeat="result in statistic.resultLists['bothLists']")
                 .panel.panel-info
-                    .panel-heading {{ 'SEC_STATS_TITLEBOTH' | translate : {corpus : result.corpora[$index]} }}
+                    .panel-heading {{ 'SEC_STATS_TITLEBOTH' | translate : {corpus : result.corpora[$index].displayName} }}
                     .panel-body
                         table.table.table-bordered.table-striped(st-table="result.list")
                             thead
                                 tr
                                     th.col-xs-6(st-sort="word") {{ 'SEC_STATS_WORD' | translate }}
-                                    th.col-xs-3(st-sort="freq1") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[0]} }}
-                                    th.col-xs-3(st-sort="freq2") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[1]} }}
+                                    th.col-xs-6(st-sort="pos") {{ 'SEC_STATS_POS' | translate }}
+                                    th.col-xs-3(st-sort="freq1") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[0].displayName} }}
+                                    th.col-xs-3(st-sort="freq2") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[1].displayName} }}
                                 tr
-                                    th(colspan="3"): input(st-search="word", placeholder="Search for word...", class="input-sm form-control", type="search")
+                                    th(colspan="2"): input(st-search="word", placeholder="Search word...", class="input-sm form-control", type="search")
+                                    th(colspan="2"): input(st-search="pos", placeholder="Search POS...", class="input-sm form-control", type="search")
                             tbody
                                 tr(ng-repeat="word in result.list")
                                     td {{word.word}}
+                                    td {{word.pos}}
                                     td {{word.freq1}}
                                     td {{word.freq2}}
                                     .row
                             tfoot
                                 tr
-                                    td.text-center(colspan="3")
+                                    td.text-center(colspan="4")
                                         div(st-pagination="", st-items-by-page="parseFloat(paginationSize)", st-template="template/smart-table/pagination2.html")
         .row(ng-hide="statsEmpty")
             div.col-xs-6(ng-repeat="result in statistic.resultLists['oneList']")
                 .panel.panel-info
-                    .panel-heading {{ 'SEC_STATS_TITLEONLY' | translate : {corpus : result.corpora[$index]} }}
+                    .panel-heading {{ 'SEC_STATS_TITLEONLY' | translate : {corpus : result.corpora[$index].displayName} }}
                     .panel-body
                         table.table.table-bordered.table-striped(st-table="result.list")
                             thead
                                 tr
-                                    th.col-xs-11(st-sort="word") {{ 'SEC_STATS_WORD' | translate }}
+                                    th.col-xs-8(st-sort="word") {{ 'SEC_STATS_WORD' | translate }}
+                                    th.col-xs-3(st-sort="pos") {{ 'SEC_STATS_POS' | translate }}
                                     th.col-xs-1(st-sort="freq") {{ 'SEC_STATS_COUNT' | translate }}
                                 tr
-                                    th(colspan="2"): input(st-search="word", placeholder="Search for word...", class="input-sm form-control", type="search")
+                                    th(colspan="1"): input(st-search="word", placeholder="Search words...", class="input-sm form-control", type="search")
+                                    th(colspan="2"): input(st-search="pos", placeholder="Search POS...", class="input-sm form-control", type="search")
                             tbody
                                 tr(ng-repeat="word in result.list")
                                     td {{word.word}}
+                                    td {{word.pos}}
                                     td {{word.freq}}
                             tfoot
                                 tr
-                                    td.text-center(colspan="2")
+                                    td.text-center(colspan="3")
                                         div(st-pagination="", st-items-by-page="parseFloat(paginationSize)", st-displayed-pages="7" st-template="template/smart-table/pagination2.html")
 
     // Padding nach unten
