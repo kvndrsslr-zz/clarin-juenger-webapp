@@ -33,7 +33,7 @@ html(ng-app="ir-matrix-cooc")
                 ul.nav.navbar-nav.navbar-right
                     li: a: span(ng-click="setLang('en')") en
                     li: a: span(ng-click="setLang('de')") de
-                    img(style="position:relative;top:77px;left:-25px" src="/images/ClarinD-Logo_140.jpg", title="", height="50px")
+                    img#clarin-d-logo(src="/images/ClarinD-Logo_140.jpg", title="CLARIN-D")
         div(ng-view)
         if preloadHTML
             script(type="text/ng-template", id="#{preloadHTMLPath}")

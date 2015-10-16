@@ -97,7 +97,15 @@ include ../mixins.jade
         .row(ng-hide="statsEmpty")
             div.col-xs-12
                 form
-                .col-xs-4.col-xs-offset-8
+                .col-xs-4.col-xs-offset-4
+                    .form-group
+                        label.control-label(for="POSTags")
+                            | {{ 'SEC_STATS_POSLABEL' | translate }}
+                        ui-select(searchEnabled="true", theme="bootstrap", ng-model="sel.PosTags")
+                            ui-select-match: div {{'SEC_STATS_POS_' + $select.selected | translate }}
+                            ui-select-choices(repeat="posTag in statistic.resultLists.availablePOSTags")
+                                div(ng-bind-html="'SEC_STATS_POS_' + posTag | translate | highlight: $select.search")
+                .col-xs-4
                     .form-group
                         label.control-label(for="paginationSize")
                             | {{ 'SEC_STATS_PAGINATIONSIZE' | translate : { x : paginationSize} }}
@@ -113,15 +121,15 @@ include ../mixins.jade
                                 tr
                                     th.col-xs-6(st-sort="word") {{ 'SEC_STATS_WORD' | translate }}
                                     th.col-xs-6(st-sort="pos") {{ 'SEC_STATS_POS' | translate }}
-                                    th.col-xs-3(st-sort="freq1") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[0].displayName} }}
-                                    th.col-xs-3(st-sort="freq2") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[1].displayName} }}
+                                    th.col-xs-3(st-sort="freq1", st-sort-default="{{$index ? 'false' : 'reverse'}}") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[0].displayName} }}
+                                    th.col-xs-3(st-sort="freq2", st-sort-default="{{$index ? 'reverse' : 'false'}}") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[1].displayName} }}
                                 tr
-                                    th(colspan="2"): input(st-search="word", placeholder="Search word...", class="input-sm form-control", type="search")
-                                    th(colspan="2"): input(st-search="pos", placeholder="Search POS...", class="input-sm form-control", type="search")
+                                    th(colspan="4"): input.input-sm.form-control(st-search="word", placeholder="Search word...", type="search")
+                                    th(ng-show="false"): input.input-sm.form-control.st-global-search(st-search="pos", type="search")
                             tbody
                                 tr(ng-repeat="word in result.list")
                                     td {{word.word}}
-                                    td {{word.pos}}
+                                    td {{'SEC_STATS_POS_' + word.pos | translate}}
                                     td {{word.freq1}}
                                     td {{word.freq2}}
                                     .row
@@ -132,21 +140,21 @@ include ../mixins.jade
         .row(ng-hide="statsEmpty")
             div.col-xs-6(ng-repeat="result in statistic.resultLists['oneList']")
                 .panel.panel-info
-                    .panel-heading {{ 'SEC_STATS_TITLEONLY' | translate : {corpus : result.corpora[$index].displayName} }}
+                    .panel-heading {{ 'SEC_STATS_TITLEONLY' | translate : {corpus : result.corpus.displayName} }}
                     .panel-body
                         table.table.table-bordered.table-striped(st-table="result.list")
                             thead
                                 tr
                                     th.col-xs-8(st-sort="word") {{ 'SEC_STATS_WORD' | translate }}
                                     th.col-xs-3(st-sort="pos") {{ 'SEC_STATS_POS' | translate }}
-                                    th.col-xs-1(st-sort="freq") {{ 'SEC_STATS_COUNT' | translate }}
+                                    th.col-xs-1(st-sort="freq", st-sort-default="reverse") {{ 'SEC_STATS_COUNT' | translate }}
                                 tr
-                                    th(colspan="1"): input(st-search="word", placeholder="Search words...", class="input-sm form-control", type="search")
-                                    th(colspan="2"): input(st-search="pos", placeholder="Search POS...", class="input-sm form-control", type="search")
+                                    th(colspan="3"): input.input-sm.form-control(st-search="word", placeholder="Search words...", type="search")
+                                    th(ng-show="false"): input.input-sm.form-control.st-global-search(st-search="pos", type="search")
                             tbody
                                 tr(ng-repeat="word in result.list")
                                     td {{word.word}}
-                                    td {{word.pos}}
+                                    td {{'SEC_STATS_POS_' + word.pos | translate}}
                                     td {{word.freq}}
                             tfoot
                                 tr

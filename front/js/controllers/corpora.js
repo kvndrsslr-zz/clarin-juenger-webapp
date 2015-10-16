@@ -104,10 +104,17 @@ angular.module('ir-matrix-cooc')
             corpora: [],
             metric: 3,
             colors: 'REDDISH',
-            sorting: 'sortOrder'
+            sorting: 'sortOrder',
+            PosTags: ''
         };
-        $scope.sortings = matrixVisualization.sortings;
 
+        $scope.$watch('sel.PosTags', function(val) {
+                var elem = angular.element('.st-global-search');
+                elem.attr('value', val || '');
+                angular.element(elem).trigger('input');
+
+        });
+        $scope.sortings = matrixVisualization.sortings;
         $scope.maxClusterDiameter = matrixVisualization.maxClusterDiameter();
         $scope.limit = 125;
 
@@ -194,6 +201,21 @@ angular.module('ir-matrix-cooc')
                 }).success(function (data) {
                     if (typeof data.resultlists !== 'undefined') {
                         showFeature['Statistik'] = true;
+                        var iterate = ['oneList', 'bothLists'];
+                        var tempPOSTags = {};
+                        iterate.forEach(function (listType) {
+                            data.resultlists[listType].forEach(function (list) {
+                                list.list.forEach(function (word) {
+                                    tempPOSTags[word.pos] = true;
+                                })
+                            });
+                        });
+                        data.resultlists.availablePOSTags = [];
+                        for (var tag in tempPOSTags) {
+                            if (tempPOSTags.hasOwnProperty(tag)) {
+                                data.resultlists.availablePOSTags.push(tag);
+                            }
+                        }
                         $scope.statistic.resultLists = data.resultlists;
                         showFeature['Statistik'] = false;
                     }
@@ -212,8 +234,5 @@ angular.module('ir-matrix-cooc')
                 $scope.selectJob(j);
             }
         });
-
-
-
     });
 

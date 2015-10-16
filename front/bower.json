@@ -15,7 +15,8 @@
     "angular-local-storage": "~0.1.5",
     "underscore": "~1.8.2",
     "angular-smart-table": "~2.1.0",
-    "angular-translate": "~2.7.2"
+    "angular-translate": "~2.7.2",
+    "jQuery": "~2.1.4"
   },
   "resolutions": {
     "angular": ">= 1.0.2",

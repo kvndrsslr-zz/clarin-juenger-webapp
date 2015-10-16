@@ -54,12 +54,12 @@ exports.postResultlists = function (params, resourceManager) {
     var regex = req.wordCount + "_" +
         req.metric + "_" +
         "(("  + req.corpora[0].name + "_" + req.corpora[1].name +
-        ")|(" + req.corpora[1].name + "_" + req.corpora[0].name + ")){1}\\.txt";
+        ")|(" + req.corpora[1].name + "_" + req.corpora[0].name + ")){1}\\.txt$";
     var listDefs = [
         {
             'name' : 'oneList',
             'use' : oneListAdapter,
-            'regex' : "list[1,2]{1}_" + regex
+            'regex' : "list([1,2]){1}_" + regex
         },
         {
             'name' : 'bothLists',
@@ -80,14 +80,24 @@ exports.postResultlists = function (params, resourceManager) {
         });
 
     function getResultList (listDef, taggedWords) {
-
+        var regex = new RegExp(listDef.regex);
         var fileDefs = filter.sync('front/misc/data', function (x) {
-            return new RegExp(listDef.regex).exec(x);
+            return regex.test(x);
         }).map(function (file) {
             var match = file.match(filename());
+            file = regex.exec(file);
+            var swap, corpus;
+            if (file.length === 5 ) {
+                swap = typeof file[3] === 'undefined';
+                corpus = req.corpora[ swap ? (file[1] == "1" ? 1 : 0 ) : (file[1] == "1" ? 0 : 1 )];
+            } else {
+                swap = typeof file[2] === 'undefined';
+                corpus = null;
+            }
             return {
                 file : match[0],
-                swapCorpora : typeof file[1] === 'undefined'
+                swapCorpora : swap,
+                corpus : corpus
             };
         });
 
@@ -102,7 +112,7 @@ exports.postResultlists = function (params, resourceManager) {
                    var tmp = taggedWords.filter(function (w) {
                        return w.word === word.word;
                    })[0];
-                   word.pos = tmp && tmp.pos ? tmp.pos : 'N/A';
+                   word.pos = tmp && tmp.pos ? tmp.pos : 'X';
                    return word;
                });
             });
@@ -111,7 +121,8 @@ exports.postResultlists = function (params, resourceManager) {
                 return {
                     'name' : fileDef.file,
                     'type' : listDef.name,
-                    'corpora' : fileDef.swapCorpora ? req.corpora.reverse : req.corpora,
+                    'corpora' : fileDef.swapCorpora ? req.corpora.slice().reverse() : req.corpora,
+                    'corpus' : fileDef.corpus,
                     'list' : wordList
                 };
             });
