@@ -123,7 +123,7 @@ include ../mixins.jade
                                     th.col-xs-6(st-sort="pos") {{ 'SEC_STATS_POS' | translate }}
                                     th.col-xs-3(st-sort="freq1") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[0].displayName} }}
                                     th.col-xs-3(st-sort="freq2") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[1].displayName} }}
-                                    th.col-xs-3(st-sort="ratio", st-sort-default="reverse") {{ 'SEC_STATS_RATIO' }}
+                                    th.col-xs-3(st-sort="ratio", st-sort-default="reverse") {{ 'SEC_STATS_RATIO' | translate }}
                                 tr
                                     th(colspan="5"): input.input-sm.form-control(st-search="word", placeholder="Search word...", type="search")
                                     th(ng-show="false"): input.input-sm.form-control.st-global-search(st-search="pos", type="search")
