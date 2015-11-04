@@ -121,10 +121,11 @@ include ../mixins.jade
                                 tr
                                     th.col-xs-6(st-sort="word") {{ 'SEC_STATS_WORD' | translate }}
                                     th.col-xs-6(st-sort="pos") {{ 'SEC_STATS_POS' | translate }}
-                                    th.col-xs-3(st-sort="freq1", st-sort-default="{{$index ? 'false' : 'reverse'}}") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[0].displayName} }}
-                                    th.col-xs-3(st-sort="freq2", st-sort-default="{{$index ? 'reverse' : 'false'}}") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[1].displayName} }}
+                                    th.col-xs-3(st-sort="freq1") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[0].displayName} }}
+                                    th.col-xs-3(st-sort="freq2") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[1].displayName} }}
+                                    th.col-xs-3(st-sort="ratio", st-sort-default="reverse") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[1].displayName} }}
                                 tr
-                                    th(colspan="4"): input.input-sm.form-control(st-search="word", placeholder="Search word...", type="search")
+                                    th(colspan="5"): input.input-sm.form-control(st-search="word", placeholder="Search word...", type="search")
                                     th(ng-show="false"): input.input-sm.form-control.st-global-search(st-search="pos", type="search")
                             tbody
                                 tr(ng-repeat="word in result.list")
@@ -132,10 +133,11 @@ include ../mixins.jade
                                     td {{'SEC_STATS_POS_' + word.pos | translate}}
                                     td {{word.freq1}}
                                     td {{word.freq2}}
+                                    td {{word.ratio}}
                                     .row
                             tfoot
                                 tr
-                                    td.text-center(colspan="4")
+                                    td.text-center(colspan="5")
                                         div(st-pagination="", st-items-by-page="parseFloat(paginationSize)", st-template="template/smart-table/pagination2.html")
         .row(ng-hide="statsEmpty")
             div.col-xs-6(ng-repeat="result in statistic.resultLists['oneList']")

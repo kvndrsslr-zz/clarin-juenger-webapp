@@ -112,6 +112,7 @@ angular.module('ir-matrix-cooc')
                 var elem = angular.element('.st-global-search');
                 elem.attr('value', val || '');
                 angular.element(elem).trigger('input');
+                //console.log(val);
 
         });
         $scope.sortings = matrixVisualization.sortings;

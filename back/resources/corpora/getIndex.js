@@ -113,6 +113,8 @@ exports.postResultlists = function (params, resourceManager) {
                        return w.word === word.word;
                    })[0];
                    word.pos = tmp && tmp.pos ? tmp.pos : 'X';
+                   if (word.freq1)
+                       word.ratio = parseFloat((word.freq1 > word.freq2 ? word.freq1 / word.freq2 : word.freq2 / word.freq1).toFixed(2));
                    return word;
                });
             });
