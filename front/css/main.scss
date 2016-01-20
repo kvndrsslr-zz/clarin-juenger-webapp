@@ -115,18 +115,29 @@ a.list-group-item {
   font-family: sans-serif;
   font-size: 11px;
 }
+rect.cell-hover, rect.cell {
+  stroke-linecap : square
+}
 
-rect.cell:hover, rect.cell + text:hover, rect.cell + text + text:hover  {
+rect.cell-hover:hover {
+  stroke-width: 1 !important;
+  stroke: rgba(255,0,0,0.9) !important;
+  fill: rgba(255,255,255,0.3) !important;
   cursor: pointer;
 }
 
-rect.cell:hover + text, rect.cell + text:hover {
-  font-weight: bolder;
-  fill: #fff !important;
+rect.cell-hover.deactive:hover {
+  cursor: default !important;
 }
 
-rect.cell:hover + text + text, rect.cell + text + text:hover {
 
+.dragover {
+  background-color: #eee !important;
+  cursor: pointer;
+}
+
+.well-ok {
+  background-color: #5cb85c;
 }
 
 #dendogram {min-height: 850px}
@@ -157,30 +168,19 @@ rect.cell:hover + text + text, rect.cell + text + text:hover {
 }
 
 .st-sort-ascent:after {
-
   content: '\25B2';
-
 }
-
 
 .st-sort-descent:after {
-
   content: '\25BC';
-
 }
-
 
 .lr-drop-target-before{
-
   border-left: 2px solid orange;
-
 }
 
-
 .lr-drop-target-after{
-
   border-right: 2px solid orange;
-
 }
 
 .panel-body {

@@ -1,8 +1,8 @@
 angular.module('ir-matrix-cooc')
-    .controller('corporaController', function ($scope, $translate, $timeout, $http, data, jobManager, matrixVisualization, $rootScope) {
+    .controller('corporaController', function ($scope, $translate, $timeout, $http, data, jobManager, matrixVisualization, Upload, $rootScope) {
         // debug
         $scope.alert = window.alert.bind(window);
-
+        window.scope = $scope;
         // inital controller data
         $scope.$watch(jobManager.jobs, function (newValue) {
             $scope.jobs = newValue;
@@ -10,11 +10,16 @@ angular.module('ir-matrix-cooc')
 
         console.log(data);
         $scope.corpora = data.corpora.map(function(c) {
-            c['language'] = window.languages.get(c.name.substring(0,3));
+            if (c.name.substring(0,3) === "usr")
+                c['language'] = $translate.instant('SEC_CONFIG_USERLANGTYPE');
+            else
+                c['language'] = window.languages.get(c.name.substring(0,3));
             return c;
         });
 
         $scope.statsEmpty = false;
+        $scope.corpusUploadName = "";
+        $scope.files = {};
 
         $scope.languages = $scope.corpora.reduce(function (prev, curr, i) {
             if (i == 0) {
@@ -25,6 +30,25 @@ angular.module('ir-matrix-cooc')
                 return prev;
             }
         }, []);
+
+        $scope.upload = function () {
+            Upload.upload({
+                //url: 'http://aspra11.informatik.uni-leipzig.de:8080/wordlistwebservice2/conversion/convertFromPlaintext'
+                url: '/api/corpora/test',
+                data: {'user:' : "kvn", 'file' : $scope.files}
+            }).progress(function (evt) {
+                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                $scope.uploadProgress = progressPercentage;
+            }).success(function (data, status, headers, config) {
+                $timeout(function() {
+                    //clean up...
+                    console.log(data);
+                    $scope.uploadProgress = 0;
+                    $scope.files = {};
+                    $scope.$apply();
+                }, 150);
+            });
+        };
 
         function assignTranslations () {
             $scope.metrics = [
@@ -95,7 +119,8 @@ angular.module('ir-matrix-cooc')
 
         $scope.statistic = {
             files: [],
-            resultLists : []
+            resultLists : [],
+            safe : {}
         };
 
         $scope.requestName = "";
@@ -109,10 +134,9 @@ angular.module('ir-matrix-cooc')
         };
 
         $scope.$watch('sel.PosTags', function(val) {
-                var elem = angular.element('.st-global-search');
-                elem.attr('value', val || '');
-                angular.element(elem).trigger('input');
-                //console.log(val);
+            var elem = angular.element('.st-global-search');
+            elem.val(val || '');
+            angular.element(elem).trigger('input');
 
         });
         $scope.sortings = matrixVisualization.sortings;
@@ -143,16 +167,16 @@ angular.module('ir-matrix-cooc')
         };
 
         $scope.setConfig = function (j) {
-            if ($scope.sel.corpora.length === 0) {
+            if ($scope.sel.corpora.length !== 0) {
                 // bugfix
-                $timeout(function () {$scope.setConfig(j)}, 100);
+                $timeout(function () {$scope.setConfig(j)}, 200);
             }
             $scope.wordCount = j.wordCount;
             $scope.sel.metric = j.metric;
             $scope.requestName = j.requestName + "'";
             $scope.limit = Math.pow(2,32) - 1;
             $scope.sel.corpora = j.corpora;
-            $timeout(function () {$scope.limit = 125}, 50);
+            $timeout(function () {$scope.limit = 125}, 100);
         };
 
         $scope.selectJob = function (j) {
@@ -186,6 +210,7 @@ angular.module('ir-matrix-cooc')
         }, true);
 
         $scope.parseFloat = parseFloat;
+
         $scope.$watch(matrixVisualization.currentPair, function (currentPair) {
             if (currentPair && !($scope.statsEmpty = currentPair[0] === currentPair[1])) {
                 var currentRequest = jobManager.jobs().filter(function (j) {
@@ -200,24 +225,22 @@ angular.module('ir-matrix-cooc')
                     timeout: 9999999999,
                     data: {'request' : currentRequest}
                 }).success(function (data) {
-                    if (typeof data.resultlists !== 'undefined') {
+                    console.log(data);
+                    if (typeof data.source !== 'undefined') {
                         showFeature['Statistik'] = true;
-                        var iterate = ['oneList', 'bothLists'];
-                        var tempPOSTags = {};
-                        iterate.forEach(function (listType) {
-                            data.resultlists[listType].forEach(function (list) {
-                                list.list.forEach(function (word) {
-                                    tempPOSTags[word.pos] = true;
-                                })
+                        var posTagSet = {};
+                        ['onlySource', 'onlyTarget','moreSource', 'moreTarget'].forEach(function (listType) {
+                            data[listType].forEach(function (word) {
+                                posTagSet[word.pos] = true;
                             });
                         });
-                        data.resultlists.availablePOSTags = [];
-                        for (var tag in tempPOSTags) {
-                            if (tempPOSTags.hasOwnProperty(tag)) {
-                                data.resultlists.availablePOSTags.push(tag);
+                        data.availablePOSTags = [];
+                        for (var tag in posTagSet) {
+                            if (posTagSet.hasOwnProperty(tag)) {
+                                data.availablePOSTags.push(tag);
                             }
                         }
-                        $scope.statistic.resultLists = data.resultlists;
+                        $scope.statistic.resultLists = data;
                         showFeature['Statistik'] = false;
                     }
                 });

@@ -1,6 +1,27 @@
 include ../mixins.jade
 
 .container
+    +feature('Upload', 'SEC_UPLOAD')
+        form(ng-submit="upload()")
+            .row
+                .col-xs-6
+                    .form-group
+                        label.control-label(for="corpusUploadName") {{ 'SEC_UPLOAD_NAME' | translate }}
+                        input.form-control(ng-model="corpusUploadName", id="corpusUploadName", type="text", placeholder="{{files.name}}")
+            .row
+                .col-xs-12.col-md-6
+                    .form-group
+                        label.control-label(for="corpusUploadSelection") {{ 'SEC_UPLOAD_CHOOSEFILE' | translate }}
+                        .well.well-lg(ngf-drop, ng-model="files", ng-class="{'well-ok' : files.name}")
+                            center: button.btn(ngf-select, ng-model="files", id="corpusUploadSelection", ng-class="{'btn-info' : !files.name, 'btn-success' : files.name}")
+                                div(ng-show="!files.name") {{ 'SEC_UPLOAD_FILESELECT' | translate }}
+                                div(ng-show="files.name") {{ files.name }}
+            .row
+                .form-group
+                    .col-xs-6
+                        progressbar(max="100", value="uploadProgress")
+                            span {{uploadProgress}} %
+                        button.btn(ng-class="{'btn-primary' : files.name, 'btn-default' : !files.name}") Upload
     +feature('Configuration', 'SEC_CONFIG')
         .row
             form(ng-submit="submit()")
@@ -112,57 +133,11 @@ include ../mixins.jade
                         input.form-control(ng-model="paginationSize", id="paginationSize",
                         type="range", min=10, max=100, step=5)
         .row(ng-hide="statsEmpty")
-            div.col-xs-6(ng-repeat="result in statistic.resultLists['bothLists']")
-                .panel.panel-info
-                    .panel-heading {{ 'SEC_STATS_TITLEBOTH' | translate : {corpus : result.corpora[$index].displayName} }}
-                    .panel-body
-                        table.table.table-bordered.table-striped(st-table="result.list")
-                            thead
-                                tr
-                                    th.col-xs-6(st-sort="word") {{ 'SEC_STATS_WORD' | translate }}
-                                    th.col-xs-6(st-sort="pos") {{ 'SEC_STATS_POS' | translate }}
-                                    th.col-xs-3(st-sort="freq1") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[0].displayName} }}
-                                    th.col-xs-3(st-sort="freq2") {{ 'SEC_STATS_COUNTINX' | translate : {x: result.corpora[1].displayName} }}
-                                    th.col-xs-3(st-sort="ratio", st-sort-default="reverse") {{ 'SEC_STATS_RATIO' | translate }}
-                                tr
-                                    th(colspan="5"): input.input-sm.form-control(st-search="word", placeholder="Search word...", type="search")
-                                    th(ng-show="false"): input.input-sm.form-control.st-global-search(st-search="pos", type="search")
-                            tbody
-                                tr(ng-repeat="word in result.list")
-                                    td {{word.word}}
-                                    td {{'SEC_STATS_POS_' + word.pos | translate}}
-                                    td {{word.freq1}}
-                                    td {{word.freq2}}
-                                    td {{word.ratio}}
-                                    .row
-                            tfoot
-                                tr
-                                    td.text-center(colspan="5")
-                                        div(st-pagination="", st-items-by-page="parseFloat(paginationSize)", st-template="template/smart-table/pagination2.html")
+            +wordList("more", "source")
+            +wordList("more", "target")
         .row(ng-hide="statsEmpty")
-            div.col-xs-6(ng-repeat="result in statistic.resultLists['oneList']")
-                .panel.panel-info
-                    .panel-heading {{ 'SEC_STATS_TITLEONLY' | translate : {corpus : result.corpus.displayName} }}
-                    .panel-body
-                        table.table.table-bordered.table-striped(st-table="result.list")
-                            thead
-                                tr
-                                    th.col-xs-8(st-sort="word") {{ 'SEC_STATS_WORD' | translate }}
-                                    th.col-xs-3(st-sort="pos") {{ 'SEC_STATS_POS' | translate }}
-                                    th.col-xs-1(st-sort="freq", st-sort-default="reverse") {{ 'SEC_STATS_COUNT' | translate }}
-                                tr
-                                    th(colspan="3"): input.input-sm.form-control(st-search="word", placeholder="Search words...", type="search")
-                                    th(ng-show="false"): input.input-sm.form-control.st-global-search(st-search="pos", type="search")
-                            tbody
-                                tr(ng-repeat="word in result.list")
-                                    td {{word.word}}
-                                    td {{'SEC_STATS_POS_' + word.pos | translate}}
-                                    td {{word.freq}}
-                            tfoot
-                                tr
-                                    td.text-center(colspan="3")
-                                        div(st-pagination="", st-items-by-page="parseFloat(paginationSize)", st-displayed-pages="7" st-template="template/smart-table/pagination2.html")
-
+            +wordList("only", "source")
+            +wordList("only", "target")
     // Padding nach unten
     .row
         p

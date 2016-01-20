@@ -16,7 +16,9 @@
     "underscore": "~1.8.2",
     "angular-smart-table": "~2.1.0",
     "angular-translate": "~2.7.2",
-    "jQuery": "~2.1.4"
+    "jQuery": "~2.1.4",
+    "ng-file-upload-shim": "~11.0.2",
+    "ng-file-upload": "~11.0.2"
   },
   "resolutions": {
     "angular": ">= 1.0.2",

@@ -4,6 +4,7 @@
   "dependencies": {
     "bluebird": "1.0.3",
     "body-parser": "1.6.3",
+    "busboy": "^0.2.12",
     "choose": "0.0.0",
     "cjson": "0.3.0",
     "fast-csv": "0.5.4",

@@ -14,3 +14,21 @@ exports.qRequest = function () {
         return deferred.promise;
     });
 };
+
+exports.qPost = function () {
+    return (function (url, formData, headers) {
+        var deferred = Q.defer();
+        request.post({
+            url      : url,
+            formData : formData,
+            headers : headers
+        }, function (err, response, body) {
+            if (err) {
+                deferred.reject(err);
+            } else {
+                deferred.resolve(body);
+            }
+        });
+        return deferred.promise;
+    });
+};

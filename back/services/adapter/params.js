@@ -6,6 +6,6 @@ exports.params = function (req, res) {
     // Combines the three sources of parameters into one, and return them in one object
     // Similar to how Rails and various other frameworks do it
     return bodyParser(req, res).then(function () {
-        return _.merge({}, req.query, req.params, req.body);
+        return _.merge({}, req.query, req.params, req.body, {'req' : req});
     });
 };

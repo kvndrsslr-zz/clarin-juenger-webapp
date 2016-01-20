@@ -2,6 +2,9 @@ var Q = require('q');
 var filter = require('filter-files');
 var filename = require('filename-regex');
 var fs = require('fs');
+var Busboy = require('busboy');
+var crypto = require('crypto');
+var spawn = require('child_process').spawn;
 
 exports.getIndex = function (resourceManager) {
     return Q()
@@ -24,7 +27,70 @@ exports.post = function (workloadManager, matrixWorkload) {
     } else {
         return {requestId: id};
     }
+    return result;
 };
+exports.postTest = function (params, qPost) {
+    //console.log(params.req.files);
+    var rand = 0;
+    var path = '';
+    do {
+        rand = crypto.randomBytes(20).toString('hex');
+    } while (fs.existsSync('uploads/' + rand));
+    var busboy = new Busboy({ headers: params.req.headers });
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        fs.mkdirSync('uploads/' + rand);
+        path = 'uploads/' + rand + '/' + filename;
+        file.pipe(fs.createWriteStream(path));
+    });
+    var deferred = Q.defer();
+    busboy.on('finish', function () {
+        var upload = spawn('curl',
+            [
+                '-H', 'Content-Type:text/plain',
+                '--data-binary', '@'+path,
+                '-o', path + ".list", 'http://clarinws.informatik.uni-leipzig.de:8080/wordlistwebservice2/conversion/convertFromPlaintext'
+            ],
+            {
+                cwd: process.cwd()
+            });
+        upload.on('close', function (code) {
+            console.log(code);
+            var lines = fs.readFileSync(path + ".list", {encoding: 'utf-8'});
+            var result = {
+                'name' : path,
+                'displayName' : params.name,
+                'description' : '',
+                'date' : new Date(),
+                'genre' : fields[4].trim(),
+                'resourceId' : 'userdefinedFromClient',
+                'words' : []
+            };
+            lines.split('\n').forEach(function (line) {
+                if (line) {
+                    var fields = line.split('\t');
+                    result.words.push({
+                        'wId' : fields[0],
+                        'word' : fields[1],
+                        'absFreq' : fields[2],
+                        'rank' : fields[0],
+                        'pos' : 'X'
+                    });
+                }
+            });
+            deferred.resolve(result);
+        });
+        //var form = {
+        //    file: fs.createReadStream(path)
+        //};
+        //qPost('http://aspra11.informatik.uni-leipzig.de:8080/wordlistwebservice2/conversion/convertFromPlaintext', form, {'Content-Type' : 'text/plain'})
+        //    .then(function (data) {
+        //        console.log(data);
+        //    });
+    });
+    params.req.pipe(busboy);
+    return deferred.promise;
+};
+
 
 exports.postRequest = function (params, workloadManager) {
     var result = workloadManager.retrieve(params.requestId);
@@ -49,116 +115,19 @@ exports.postImages = function (params) {
 
 exports.postResultlists = function (params, resourceManager) {
 
-    var resultlists = {};
+    var result = {'error' : true};
     var req = params.request;
-    var regex = req.wordCount + "_" +
+    var regex = new RegExp("result_" +
+        req.wordCount + "_" +
         req.metric + "_" +
         "(("  + req.corpora[0].name + "_" + req.corpora[1].name +
-        ")|(" + req.corpora[1].name + "_" + req.corpora[0].name + ")){1}\\.txt$";
-    var listDefs = [
-        {
-            'name' : 'oneList',
-            'use' : oneListAdapter,
-            'regex' : "list([1,2]){1}_" + regex
-        },
-        {
-            'name' : 'bothLists',
-            'use' : bothListsAdapter,
-            'regex' : "both_lists_" + regex
-        }
-    ];
-
-    return Q().then(resourceManager.action('wordList', req))
-        .then(function (wordlists) {
-            var taggedWords = wordlists.reduce(function (a, b) {
-                return a.concat(b.list);
-            }, []);
-            listDefs.forEach(function (listDef) {
-                getResultList(listDef, taggedWords);
-            });
-            return {'resultlists': resultlists};
-        });
-
-    function getResultList (listDef, taggedWords) {
-        var regex = new RegExp(listDef.regex);
-        var fileDefs = filter.sync('front/misc/data', function (x) {
-            return regex.test(x);
-        }).map(function (file) {
-            var match = file.match(filename());
-            file = regex.exec(file);
-            var swap, corpus;
-            if (file.length === 5 ) {
-                swap = typeof file[3] === 'undefined';
-                corpus = req.corpora[ swap ? (file[1] == "1" ? 1 : 0 ) : (file[1] == "1" ? 0 : 1 )];
-            } else {
-                swap = typeof file[2] === 'undefined';
-                corpus = null;
-            }
-            return {
-                file : match[0],
-                swapCorpora : swap,
-                corpus : corpus
-            };
-        });
-
-        fileDefs.forEach(function (fileDef) {
-            var wordLists = [];
-            var file = fs.readFileSync('front/misc/data/' + fileDef.file, {encoding: 'utf-8'});
-            // execute list adapter
-            file.split('\n').forEach(listDef.use.bind(null, wordLists));
-            // enrich words with POS tags
-            wordLists = wordLists.map(function (wordList) {
-               return wordList.map(function (word) {
-                   var tmp = taggedWords.filter(function (w) {
-                       return w.word === word.word;
-                   })[0];
-                   word.pos = tmp && tmp.pos ? tmp.pos : 'X';
-                   if (word.freq1)
-                       word.ratio = parseFloat((word.freq1 > word.freq2 ? word.freq1 / word.freq2 : word.freq2 / word.freq1).toFixed(2));
-                   return word;
-               });
-            });
-            // enrich wordlists with information
-            var result = wordLists.map(function (wordList) {
-                return {
-                    'name' : fileDef.file,
-                    'type' : listDef.name,
-                    'corpora' : fileDef.swapCorpora ? req.corpora.slice().reverse() : req.corpora,
-                    'corpus' : fileDef.corpus,
-                    'list' : wordList
-                };
-            });
-            // append to resultlist
-            resultlists[listDef.name] = (resultlists[listDef.name] && resultlists[listDef.name].length)
-                ? resultlists[listDef.name].concat(result) : result;
-        });
-    }
-
-    function bothListsAdapter (words, l, i) {
-        if (!Array.isArray(words[0])) {
-            words[0] = [];
-            words[1] = [];
-        }
-        if (i > 1 && l.trim()) {
-            var data = l.split('\t');
-            words[(parseFloat(data[1]) < parseFloat(data[2]))+0].push({
-                'word': data[0],
-                'freq1': parseFloat(data[1]),
-                'freq2': parseFloat(data[2]),
-                'logRatioNormalized' : parseFloat(data[3])
-            });
-        }
-    }
-
-    function oneListAdapter (words, l, i) {
-        if (!Array.isArray(words[0]))
-            words[0] = [];
-        if (i > 1 && l.trim()) {
-            var data = l.split('\t');
-            words[0].push({
-                'word': data[0],
-                'freq': parseFloat(data[1])
-            });
-        }
-    }
+        ")|(" + req.corpora[1].name + "_" + req.corpora[0].name + ")){1}\\.json$");
+    filter.sync('front/misc/data', function (x) {
+        return regex.test(x);
+    }).map(function (file) {
+        var fp = JSON.parse(fs.readFileSync(file, {encoding: 'utf-8'}));
+        result = fp;
+    });
+    console.log("Returning wordlists for \n\t source: " + result.source.displayName + "\n\t target: " + result.target.displayName );
+    return result;
 };

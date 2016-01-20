@@ -12,7 +12,7 @@ var fs = require('fs');
 exports.matrixWorkload = function (params, resourceManager, writeWordlists, spawnListdif, clustering) {
 
     function resultFile (a, b) {
-        return 'front/misc/data/result_' + params.wordCount + '_' + params.metric + '_' + a.name + '_' + b.name + '.txt';
+        return 'front/misc/data/result_' + params.wordCount + '_' + params.metric + '_' + a.name + '_' + b.name + '.json';
     }
 
     var matrixWorkload = function () {
@@ -41,7 +41,7 @@ exports.matrixWorkload = function (params, resourceManager, writeWordlists, spaw
                     var corpusA = corpora.splice(i, 1)[0];
                     corpora.forEach(function (corpusB) {
                         var f = fs.existsSync(resultFile(corpusA, corpusB)) ? resultFile(corpusA, corpusB) : resultFile(corpusB, corpusA);
-                            distances.push([corpusA.name, corpusB.name, parseFloat(fs.readFileSync(f, {encoding: 'utf-8'}))]);
+                            distances.push([corpusA.name, corpusB.name, 1.0-parseFloat(fs.readFileSync(f + ".sim", {encoding: 'utf-8'}))]);
                     });
                 }
                 return distances;

@@ -240,17 +240,14 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
                 .append("rect")
                 .style("stroke-width", 3)
                 .style("stroke", function (d, i) {
-                    return d3.rgb(nodes[d.x].group == nodes[d.y].group ? c(nodes[d.x].group) : '#000');
-                })
-                .style("stroke-opacity", function (d, i) {
-                    return nodes[d.x].group == nodes[d.y].group ? 1 : 0;
+                    return d3.rgb(nodes[d.x].group == nodes[d.y].group ? c(nodes[d.x].group) : d3.rgb.apply(this, heatMap.get(z(d.z))));
                 })
                 .attr("class", "cell")
                 .attr("x", function (d) {
-                    return x(d.x);
+                    return x(d.x)+3;
                 })
-                .attr("width", x.rangeBand())
-                .attr("height", x.rangeBand())
+                .attr("width", x.rangeBand()-3)
+                .attr("height", x.rangeBand()-3)
                 .attr("fill", function (d) {
                     return d3.rgb.apply(this, heatMap.get(z(d.z)));
                     //return d3.rgb(nodes[d.x].group == nodes[d.y].group ? c(nodes[d.x].group) : '#000');
@@ -258,30 +255,15 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
                 .on("mouseover", mouseover)
                 .on("mouseout", mouseout)
                 .on("click", click);
-            cell.append("text")
-                .attr("x", function (d) {
-                    return x(d.x) + x.rangeBand() / 2 + 1;
-                })
-                .attr("text-anchor", "middle")
-                .attr("width", x.rangeBand())
-                .attr("height", x.rangeBand())
-                .attr("y", x.rangeBand() / 2 + 1)
-                .style("fill", "#999")
-                .text(function (d, i) {
-                    return (d.z / 1000).toFixed(3);
-                })
-                .on("mouseover", mouseover)
-                .on("mouseout", mouseout)
-                .on("click", click);
             cell
                 .append("text")
                 .attr("x", function (d) {
-                    return x(d.x) + x.rangeBand() / 2;
+                    return x(d.x) + 1.5 + x.rangeBand() / 2;
                 })
                 .attr("text-anchor", "middle")
                 .attr("width", x.rangeBand())
                 .attr("height", x.rangeBand())
-                .attr("y", x.rangeBand() / 2 + 1)
+                .attr("y", x.rangeBand() / 2+3)
                 .style("fill", "#000")
                 .text(function (d, i) {
                     return (d.z / 1000).toFixed(3);
@@ -289,21 +271,45 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
                 .on("mouseover", mouseover)
                 .on("mouseout", mouseout)
                 .on("click", click);
+            cell
+                .append("rect")
+                .style("stroke-width", 1)
+                .style("stroke", function (d, i) {
+                    return "transparent";
+                })
+                .attr("class", function (d, i) {
+                    return "cell-hover" + (d.x === d.y ? " deactive": "");
+                })
+                .attr("x", function (d) {
+                    return x(d.x)+2;
+                })
+                .attr("width", x.rangeBand()-2)
+                .attr("height", x.rangeBand()-2)
+                .attr("fill", function (d) {
+                    return "transparent";
+                    //return d3.rgb(nodes[d.x].group == nodes[d.y].group ? c(nodes[d.x].group) : '#000');
+                })
+                .on("mouseover", mouseover)
+                .on("mouseout", mouseout)
+                .on("click", click);
         }
 
         function click(p) {
-            currentPair = [data.nodes[p.x].name, data.nodes[p.y].name, data.nodes[p.x].displayName, data.nodes[p.y].displayName];
-            //console.log(data.nodes[p.x].name + "_" + data.nodes[p.y].name);
-            scope.$apply();
+            if (data.nodes[p.x].name !== data.nodes[p.y].name) {
+                currentPair = [data.nodes[p.x].name, data.nodes[p.y].name, data.nodes[p.x].displayName, data.nodes[p.y].displayName];
+                scope.$apply();
+            }
         }
 
         function mouseover(p) {
-            d3.selectAll(".row text.label").classed("active", function (d, i) {
-                return i == p.y;
-            });
-            d3.selectAll(".column text.label").classed("active", function (d, i) {
-                return i == p.x;
-            });
+            if (data.nodes[p.x].name !== data.nodes[p.y].name) {
+                d3.selectAll(".row text.label").classed("active", function (d, i) {
+                    return i == p.y;
+                });
+                d3.selectAll(".column text.label").classed("active", function (d, i) {
+                    return i == p.x;
+                });
+            }
         }
 
         function mouseout() {

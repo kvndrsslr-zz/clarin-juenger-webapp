@@ -44,7 +44,6 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
         'id': 'uniLeipzigClarinWs',
         'name': 'Clarin Wordlist Webservice @ Uni Leipzig',
         'url' : {
-            '' : 'http://clarinws.informatik.uni-leipzig.de:8080/wordlistwebservice/wordlist',
             'corpora' : baseUrl + '/availableWordlists',
             'wordList' : baseUrl + '/{{corpusId}}/wordlisttext?limit={{wordCount}}',
             'wordFrequency' : baseUrl + '/{{corpusId}}/wordfrequencytext/{{word}}'
@@ -70,19 +69,21 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                 var lines = response.split('\n');
                 lines.forEach(function (line) {
                     var fields = line.split('\t');
-                    if (fields.length > 4)
+                    if (fields.length > 4) {
                         cache.corpora.push(
                             /*
                              Use this interface for corporas when writing further resource adapters
                              */
                             {
-                                'name' : fields[0].trim(),
-                                'displayName' : fields[1].trim(),
-                                'description' : fields[2].trim(),
-                                'date' : fields[3].trim(),
-                                'genre' : fields[4].trim(),
-                                'resourceId' : resource.id
+                                'name': fields[0].trim(),
+                                'displayName': fields[1].trim(),
+                                'description': fields[2].trim(),
+                                'date': new Date(Date.parse(fields[3].trim())),
+                                'genre': fields[4].trim(),
+                                'resourceId': resource.id
                             });
+                        console.log(new Date(Date.parse(fields[3].trim())));
+                    }
                 });
                 return cache.corpora;
             });
@@ -98,7 +99,7 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
         var requested = !params.missingLinks ? params.corpora : params.missingLinks
             .reduce(function (a, b) { return a.concat(b); }, [])
             .sort(function (a, b) { return a.name > b.name })
-            .reduce(function (a, b) { return a.name === b.name ? a : a.concat([b]); }, []);
+            .reduce(function (a, b) { return a.name === b.name ? a : a.push(b); }, []);
 
         console.log('trying wordlist retrieval :' + JSON.stringify(params.corpora));
 
@@ -128,12 +129,12 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
         function getWordlist (corpus) {
             var wordlistRetrieved = Q.defer();
             var cached = cache.wordList.filter(function(l) {
-                return l.corpus.name === corpus.name && parseFloat(l.wordCount) >= parseFloat(params.wordCount);
+                return l.name === corpus.name && parseFloat(l.size) >= parseFloat(params.wordCount);
             });
             if (cached.length) {
                 cached = cached[0];
-                cached.list = cached.list.slice(0, params.wordCount);
-                cached.wordCount = params.wordCount;
+                cached.words = cached.words.slice(0, params.wordCount);
+                cached.size = params.wordCount;
                 wordlists.push(cached);
                 console.log('Got cached wordlist for "' + corpus.displayName + '"!');
                 wordlistRetrieved.resolve();
@@ -147,16 +148,35 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                         var wordList = [];
                         if (response.indexOf('<html>') !== 0) {
                             var lines = response.split('\n');
+                            var rank = 1;
                             lines.forEach(function (line) {
                                 var data = line.split('\t');
-                                wordList.push({w_id: data[0], word: data[1], freq: data[2], pos: data[3]});
+                                if (data.length > 2) {
+                                    wordList.push({
+                                        wId: data[0],
+                                        word: data[1],
+                                        absFreq: data[2],
+                                        pos: data[3] == "" ? "X" : data[3],
+                                        rank: rank
+                                    });
+                                }
+                                rank++;
                             });
                         } else {
                             wordList = [];
                         }
-                        wordList = {corpus: corpus, wordCount: params.wordCount, list: wordList};
-                        cache.wordList.push(wordList);
-                        wordlists.push(wordList);
+                        var wordListTask = {
+                            'name' : corpus.name,
+                            'displayName' : corpus.displayName,
+                            'description' : corpus.description,
+                            'date' : corpus.date,
+                            'genre' : corpus.genre,
+                            'resourceId' : corpus.resourceId,
+                            'size' : params.wordCount,
+                            'words' : wordList
+                        };
+                        cache.wordList.push(wordListTask);
+                        wordlists.push(wordListTask);
                         console.log('Retrieved wordlists from "' + corpus.name + '"...');
                         wordlistRetrieved.resolve();
                     })
@@ -181,6 +201,7 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
         return Q()
             .then(params.corpora.forEach.bind(params.corpora, function (corpus) {
                 //console.log('entering corpora loop');
+                if (corpus.resourceId === resource.id)
                 params.words.forEach(function (word) {
                     //console.log('entering words loop');
                     for (var year = params.minYear; year <= params.maxYear; year++) {
