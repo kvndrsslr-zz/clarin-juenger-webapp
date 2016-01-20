@@ -99,7 +99,7 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
         var requested = !params.missingLinks ? params.corpora : params.missingLinks
             .reduce(function (a, b) { return a.concat(b); }, [])
             .sort(function (a, b) { return a.name > b.name })
-            .reduce(function (a, b) { return a.name === b.name ? a : a.push(b); }, []);
+            .reduce(function (a, b) { return a.name === b.name ? a : a.concat([b]); }, []);
 
         console.log('trying wordlist retrieval :' + JSON.stringify(params.corpora));
 
