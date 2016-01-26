@@ -1,12 +1,11 @@
 var spawn = require('child_process').spawn;
 var Q = require('q');
-var numCPUs = require('os').cpus().length;
 
 
 
 exports.spawnListdif = function (params, workloadManager) {
     return (function () {
-        function spawnInstance(corpusA, corpusB, length) {
+        function spawnInstance(corpusA, corpusB) {
             var deferred = Q.defer();
             var listdif = spawn('java',
                 [
@@ -21,7 +20,6 @@ exports.spawnListdif = function (params, workloadManager) {
                     cwd: process.cwd() + '/front/misc/data/'
                 });
             listdif.on('close', function (code) {
-                console.log(code);
                 console.log('Success: "' + corpusA + '", "' + corpusB + '"');
                 deferred.resolve();
             });
@@ -38,7 +36,5 @@ exports.spawnListdif = function (params, workloadManager) {
             chain[0] = chain[0].then(spawnInstance.bind(null, missing[0].name, missing[1].name, params.corpora.length));
         });
         return Q.all(chain);
-
-
     });
 };

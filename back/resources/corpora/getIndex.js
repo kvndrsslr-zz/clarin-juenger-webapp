@@ -5,6 +5,7 @@ var fs = require('fs');
 var Busboy = require('busboy');
 var crypto = require('crypto');
 var spawn = require('child_process').spawn;
+var inspect = require('util').inspect;
 
 exports.getIndex = function (resourceManager) {
     return Q()
@@ -29,7 +30,7 @@ exports.post = function (workloadManager, matrixWorkload) {
     }
     return result;
 };
-exports.postTest = function (params, qPost) {
+exports.postUpload = function (params) {
     //console.log(params.req.files);
     var rand = 0;
     var path = '';
@@ -37,32 +38,38 @@ exports.postTest = function (params, qPost) {
         rand = crypto.randomBytes(20).toString('hex');
     } while (fs.existsSync('uploads/' + rand));
     var busboy = new Busboy({ headers: params.req.headers });
-    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+    busboy.on('file', function (fieldname, file, filename) {
         fs.mkdirSync('uploads/' + rand);
         path = 'uploads/' + rand + '/' + filename;
         file.pipe(fs.createWriteStream(path));
+    });
+    busboy.on('field', function (fieldname, val) {
+        params[fieldname] = val;
+        console.log(fieldname + ' : ' + val);
     });
     var deferred = Q.defer();
     busboy.on('finish', function () {
         var upload = spawn('curl',
             [
-                '-H', 'Content-Type:text/plain',
+                '-H', 'Content-Type:text/' + params.filetype,
                 '--data-binary', '@'+path,
-                '-o', path + ".list", 'http://clarinws.informatik.uni-leipzig.de:8080/wordlistwebservice2/conversion/convertFromPlaintext'
+                '-o', path + ".list", 'http://clarinws.informatik.uni-leipzig.de:8080/wordlistwebservice2/conversion/convertFrom' + (params.filetype === 'plain' ? 'Plaintext' : 'TCF')
             ],
             {
                 cwd: process.cwd()
             });
-        upload.on('close', function (code) {
-            console.log(code);
+        upload.on('close', function () {
             var lines = fs.readFileSync(path + ".list", {encoding: 'utf-8'});
+            fs.unlinkSync(path);
+            fs.unlinkSync(path + ".list");
+            fs.rmdirSync('uploads/' + rand);
             var result = {
-                'name' : path,
-                'displayName' : params.name,
+                'name' : params.name,
+                'displayName' : params.displayName,
                 'description' : '',
                 'date' : new Date(),
-                'genre' : fields[4].trim(),
-                'resourceId' : 'userdefinedFromClient',
+                'genre' : '',
+                'resourceId' : 'userDefinedFromClient',
                 'words' : []
             };
             lines.split('\n').forEach(function (line) {
@@ -77,15 +84,9 @@ exports.postTest = function (params, qPost) {
                     });
                 }
             });
+            fs.writeFileSync('uploads/' + params.name + ".json", JSON.stringify(result));
             deferred.resolve(result);
         });
-        //var form = {
-        //    file: fs.createReadStream(path)
-        //};
-        //qPost('http://aspra11.informatik.uni-leipzig.de:8080/wordlistwebservice2/conversion/convertFromPlaintext', form, {'Content-Type' : 'text/plain'})
-        //    .then(function (data) {
-        //        console.log(data);
-        //    });
     });
     params.req.pipe(busboy);
     return deferred.promise;
@@ -103,7 +104,6 @@ exports.postRequest = function (params, workloadManager) {
 };
 
 exports.postImages = function (params) {
-
     var list = filter.sync('front/misc/data', function (x) {
         return new RegExp(params.regex).test(x);
     }).map(function (x) {
@@ -113,8 +113,7 @@ exports.postImages = function (params) {
     return {'files': list};
 };
 
-exports.postResultlists = function (params, resourceManager) {
-
+exports.postResultlists = function (params) {
     var result = {'error' : true};
     var req = params.request;
     var regex = new RegExp("result_" +

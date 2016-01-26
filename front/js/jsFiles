@@ -25,3 +25,4 @@ controllers/header.js
 controllers/words.js
 services/jobs.js
 services/visuals.js
+services/usercorpora.js

@@ -2,26 +2,53 @@ include ../mixins.jade
 
 .container
     +feature('Upload', 'SEC_UPLOAD')
-        form(ng-submit="upload()")
-            .row
-                .col-xs-6
+        .row
+            .col-xs-6
+                form(ng-submit="upload()")
                     .form-group
-                        label.control-label(for="corpusUploadName") {{ 'SEC_UPLOAD_NAME' | translate }}
-                        input.form-control(ng-model="corpusUploadName", id="corpusUploadName", type="text", placeholder="{{files.name}}")
-            .row
-                .col-xs-12.col-md-6
+                        label.control-label(for="uploadname") {{ 'SEC_UPLOAD_NAME' | translate }}
+                        input.form-control(ng-model="uploadModel.displayName", id="uploadname", type="text", placeholder="{{uploadModel.file.name}}")
+                    .form-group
+                        label.control-label {{ 'SEC_UPLOAD_FILETYPE' | translate }}
+                        br
+                        .btn-group
+                            label.btn.btn-primary(ng-model="uploadModel.filetype", btn-radio="'plain'") Plaintext
+                            label.btn.btn-primary(ng-model="uploadModel.filetype", btn-radio="'tcf+xml'") TCF
                     .form-group
                         label.control-label(for="corpusUploadSelection") {{ 'SEC_UPLOAD_CHOOSEFILE' | translate }}
-                        .well.well-lg(ngf-drop, ng-model="files", ng-class="{'well-ok' : files.name}")
-                            center: button.btn(ngf-select, ng-model="files", id="corpusUploadSelection", ng-class="{'btn-info' : !files.name, 'btn-success' : files.name}")
-                                div(ng-show="!files.name") {{ 'SEC_UPLOAD_FILESELECT' | translate }}
-                                div(ng-show="files.name") {{ files.name }}
-            .row
-                .form-group
-                    .col-xs-6
-                        progressbar(max="100", value="uploadProgress")
+                        .well.well-lg(ngf-drop, ng-model="files", ng-class="{'well-ok' : uploadModel.file.name}")
+                            center: button.btn(ngf-select, ng-model="uploadModel.file", id="corpusUploadSelection", ng-class="{'btn-info' : !uploadModel.file.name, 'btn-success' : uploadModel.file.name}")
+                                div(ng-show="!uploadModel.file.name") {{ 'SEC_UPLOAD_FILESELECT' | translate }}
+                                div(ng-show="uploadModel.file.name") {{ uploadModel.file.name }}
+                    .form-group
+                        progressbar(ng-hide="uploadModel.progress == 0", max="100", value="uploadModel.progress")
                             span {{uploadProgress}} %
-                        button.btn(ng-class="{'btn-primary' : files.name, 'btn-default' : !files.name}") Upload
+                        button.btn(
+                            ng-class="[uploadModel.validation() ? 'btn-disabled' : 'btn-primary']",
+                            type="submit",
+                            popover="{{uploadModel.validation()}}",
+                            popover-trigger="mouseenter",
+                            popover-placement="right"
+                        ) {{ 'SEC_UPLOAD_SEND' | translate }}
+            .col-xs-6
+                .panel.panel-info
+                    .panel-heading Uploaded Corpora
+                    .panel-body
+                        table.table.table-bordered.table-striped(st-table="userCorpora")
+                            thead
+                                tr
+                                    th.col-xs-8 Name
+                                    th.col-xs-2 Size
+                                    th.col-xs-2 Delete
+                            tbody
+                                tr(ng-repeat="corpus in userCorpora")
+                                    td {{corpus.displayName}}
+                                    td {{corpus.words.length}}
+                                    td: button.btn.btn-warning(ng-click="deleteUserCorpora(corpus.name)") X
+                            tfoot
+                                tr
+                                    td.text-center(colspan="3")
+                                        div(st-pagination="", st-items-by-page="10", st-template="template/smart-table/pagination2.html")
     +feature('Configuration', 'SEC_CONFIG')
         .row
             form(ng-submit="submit()")

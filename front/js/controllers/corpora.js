@@ -1,5 +1,5 @@
 angular.module('ir-matrix-cooc')
-    .controller('corporaController', function ($scope, $translate, $timeout, $http, data, jobManager, matrixVisualization, Upload, $rootScope) {
+    .controller('corporaController', function ($scope, $translate, $timeout, $http, data, jobManager, matrixVisualization, userCorpora, $rootScope) {
         // debug
         $scope.alert = window.alert.bind(window);
         window.scope = $scope;
@@ -8,18 +8,41 @@ angular.module('ir-matrix-cooc')
             $scope.jobs = newValue;
         }, true);
 
-        console.log(data);
-        $scope.corpora = data.corpora.map(function(c) {
-            if (c.name.substring(0,3) === "usr")
-                c['language'] = $translate.instant('SEC_CONFIG_USERLANGTYPE');
-            else
-                c['language'] = window.languages.get(c.name.substring(0,3));
-            return c;
-        });
-
         $scope.statsEmpty = false;
-        $scope.corpusUploadName = "";
-        $scope.files = {};
+
+        $scope.uploadModel = {
+            displayName: "",
+            filetype: "plain",
+            progress: 0,
+            file: null,
+            validation: function () {
+                if ($scope.uploadModel.file === null) {
+                    return $translate.instant('SEC_UPLOAD_VALIDATIONSELECTFILE');
+                } else {
+                    return "";
+                }
+            }
+        };
+
+        $scope.upload = function () {
+            userCorpora.add($scope.uploadModel);
+        };
+
+        $scope.$watch(userCorpora.list, function (x) {
+            $scope.userCorpora = x;
+            updateCorpora();
+        },1000);
+
+        function updateCorpora() {
+            $scope.corpora = data.corpora.concat(userCorpora.list()).map(function(c) {
+                if (c.name.substring(0,3) === "usr")
+                    c['language'] = $translate.instant('SEC_CONFIG_USERLANGTYPE');
+                else
+                    c['language'] = window.languages.get(c.name.substring(0,3));
+                return c;
+            });
+        }
+        updateCorpora();
 
         $scope.languages = $scope.corpora.reduce(function (prev, curr, i) {
             if (i == 0) {
@@ -30,25 +53,6 @@ angular.module('ir-matrix-cooc')
                 return prev;
             }
         }, []);
-
-        $scope.upload = function () {
-            Upload.upload({
-                //url: 'http://aspra11.informatik.uni-leipzig.de:8080/wordlistwebservice2/conversion/convertFromPlaintext'
-                url: '/api/corpora/test',
-                data: {'user:' : "kvn", 'file' : $scope.files}
-            }).progress(function (evt) {
-                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                $scope.uploadProgress = progressPercentage;
-            }).success(function (data, status, headers, config) {
-                $timeout(function() {
-                    //clean up...
-                    console.log(data);
-                    $scope.uploadProgress = 0;
-                    $scope.files = {};
-                    $scope.$apply();
-                }, 150);
-            });
-        };
 
         function assignTranslations () {
             $scope.metrics = [

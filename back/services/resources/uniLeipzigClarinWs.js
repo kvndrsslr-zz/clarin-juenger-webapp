@@ -65,7 +65,6 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
         return cache.corpora.length ? cache.corpora : Q()
             .then(qRequest.bind(null, resource.url.corpora))
             .then(function (response) {
-                console.log(response);
                 var lines = response.split('\n');
                 lines.forEach(function (line) {
                     var fields = line.split('\t');
@@ -82,7 +81,6 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                                 'genre': fields[4].trim(),
                                 'resourceId': resource.id
                             });
-                        console.log(new Date(Date.parse(fields[3].trim())));
                     }
                 });
                 return cache.corpora;

@@ -1,19 +1,23 @@
 var Q = require('q');
 
-exports.resourceManager = function (uniLeipzigClarinWs) {
+exports.resourceManager = function (uniLeipzigClarinWs,userDefinedFromClient) {
     var resources = [];
 
     resourceManager = {
         register : register,
         action : action
     };
+
     resourceManager.register(uniLeipzigClarinWs);
+    resourceManager.register(userDefinedFromClient);
+
     return resourceManager;
 
     function register (resource) {
-        console.log('Registered resource: ' + resource.id);
-        if (resources.filter(function (r) {return r.id === resource.id}).length || resources.length === 0)
+        if (resources.filter(function (r) {return r.id === resource.id}).length == 0) {
+            console.log('Registered resource: ' + resource.id);
             resources.push(resource);
+        }
     }
 
     function action (name, args) {
