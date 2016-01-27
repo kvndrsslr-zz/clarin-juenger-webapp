@@ -9,7 +9,7 @@ exports.params = function (req, res) {
     // Similar to how Rails and various other frameworks do it
     return bodyParser(req, res).then(function () {
         return _.merge({}, req.query, req.params, req.body, {'req' : req});
-    }).fail(function (err) {
+    },function (err) {
         console.log("file too large!");
         console.log(err);
         return {};
