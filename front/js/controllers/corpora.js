@@ -24,6 +24,9 @@ angular.module('ir-matrix-cooc')
             }
         };
 
+        $scope.deleteUserCorpora = userCorpora.remove;
+
+
         $scope.upload = function () {
             userCorpora.add($scope.uploadModel);
         };

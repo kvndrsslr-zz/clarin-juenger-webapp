@@ -32,23 +32,26 @@ include ../mixins.jade
                         ) {{ 'SEC_UPLOAD_SEND' | translate }}
             .col-xs-6
                 .panel.panel-info
-                    .panel-heading Uploaded Corpora
-                    .panel-body
+                    .panel-heading {{ 'SEC_UPLOADED_HEADING' | translate }}
+                    .panel-body(ng-show="userCorpora.length == 0")
+                    .panel-body(ng-show="userCorpora.length > 0")
                         table.table.table-bordered.table-striped(st-table="userCorpora")
                             thead
                                 tr
-                                    th.col-xs-8 Name
-                                    th.col-xs-2 Size
-                                    th.col-xs-2 Delete
+                                    th.col-xs-8 {{ 'SEC_UPLOADED_NAME' | translate }}
+                                    th.col-xs-2 {{ 'SEC_UPLOADED_SIZE' | translate }}
+                                    th.col-xs-2 {{ 'SEC_UPLOADED_DELETE' | translate }}
                             tbody
                                 tr(ng-repeat="corpus in userCorpora")
                                     td {{corpus.displayName}}
                                     td {{corpus.words.length}}
-                                    td: button.btn.btn-warning(ng-click="deleteUserCorpora(corpus.name)") X
+                                    td: button.btn.btn-xs.btn-danger(ng-click="deleteUserCorpora(corpus)"): i.fa.fa-close
                             tfoot
                                 tr
-                                    td.text-center(colspan="3")
+                                    td.text-center(colspan="2")
                                         div(st-pagination="", st-items-by-page="10", st-template="template/smart-table/pagination2.html")
+                                    td: button.btn.btn-xs.btn-danger(ng-click="deleteAllUserCorpora()") Delete all
+
     +feature('Configuration', 'SEC_CONFIG')
         .row
             form(ng-submit="submit()")
