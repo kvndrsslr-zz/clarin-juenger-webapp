@@ -32,8 +32,8 @@ include ../mixins.jade
                         ) {{ 'SEC_UPLOAD_SEND' | translate }}
             .col-xs-6
                 .panel.panel-info
-                    .panel-heading {{ 'SEC_UPLOADED_HEADING' | translate }}
-                    .panel-body(ng-show="userCorpora.length == 0")
+                    .panel-heading(ng-show="userCorpora.length == 0") No corpus uploaded yet.
+                    .panel-heading(ng-show="userCorpora.length > 0") {{ 'SEC_UPLOADED_HEADING' | translate }}
                     .panel-body(ng-show="userCorpora.length > 0")
                         table.table.table-bordered.table-striped(st-table="userCorpora")
                             thead
