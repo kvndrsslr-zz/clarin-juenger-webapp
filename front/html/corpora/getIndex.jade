@@ -22,7 +22,7 @@ include ../mixins.jade
                                 div(ng-show="uploadModel.file.name") {{ uploadModel.file.name }}
                     .form-group
                         progressbar(ng-hide="uploadModel.progress == 0", max="100", value="uploadModel.progress")
-                            span {{uploadProgress}} %
+                            span {{uploadModel.progress}} %
                         button.btn(
                             ng-class="[uploadModel.validation() ? 'btn-disabled' : 'btn-primary']",
                             type="submit",
