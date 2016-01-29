@@ -80,7 +80,7 @@ exports.postUpload = function (params) {
                         'word' : fields[1],
                         'absFreq' : fields[2],
                         'rank' : fields[0],
-                        'pos' : 'X'
+                        'pos' : fields[3]
                     });
                 }
             });
