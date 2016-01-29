@@ -4,6 +4,33 @@ exports.clustering = function (params) {
 
     return function (entities, distances, clusterDepth) {
 
+        var clusters = [];
+        var next = nextCluster([entities.slice()]);
+        var hierarchy = {};
+        var division;
+
+        while (next !== null) {
+            clusters = clusters.filter(function (x) {
+                return next !== null && next.cluster !== x;
+            });
+            division = split(next.cluster.slice(), splitCore(next.cluster.slice()));
+            clusters = clusters.concat(division.slice());
+            makeHierarchy(hierarchy, next.cluster, division.slice());
+            next = nextCluster(clusters);
+        }
+
+        return {
+            hierarchy: hierarchy,
+            distances: distances.map(function (d) {
+                return [entities.indexOf(d[0]), entities.indexOf(d[1]), d[2]];
+            }),
+            entities: entities.map(function (e) {
+                var c = params.corpora.filter(function (c) { return c.name === e})[0];
+                c.group = 0;
+                return c;
+            })
+        };
+
         function isClusterEntityEntry(cluster, entity, entry) {
             if (cluster === null) {
                 return entry === entity;
@@ -61,24 +88,21 @@ exports.clustering = function (params) {
                 function distancesTo(cluster, entity) {
 
                     return cluster
-                        .filter(function (entry) {
-                            return entry != entity;
-                        })
-                        .map(function (entity2) {
-                            return distanceBetween(entity, entity2);
-                        });
+                            .filter(function (entry) {
+                                return entry != entity;
+                            })
+                            .map(function (entity2) {
+                                return distanceBetween(entity, entity2);
+                            })
+                            .reduce(function (a, b) {
+                                return a + b;
+                            }, 0.0) / (cluster.length === 0 ? 1 : cluster.length);
                 }
 
                 return cluster
                     .map(function (entity) {
-                        var meanClusterDistance = distancesTo(cluster, entity)
-                                .reduce(function (a, b) {
-                                    return a + b;
-                                }, 0.0) / cluster.length;
-                        var meanSplinterDistance = distancesTo(splinterGroup, entity)
-                                .reduce(function (a, b) {
-                                    return a + b;
-                                }, 0.0) / splinterGroup.length;
+                        var meanClusterDistance = distancesTo(cluster, entity);
+                        var meanSplinterDistance = distancesTo(splinterGroup, entity);
                         return {entity: entity, distance: meanSplinterDistance - meanClusterDistance};
                     });
             }
@@ -95,22 +119,25 @@ exports.clustering = function (params) {
                         return entry.entity;
                     });
             }
+            if (cluster.length === 0)
+                cluster.push(splinterGroup.pop());
+
             var clusterDistancesToAll = meanDistancesBetween(cluster, entities);
             clusterDistancesToAll = clusterDistancesToAll
-                .map(function (a) {
-                    return a.distance;
-                })
-                .reduce(function (a, b) {
-                return a + b;
-            }, 0.0) / clusterDistancesToAll.length;
+                    .map(function (a) {
+                        return a.distance;
+                    })
+                    .reduce(function (a, b) {
+                        return a + b;
+                    }, 0.0) / clusterDistancesToAll.length;
             var splinterGroupDistancesToAll = meanDistancesBetween(splinterGroup, entities);
             splinterGroupDistancesToAll = splinterGroupDistancesToAll
-                .map(function (a) {
-                    return a.distance;
-                })
-                .reduce(function (a, b) {
-                return a + b;
-            }, 0.0) / splinterGroupDistancesToAll.length;
+                    .map(function (a) {
+                        return a.distance;
+                    })
+                    .reduce(function (a, b) {
+                        return a + b;
+                    }, 0.0) / splinterGroupDistancesToAll.length;
             return clusterDistancesToAll > splinterGroupDistancesToAll ?
                 [cluster, splinterGroup] : [splinterGroup, cluster];
         }
@@ -167,32 +194,5 @@ exports.clustering = function (params) {
                 current.children = newC.map(function (c) {return {name: c.toString(), diameter: diameter(c)}});
             }
         }
-
-        var clusters = [];
-        var next = nextCluster([entities.slice()]);
-        var hierarchy = {},
-            division;
-
-        while (next !== null) {
-            clusters = clusters.filter(function (x) {
-                return next !== null && next.cluster !== x;
-            });
-            division = split(next.cluster.slice(), splitCore(next.cluster.slice()));
-            clusters = clusters.concat(division.slice());
-            makeHierarchy(hierarchy, next.cluster, division.slice());
-            next = nextCluster(clusters);
-        }
-
-        return {
-            hierarchy: hierarchy,
-            distances: distances.map(function (d) {
-                return [entities.indexOf(d[0]), entities.indexOf(d[1]), d[2]];
-            }),
-            entities: entities.map(function (e) {
-                var c = params.corpora.filter(function (c) { return c.name === e})[0];
-                c.group = 0;
-                return c;
-            })
-        };
     }
 };
