@@ -442,6 +442,8 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
                 return selectColor(d.name, data.entities);
             })
             .text(function (d) {
+                if (data.entities.filter(function (e) {return d.name === e.name}).length < 1)
+                    console.log(d);
                 return d.children ? "" : data.entities.filter(function (e) {return d.name === e.name})[0]['displayName'];
             });
         texts.call(wrap, 100);
