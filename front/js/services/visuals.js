@@ -335,6 +335,7 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
         treeSearch([data.hierarchy], clusterFinder);
         data.clusters = clusterFinder.getClusters();
         data.entities = getEntityGroups(data.entities, data.clusters);
+        console.log(data);
         return data;
 
         function treeSearch (stack, cb) {
