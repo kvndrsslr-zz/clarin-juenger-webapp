@@ -53,7 +53,7 @@ exports.postUpload = function (params) {
             [
                 '-H', 'Content-Type:text/' + params.filetype,
                 '--data-binary', '@'+path,
-                '-o', path + ".list", 'http://clarinws.informatik.uni-leipzig.de:8080/wordlistwebservice2/conversion/convertFrom' + (params.filetype === 'plain' ? 'Plaintext' : 'TCF')
+                '-o', path + ".list", 'http://aspra11.informatik.uni-leipzig.de:8080/wordlistwebservice/conversion/convertFrom' + (params.filetype === 'plain' ? 'Plaintext' : 'TCF')
             ],
             {
                 cwd: process.cwd()
