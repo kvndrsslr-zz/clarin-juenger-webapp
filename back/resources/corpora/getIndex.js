@@ -31,7 +31,6 @@ exports.post = function (workloadManager, matrixWorkload) {
     return result;
 };
 exports.postUpload = function (params) {
-    //console.log(params.req.files);
     var rand = 0;
     var path = '';
     do {
@@ -45,7 +44,6 @@ exports.postUpload = function (params) {
     });
     busboy.on('field', function (fieldname, val) {
         params[fieldname] = val;
-        console.log(fieldname + ' : ' + val);
     });
     var deferred = Q.defer();
     busboy.on('finish', function () {
@@ -96,7 +94,6 @@ exports.postUpload = function (params) {
 exports.postRequest = function (params, workloadManager) {
     var result = workloadManager.retrieve(params.requestId);
     if (result) {
-        //console.log(result);
         return result;
     } else {
         return {progress: workloadManager.progress(params.requestId)};
@@ -127,6 +124,6 @@ exports.postResultlists = function (params) {
         var fp = JSON.parse(fs.readFileSync(file, {encoding: 'utf-8'}));
         result = fp;
     });
-    console.log("Returning wordlists for \n\t source: " + result.source.displayName + "\n\t target: " + result.target.displayName );
+    console.log("Returning wordlists for \n\t source: " + result.source.displayName + "\n\t target: " + result.target.displayName);
     return result;
 };

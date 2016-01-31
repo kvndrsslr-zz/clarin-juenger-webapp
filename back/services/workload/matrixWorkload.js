@@ -78,7 +78,6 @@ exports.matrixWorkload = function (params, resourceManager, writeWordlists, spaw
             corpora.forEach(function (corpusB) {
                 if (!fs.existsSync(resultFile(corpusA, corpusB)) && !fs.existsSync(resultFile(corpusB, corpusA))) {
                     params.missingLinks.push([corpusA, corpusB]);
-                    console.log(corpusA);
                 }
             });
         }
