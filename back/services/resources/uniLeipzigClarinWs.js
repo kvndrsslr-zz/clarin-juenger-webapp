@@ -99,8 +99,6 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
             .sort(function (a, b) { return a.name > b.name })
             .reduce(function (a, b) { return a.name === b.name ? a : a.concat([b]); }, []);
 
-        console.log('trying wordlist retrieval :' + JSON.stringify(params.corpora));
-
         return Q()
             .then(requested.forEach.bind(params.corpora, function (corpus) {
                 //  Compatibility fix for old frontend

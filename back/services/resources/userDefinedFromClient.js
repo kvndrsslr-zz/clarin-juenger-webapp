@@ -72,7 +72,6 @@ exports.userDefinedFromClient = function (qRequest, injectObjectToString, deep) 
 
         return Q()
             .then(requested.forEach.bind(params.corpora, function (corpus) {
-                console.log("trying " + corpus.resourceId + " : " + resource.id);
                 if (corpus.resourceId === resource.id)
                     queryQ = queryQ.then(getWordlist.bind(null, corpus));
             }))
