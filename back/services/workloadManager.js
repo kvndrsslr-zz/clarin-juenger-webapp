@@ -49,8 +49,6 @@ exports.workloadManager = function (params) {
         var w = workloads.filter(function (w) { return w.id === id; });
         if (w.length === 0)
             return 0;
-        if (w[0].status === -1)
-            return { 'result': false };
         return w[0];
     }
 
