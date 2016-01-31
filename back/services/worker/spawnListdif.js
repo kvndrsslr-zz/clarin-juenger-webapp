@@ -32,7 +32,6 @@ exports.spawnListdif = function (params, workloadManager) {
         var chain = [Q(), Q()];
         //@todo: parallel chaining based on number of available CPUs.
         params.missingLinks.forEach(function (missing) {
-            console.log(missing);
             chain[0] = chain[0].then(spawnInstance.bind(null, missing[0].name, missing[1].name, params.corpora.length));
         });
         return Q.all(chain);
