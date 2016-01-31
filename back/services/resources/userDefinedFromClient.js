@@ -104,7 +104,7 @@ exports.userDefinedFromClient = function (qRequest, injectObjectToString, deep) 
                         'genre' : corpus.genre,
                         'resourceId' : corpus.resourceId,
                         'size' : params.wordCount,
-                        'words' : corpus.words
+                        'words' : corpus.words.slice(0, params.wordCount)
                     };
                     cache.wordList.push(wordListTask);
                     wordlists.push(wordListTask);
