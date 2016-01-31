@@ -44,13 +44,14 @@ mixin wordList(type, origin)
                     tr(ng-repeat="word in statistic.safe['#{type+origin.charAt(0).toUpperCase()+origin.slice(1)}']")
                         td {{word.word}}
                         td {{'SEC_STATS_POS_' + word.pos | translate}}
-                        td {{word.#{type == 'more' ? origin + 'Record.' : ''}absFreq}}
+                        td.text-right {{word.#{type == 'more' ? origin + 'Record.' : ''}absFreq}}
                         if type == "more"
-                            td {{word.#{origin == "source" ? "target" : "source"}Record.absFreq}}
-                        td {{word.#{type == 'more' ? origin + 'Record.' : ''}relFreq | rounded: 5}}
+                            td.text-right {{word.#{origin == "source" ? "target" : "source"}Record.absFreq}}
+                        td.text-right {{word.#{type == 'more' ? origin + 'Record.' : ''}relFreq * 1000 | number: 2}} &permil;
                         if type == "more"
-                            td {{word.#{origin == "source" ? "target" : "source"}Record.relFreq | rounded: 5}}
-                            td {{word.#{origin}Record.relFreq / word.#{origin == "source" ? "target" : "source"}Record.relFreq | number: 2}}
+                            td.text-right {{word.#{origin == "source" ? "target" : "source"}Record.relFreq * 1000 | number: 3}} &permil;
+                            td.text-right {{word.logRelativeRatio | number: 2}}
+                            //td {{word.#{origin}Record.relFreq / word.#{origin == "source" ? "target" : "source"}Record.relFreq | number: 2}}
                         .row
                 tfoot
                     tr
