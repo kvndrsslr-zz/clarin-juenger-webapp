@@ -8,6 +8,7 @@ exports.clustering = function (params) {
         var next = nextCluster([entities.slice()]);
         var hierarchy = {};
         var division;
+        var i=1;
 
         while (next !== null) {
             clusters = clusters.filter(function (x) {
@@ -40,6 +41,7 @@ exports.clustering = function (params) {
             }
         }
 
+
         function splitCore(cluster) {
 
             function meanDistances(cluster) {
@@ -47,13 +49,14 @@ exports.clustering = function (params) {
                 function meanDistance(cluster, entity) {
                     return distances
                             .filter(function (entry) {
-                                return isClusterEntityEntry(cluster, entity, entry[0])
-                                    || isClusterEntityEntry(cluster, entity, entry[1]);
+                                return cluster.indexOf(entry[0]) > -1
+                                    && cluster.indexOf(entry[1]) > -1
+                                    && (entry[0] === entity || entry[1] === entity);
                             }).map(function (entry) {
                                 return entry[2];
                             }).reduce(function (a, b) {
                                 return a + b;
-                            }) / (cluster.length - 1);
+                            }, 0) / (cluster.length - 1);
                 }
 
                 return cluster
@@ -62,10 +65,12 @@ exports.clustering = function (params) {
                     });
             }
 
-            return meanDistances(cluster)
+            var core = meanDistances(cluster)
                 .sort(function (a, b) {
-                    return a.meanDistance - b.meanDistance;
-                })[0].entity;
+                    return b.meanDistance - a.meanDistance;
+                })[0];
+
+            return core.entity;
         }
 
         function distanceBetween(entity1, entity2) {
