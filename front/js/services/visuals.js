@@ -166,7 +166,6 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
             nodes[link[0]].count += link[2] * 10;
             nodes[link[1]].count += link[2] * 10;
         });
-        console.log(nodes);
         // Precompute the orders.
         var orders = {
             name: d3.range(n).sort(function (a, b) {
@@ -335,11 +334,9 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
         treeSearch([data.hierarchy], clusterFinder);
         data.clusters = clusterFinder.getClusters();
         data.entities = getEntityGroups(data.entities, data.clusters);
-        console.log(data);
         return data;
 
         function treeSearch (stack, cb) {
-            console.log(stack);
             while (stack.length > 0) {
                 var node = stack.pop();
                 var leaf = typeof node.children === "undefined";
@@ -442,8 +439,6 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
                 return selectColor(d.name, data.entities);
             })
             .text(function (d) {
-                if (data.entities.filter(function (e) {return d.name === e.name}).length < 1)
-                    console.log(d);
                 return d.children ? "" : data.entities.filter(function (e) {return d.name === e.name})[0]['displayName'];
             });
         texts.call(wrap, 100);

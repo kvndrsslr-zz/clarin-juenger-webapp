@@ -96,7 +96,7 @@ exports.clustering = function (params) {
                             })
                             .reduce(function (a, b) {
                                 return a + b;
-                            }, 0.0) / (cluster.length === 0 ? 1 : cluster.length);
+                            }, 0.0) / (cluster.length < 2 ? 1 : cluster.length - 1);
                 }
 
                 return cluster
@@ -119,8 +119,9 @@ exports.clustering = function (params) {
                         return entry.entity;
                     });
             }
-            if (cluster.length === 0)
+            if (cluster.length === 0){
                 cluster.push(splinterGroup.pop());
+            }
 
             var clusterDistancesToAll = meanDistancesBetween(cluster, entities);
             clusterDistancesToAll = clusterDistancesToAll

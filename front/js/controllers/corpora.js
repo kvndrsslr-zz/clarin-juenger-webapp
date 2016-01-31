@@ -28,13 +28,51 @@ angular.module('ir-matrix-cooc')
 
 
         $scope.upload = function () {
-            userCorpora.add($scope.uploadModel);
+            if (!$scope.uploadModel.validation()) {
+                userCorpora.add($scope.uploadModel);
+            }
         };
 
         $scope.$watch(userCorpora.list, function (x) {
             $scope.userCorpora = x;
             updateCorpora();
         },1000);
+
+
+        $scope.requestName = "";
+        $scope.wordCount = 10000;
+        $scope.sel = {
+            corpora: [],
+            metric: 3,
+            colors: 'REDDISH',
+            sorting: 'sortOrder',
+            PosTags: '',
+            wordList: 'moreSource',
+            wordListType: 'BOTH',
+            wordListOrigin: 'source'
+        };
+
+        $scope.selectWordlist = function (name) {
+            $scope.sel.wordList = name;
+            switch (name) {
+                case 'moreSource':
+                    $scope.sel.wordListType = 'BOTH';
+                    $scope.sel.wordListOrigin = 'source';
+                    break;
+                case 'moreTarget':
+                    $scope.sel.wordListType = 'BOTH';
+                    $scope.sel.wordListOrigin = 'target';
+                    break;
+                case 'onlySource':
+                    $scope.sel.wordListType = 'ONLY';
+                    $scope.sel.wordListOrigin = 'source';
+                    break;
+                case 'onlyTarget':
+                    $scope.sel.wordListType = 'ONLY';
+                    $scope.sel.wordListOrigin = 'target';
+                    break;
+            }
+        };
 
         function updateCorpora() {
             $scope.corpora = data.corpora.concat(userCorpora.list()).map(function(c) {
@@ -44,7 +82,17 @@ angular.module('ir-matrix-cooc')
                     c['language'] = window.languages.get(c.name.substring(0,3));
                 return c;
             });
+            $scope.sel.corpora = $scope.sel.corpora.filter(function (c) {
+                return $scope.corpora.filter(function (d) {
+                    return c === d.name;
+                }).length > 0;
+            })
         }
+
+        $scope.deleteAllUserCorpora = function () {
+            userCorpora.clear();
+        };
+
         updateCorpora();
 
         $scope.languages = $scope.corpora.reduce(function (prev, curr, i) {
@@ -130,15 +178,6 @@ angular.module('ir-matrix-cooc')
             safe : {}
         };
 
-        $scope.requestName = "";
-        $scope.wordCount = 10000;
-        $scope.sel = {
-            corpora: [],
-            metric: 3,
-            colors: 'REDDISH',
-            sorting: 'sortOrder',
-            PosTags: ''
-        };
 
         $scope.$watch('sel.PosTags', function(val) {
             var elem = angular.element('.st-global-search');

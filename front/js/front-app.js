@@ -94,7 +94,9 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
             'SEC_STATS_POS_X' : 'other',
             'SEC_STATS_RATIO' : 'log. Ratio',
             'SEC_STATS_COUNT' : 'Frequency',
+            'SEC_STATS_RELCOUNT' : 'Rel. Frequency',
             'SEC_STATS_COUNTINX' : 'Frequency in {{x}}',
+            'SEC_STATS_RELCOUNTINX' : 'Rel. Frequency in {{x}}',
             'SEC_STATS_PAGINATIONSIZE' : 'Words shown per page ({{x}})',
             'SEC_WCONF' : 'Configuration',
             'SEC_WCONF_WORDS' : 'Words',
@@ -116,7 +118,10 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
             'COLORSCALE_GREY' : 'Gray (cluster clarity)',
             'SORT_ORDER_NAME' : 'Name',
             'SORT_ORDER_GROUP' : 'Group',
-            'SORT_ORDER_CLUSTER' : 'Cluster'
+            'SORT_ORDER_CLUSTER' : 'Cluster',
+            'ST_PAGINATION_FIRST' : 'First',
+            'ST_PAGINATION_LAST' : 'Last',
+            'ST_PAGINATION_OF' : 'of'
         }).translations('de', {
             'APP_TITLE' : 'Kookkorpora',
             'NAV_CORPORA' : 'Ähnlichkeitsmatrix',
@@ -160,7 +165,10 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
             'CON_METRIC3' : 'Cosinus - basierend auf Logarithmus d. Freq.',
             'SORT_ORDER_NAME' : 'Name',
             'SORT_ORDER_GROUP' : 'Gruppe',
-            'SORT_ORDER_CLUSTER' : 'Cluster'
+            'SORT_ORDER_CLUSTER' : 'Cluster',
+            'ST_PAGINATION_FIRST' : 'Erste',
+            'ST_PAGINATION_LAST' : 'Letzte',
+            'ST_PAGINATION_OF' : 'von'
         })
             .preferredLanguage('en')
             .fallbackLanguage('en');
@@ -300,11 +308,11 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
         $templateCache.put('template/smart-table/pagination2.html',
             '<nav ng-if="pages.length >= 2">' +
             '<ul class="pagination">' +
-            '<li><a ng-click="selectPage(1)">First</a>' +
+            '<li><a ng-click="selectPage(1)">{{\'ST_PAGINATION_FIRST\' | translate}}</a>' +
             '</li><li><a ng-click="selectPage(currentPage - 1)">&lt;</a>' +
-            '</li><li><a><page-select></page-select> of {{numPages}}</a>' +
+            '</li><li><a><page-select></page-select> {{\'ST_PAGINATION_OF\' | translate}} {{numPages}}</a>' +
             '</li><li><a ng-click="selectPage(currentPage + 1)">&gt;</a>' +
-            '</li><li><a ng-click="selectPage(numPages)">Last</a></li>' +
+            '</li><li><a ng-click="selectPage(numPages)">{{\'ST_PAGINATION_LAST\' | translate}}</a></li>' +
             '</ul>' +
             '</nav>');
     }]);

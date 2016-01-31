@@ -22,35 +22,37 @@ mixin info(title)
                 block
 
 mixin wordList(type, origin)
-        div.col-xs-6
-            .panel.panel-info
-                .panel-heading {{ 'SEC_STATS_TITLE#{type=="only" ? "ONLY" : "BOTH"}' | translate : {corpus : statistic.resultLists["#{origin}"].displayName} }}
-                .panel-body
-                    table.table.table-bordered.table-striped(st-table="statistic.safe['#{type+origin.charAt(0).toUpperCase()+origin.slice(1)}']", st-safe-src="statistic.resultLists['#{type+origin.charAt(0).toUpperCase()+origin.slice(1)}']")
-                        thead
-                            tr
-                                th.col-xs-6(st-sort="word") {{ 'SEC_STATS_WORD' | translate }}
-                                th.col-xs-6(st-sort="pos") {{ 'SEC_STATS_POS' | translate }}
-                                th.col-xs-3(st-sort!="#{(type == 'more' ? origin + 'Record.' : '') + 'absFreq' + (type == 'more' ? origin + '' : '\", st-sort-default=\'reverse\'')}")
-                                    | {{ 'SEC_STATS_COUNTINX' | translate : {x: statistic.resultLists["#{origin == "source" ? "source" : "target"}"].displayName} }}
-                                if type == "more"
-                                    th.col-xs-3(st-sort="#{origin == 'source' ? 'target' : 'source'}Record.absFreq") {{ 'SEC_STATS_COUNTINX' | translate : {x: statistic.resultLists["#{origin == "target" ? "source" : "target"}"].displayName} }}
-                                if type == "more"
-                                    th.col-xs-3(st-sort="#{origin == 'source' ? '' : '-'}logRelativeRatio", st-sort-default="reverse") {{ 'SEC_STATS_RATIO' | translate }}
-                            tr
-                                th(colspan="#{type == 'more' ? '5' : '3'}"): input.input-sm.form-control(st-search="word", placeholder="Search word...", type="search")
-                                th(ng-show="false"): input.input-sm.form-control.st-global-search(st-search="pos", type="search")
-                        tbody
-                            tr(ng-repeat="word in statistic.safe['#{type+origin.charAt(0).toUpperCase()+origin.slice(1)}']")
-                                td {{word.word}}
-                                td {{'SEC_STATS_POS_' + word.pos | translate}}
-                                td {{word.#{type == 'more' ? origin + 'Record.' : ''}absFreq}}
-                                if type == "more"
-                                    td {{word.#{origin == "source" ? "target" : "source"}Record.absFreq}}
-                                if type == "more"
-                                    td {{word.#{origin}Record.relFreq / word.#{origin == "source" ? "target" : "source"}Record.relFreq | number: 2}}
-                                .row
-                        tfoot
-                            tr
-                                td.text-center(colspan="#{type == 'more' ? '5' : '3'}")
-                                    div(st-pagination="", st-items-by-page="parseFloat(paginationSize)", st-template="template/smart-table/pagination2.html")
+        div.col-xs-12(ng-show="sel.wordList === '#{type+origin.charAt(0).toUpperCase()+origin.slice(1)}'")
+            table.table.table-bordered.table-striped(st-table="statistic.safe['#{type+origin.charAt(0).toUpperCase()+origin.slice(1)}']", st-safe-src="statistic.resultLists['#{type+origin.charAt(0).toUpperCase()+origin.slice(1)}']")
+                thead
+                    tr
+                        th.col-xs-3(st-sort="word") {{ 'SEC_STATS_WORD' | translate }}
+                        th.col-xs-4(st-sort="pos") {{ 'SEC_STATS_POS' | translate }}
+                        th.col-xs-1(st-sort!="#{(type == 'more' ? origin + 'Record.' : '') + 'absFreq' + (type == 'more' ? '' : '\", st-sort-default=\'reverse\'')}")
+                            | {{ 'SEC_STATS_COUNTINX' | translate : {x: statistic.resultLists["#{origin == "source" ? "source" : "target"}"].displayName} }}
+                        if type == "more"
+                            th.col-xs-1(st-sort="#{origin == 'source' ? 'target' : 'source'}Record.absFreq") {{ 'SEC_STATS_COUNTINX' | translate : {x: statistic.resultLists["#{origin == "target" ? "source" : "target"}"].displayName} }}
+                        th.col-xs-1(st-sort!="#{(type == 'more' ? origin + 'Record.' : '') + 'relFreq' + (type == 'more' ? '' : '\", st-sort-default=\'reverse\'')}")
+                            | {{ 'SEC_STATS_RELCOUNTINX' | translate : {x: statistic.resultLists["#{origin == "source" ? "source" : "target"}"].displayName} }}
+                        if type == "more"
+                            th.col-xs-1(st-sort="#{origin == 'source' ? 'target' : 'source'}Record.relFreq") {{ 'SEC_STATS_RELCOUNTINX' | translate : {x: statistic.resultLists["#{origin == "target" ? "source" : "target"}"].displayName} }}
+                            th.col-xs-1(st-sort="#{origin == 'source' ? '' : '-'}logRelativeRatio", st-sort-default="reverse") {{ 'SEC_STATS_RATIO' | translate }}
+                    tr
+                        th(colspan="#{type == 'more' ? '7' : '4'}"): input.input-sm.form-control(st-search="word", placeholder="Search word...", type="search")
+                        th(ng-show="false"): input.input-sm.form-control.st-global-search(st-search="pos", type="search")
+                tbody
+                    tr(ng-repeat="word in statistic.safe['#{type+origin.charAt(0).toUpperCase()+origin.slice(1)}']")
+                        td {{word.word}}
+                        td {{'SEC_STATS_POS_' + word.pos | translate}}
+                        td {{word.#{type == 'more' ? origin + 'Record.' : ''}absFreq}}
+                        if type == "more"
+                            td {{word.#{origin == "source" ? "target" : "source"}Record.absFreq}}
+                        td {{word.#{type == 'more' ? origin + 'Record.' : ''}relFreq | rounded: 5}}
+                        if type == "more"
+                            td {{word.#{origin == "source" ? "target" : "source"}Record.relFreq | rounded: 5}}
+                            td {{word.#{origin}Record.relFreq / word.#{origin == "source" ? "target" : "source"}Record.relFreq | number: 2}}
+                        .row
+                tfoot
+                    tr
+                        td.text-center(colspan="#{type == 'more' ? '7' : '4'}")
+                            div(st-pagination="", st-items-by-page="parseFloat(paginationSize)", st-template="template/smart-table/pagination2.html")

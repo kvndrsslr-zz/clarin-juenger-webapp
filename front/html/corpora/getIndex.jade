@@ -5,31 +5,32 @@ include ../mixins.jade
         .row
             .col-xs-6
                 form(ng-submit="upload()")
-                    .form-group
-                        label.control-label(for="uploadname") {{ 'SEC_UPLOAD_NAME' | translate }}
-                        input.form-control(ng-model="uploadModel.displayName", id="uploadname", type="text", placeholder="{{uploadModel.file.name}}")
-                    .form-group
-                        label.control-label {{ 'SEC_UPLOAD_FILETYPE' | translate }}
-                        br
-                        .btn-group
-                            label.btn.btn-primary(ng-model="uploadModel.filetype", btn-radio="'plain'") Plaintext
-                            label.btn.btn-primary(ng-model="uploadModel.filetype", btn-radio="'tcf+xml'") TCF
-                    .form-group
-                        label.control-label(for="corpusUploadSelection") {{ 'SEC_UPLOAD_CHOOSEFILE' | translate }}
-                        .well.well-lg(ngf-drop, ng-model="files", ng-class="{'well-ok' : uploadModel.file.name}")
-                            center: button.btn(ngf-select, ng-model="uploadModel.file", id="corpusUploadSelection", ng-class="{'btn-info' : !uploadModel.file.name, 'btn-success' : uploadModel.file.name}")
-                                div(ng-show="!uploadModel.file.name") {{ 'SEC_UPLOAD_FILESELECT' | translate }}
-                                div(ng-show="uploadModel.file.name") {{ uploadModel.file.name }}
-                    .form-group
-                        progressbar(ng-hide="uploadModel.progress == 0", max="100", value="uploadModel.progress")
-                            span {{uploadModel.progress}} %
-                        button.btn(
-                            ng-class="[uploadModel.validation() ? 'btn-disabled' : 'btn-primary']",
-                            type="submit",
-                            popover="{{uploadModel.validation()}}",
-                            popover-trigger="mouseenter",
-                            popover-placement="right"
-                        ) {{ 'SEC_UPLOAD_SEND' | translate }}
+                    fieldset(ng-disabled="uploadModel.isSaving")
+                        .form-group
+                            label.control-label(for="uploadname") {{ 'SEC_UPLOAD_NAME' | translate }}
+                            input.form-control(ng-model="uploadModel.displayName", id="uploadname", type="text", placeholder="{{uploadModel.file.name}}")
+                        .form-group
+                            label.control-label {{ 'SEC_UPLOAD_FILETYPE' | translate }}
+                            br
+                            .btn-group
+                                label.btn.btn-primary(ng-model="uploadModel.filetype", btn-radio="'plain'") Plaintext
+                                label.btn.btn-primary(ng-model="uploadModel.filetype", btn-radio="'tcf+xml'") TCF
+                        .form-group
+                            label.control-label(for="corpusUploadSelection") {{ 'SEC_UPLOAD_CHOOSEFILE' | translate }}
+                            .well.well-lg(ngf-drop, ng-model="files", ng-class="{'well-ok' : uploadModel.file.name}")
+                                center: button.btn(ngf-select, ng-model="uploadModel.file", id="corpusUploadSelection", ng-class="{'btn-info' : !uploadModel.file.name, 'btn-success' : uploadModel.file.name}")
+                                    div(ng-show="!uploadModel.file.name") {{ 'SEC_UPLOAD_FILESELECT' | translate }}
+                                    div(ng-show="uploadModel.file.name") {{ uploadModel.file.name }}
+                        .form-group
+                            progressbar(ng-hide="uploadModel.progress == 0", max="100", value="uploadModel.progress")
+                                span {{uploadModel.progress}} %
+                            button.btn(
+                                ng-class="[uploadModel.validation() ? 'btn-disabled' : 'btn-primary']",
+                                type="submit",
+                                popover="{{uploadModel.validation()}}",
+                                popover-trigger="mouseenter",
+                                popover-placement="right"
+                            ) {{ 'SEC_UPLOAD_SEND' | translate }}
             .col-xs-6
                 .panel.panel-info
                     .panel-heading(ng-show="userCorpora.length == 0") No corpus uploaded yet.
@@ -65,12 +66,12 @@ include ../mixins.jade
                             | {{ 'SEC_CONFIG_CORPUSSELECTION_TEXT' | translate }}
                         ui-select(multiple, searchEnabled="true", close-on-select="false",
                                   theme="bootstrap", ng-model="sel.corpora")
-                            ui-select-match(placeholder="{{ 'SEC_CONFIG_CORPUSSELECTION_FILLIN' | translate}}") {{$item.displayName}}
+                            ui-select-match(placeholder="{{ 'SEC_CONFIG_CORPUSSELECTION_FILLIN' | translate}}") {{$item.description}}
                             ui-select-choices(
                                 repeat="corpus.name as corpus in corpora | filter: $select.search | orderBy: 'language' | limitTo: limit",
                                 group-by="'language'"
                             )
-                                div(ng-bind-html="corpus.displayName | highlight: $select.search")
+                                div(ng-bind-html="corpus.description | highlight: $select.search")
                 .col-xs-12.col-md-4
                     .form-group
                         label.control-label(for="requestName") {{ 'SEC_CONFIG_REQUESTNAME' | translate }}
@@ -110,7 +111,7 @@ include ../mixins.jade
                     h4 {{jobdata.requestName}}
                     samp
                         span(ng-repeat="corpus in jobdata.corpora | limitTo: 3")
-                            | {{corpus.displayName}},
+                            | {{corpus.description}},
                             br
                         | {{ 'SEC_JOBS_MORE' | translate: {count:jobdata.corpora.length-3} }}
             .col-xs-3.col-xs-offset-9
@@ -143,29 +144,39 @@ include ../mixins.jade
 
     +feature('Statistik', 'SEC_STATS')
         .row(ng-show="statsEmpty")
-            div.col-xs-12
+            .col-xs-12
                 h4 Please select two distinct corpora!
         .row(ng-hide="statsEmpty")
-            div.col-xs-12
+            .col-xs-12
                 form
-                .col-xs-4.col-xs-offset-4
-                    .form-group
-                        label.control-label(for="POSTags")
-                            | {{ 'SEC_STATS_POSLABEL' | translate }}
-                        ui-select(searchEnabled="true", theme="bootstrap", ng-model="sel.PosTags")
-                            ui-select-match: div {{'SEC_STATS_POS_' + $select.selected | translate }}
-                            ui-select-choices(repeat="posTag in statistic.resultLists.availablePOSTags")
-                                div(ng-bind-html="'SEC_STATS_POS_' + posTag | translate | highlight: $select.search")
-                .col-xs-4
-                    .form-group
-                        label.control-label(for="paginationSize")
-                            | {{ 'SEC_STATS_PAGINATIONSIZE' | translate : { x : paginationSize} }}
-                        input.form-control(ng-model="paginationSize", id="paginationSize",
-                        type="range", min=10, max=100, step=5)
+                    .col-xs-4
+                        .form-group
+                            .btn-group(dropdown)
+                                button.btn.btn-primary.btn-lg.dropdown-toggle(id="visiblelist", type="button", dropdown-toggle)
+                                    | {{ 'SEC_STATS_TITLE' + sel.wordListType | translate : {corpus : statistic.resultLists[sel.wordListOrigin].displayName} }}&nbsp;
+                                    span.caret
+                                ul.dropdown-menu(role="menu", aria-labelledby="visiblelist")
+                                    li(role="menuitem", ng-click="selectWordlist('moreSource')"): a {{ 'SEC_STATS_TITLEBOTH' | translate : {corpus : statistic.resultLists["source"].displayName} }}
+                                    li(role="menuitem", ng-click="selectWordlist('moreTarget')"): a {{ 'SEC_STATS_TITLEBOTH' | translate : {corpus : statistic.resultLists["target"].displayName} }}
+                                    li(role="menuitem", ng-click="selectWordlist('onlySource')"): a {{ 'SEC_STATS_TITLEONLY' | translate : {corpus : statistic.resultLists["source"].displayName} }}
+                                    li(role="menuitem", ng-click="selectWordlist('onlyTarget')"): a {{ 'SEC_STATS_TITLEONLY' | translate : {corpus : statistic.resultLists["target"].displayName} }}
+                    .col-xs-4
+                        .form-group
+                            label.control-label
+                                | {{ 'SEC_STATS_POSLABEL' | translate }}
+                            ui-select(searchEnabled="true", theme="bootstrap", ng-model="sel.PosTags")
+                                ui-select-match: div {{'SEC_STATS_POS_' + $select.selected | translate }}
+                                ui-select-choices(repeat="posTag in statistic.resultLists.availablePOSTags")
+                                    div(ng-bind-html="'SEC_STATS_POS_' + posTag | translate | highlight: $select.search")
+                    .col-xs-4
+                        .form-group
+                            label.control-label(for="paginationSize")
+                                | {{ 'SEC_STATS_PAGINATIONSIZE' | translate : { x : paginationSize} }}
+                            input.form-control(ng-model="paginationSize", id="paginationSize",
+                            type="range", min=10, max=100, step=5)
         .row(ng-hide="statsEmpty")
             +wordList("more", "source")
             +wordList("more", "target")
-        .row(ng-hide="statsEmpty")
             +wordList("only", "source")
             +wordList("only", "target")
     // Padding nach unten

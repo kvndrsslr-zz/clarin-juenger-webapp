@@ -15,7 +15,14 @@ exports.workloadManager = function (params) {
     }
 
     function enqueue (workload) {
-        var w = {id: createId(workload), request: _.clone(params), workload: workload, progress: "", result: false};
+        var w = {
+            id: createId(workload),
+            request: _.clone(params),
+            workload: workload,
+            progress: "",
+            result: false,
+            status: -1
+        };
         if (typeof retrieve(w.id) === 'undefined') {
             var qPoint;
             workloads.push(w);
@@ -26,9 +33,12 @@ exports.workloadManager = function (params) {
                 qPoint = queue = queue.then(workload);
             }
             qPoint.then(function (data) {
+                w.status = 0;
                 w.result = data;
-            });
-            qPoint.progress(function (progress) {
+            }, function (error) {
+                w.status = 1;
+                w.result = error;
+            }, function (progress) {
                 w.progress = progress;
             });
         }
@@ -37,11 +47,11 @@ exports.workloadManager = function (params) {
 
     function _retrieve (id) {
         var w = workloads.filter(function (w) { return w.id === id; });
-        if (w.length === 0) {
+        if (w.length === 0)
             return 0;
-        } else {
-            return w[0];
-        }
+        if (w[0].status === -1)
+            return { 'result': false };
+        return w[0];
     }
 
     function retrieve (id) {

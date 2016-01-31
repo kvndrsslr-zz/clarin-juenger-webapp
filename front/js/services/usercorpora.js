@@ -7,6 +7,8 @@ angular.module('ir-matrix-cooc').factory('userCorpora', function ($q, $http, $ti
     }
 
     function add (uploadModel) {
+        // disable form
+        uploadModel.isSaving = true;
         // get list of corpora
         var clientId = localStorageService.get('userCorpora$clientId');
         var suffix = parseInt(localStorageService.get('userCorpora$suffixCounter')) + 1;
@@ -31,12 +33,15 @@ angular.module('ir-matrix-cooc').factory('userCorpora', function ($q, $http, $ti
             uploadModel.progress = parseInt(100.0 * evt.loaded / evt.total);
         }).success(function (data, status, headers, config) {
             $timeout(function() {
+                uploadModel.displayName = '';
                 uploadModel.progress = 0;
                 uploadModel.file = null;
                 console.log(data);
                 list.push(data);
                 localStorageService.set('userCorpora$suffixCounter', suffix);
                 localStorageService.set('userCorpora$list', list);
+                //enable form
+                uploadModel.isSaving = false;
             }, 150);
         });
     }
@@ -83,6 +88,7 @@ angular.module('ir-matrix-cooc').factory('userCorpora', function ($q, $http, $ti
     return {
         list : list,
         add : add,
-        remove : remove
+        remove : remove,
+        clear : clear
     };
 });

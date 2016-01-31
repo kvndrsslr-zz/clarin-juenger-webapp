@@ -66,7 +66,7 @@ exports.postUpload = function (params) {
             var result = {
                 'name' : params.name,
                 'displayName' : params.displayName,
-                'description' : '',
+                'description' : params.displayName,
                 'date' : new Date(),
                 'genre' : '',
                 'resourceId' : 'userDefinedFromClient',
