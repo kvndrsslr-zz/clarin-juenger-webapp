@@ -92,16 +92,14 @@ exports.clustering = function (params) {
 
                 function distancesTo(cluster, entity) {
 
-                    return cluster
-                            .filter(function (entry) {
-                                return entry != entity;
-                            })
-                            .map(function (entity2) {
-                                return distanceBetween(entity, entity2);
-                            })
-                            .reduce(function (a, b) {
-                                return a + b;
-                            }, 0.0) / (cluster.length < 2 ? 1 : cluster.length - 1);
+                    var result = cluster.filter(function (entry) {
+                        return entry != entity;
+                    }).map(function (entity2) {
+                        return distanceBetween(entity, entity2);
+                    });
+                    return result.reduce(function (a, b) {
+                            return a + b;
+                        }, 0.0) / (result.length < 2 ? 1 : result.length);
                 }
 
                 return cluster
