@@ -13,8 +13,8 @@ include ../mixins.jade
                             label.control-label {{ 'SEC_UPLOAD_FILETYPE' | translate }}
                             br
                             .btn-group
-                                label.btn.btn-primary(ng-model="uploadModel.filetype", btn-radio="'plain'") Plaintext
-                                label.btn.btn-primary(ng-model="uploadModel.filetype", btn-radio="'tcf+xml'") TCF
+                                label.btn.btn-primary(ng-model="uploadModel.filetype", btn-radio="'plain'") {{ 'SEC_UPLOAD_FORMAT_PLAIN' | translate }}
+                                label.btn.btn-primary(ng-model="uploadModel.filetype", btn-radio="'tcf+xml'") {{ 'SEC_UPLOAD_FORMAT_TCF' | translate }}
                         .form-group
                             label.control-label(for="corpusUploadSelection") {{ 'SEC_UPLOAD_CHOOSEFILE' | translate }}
                             .well.well-lg(ngf-drop, ng-model="files", ng-class="{'well-ok' : uploadModel.file.name}")
@@ -33,7 +33,7 @@ include ../mixins.jade
                             ) {{ 'SEC_UPLOAD_SEND' | translate }}
             .col-xs-6
                 .panel.panel-info
-                    .panel-heading(ng-show="userCorpora.length == 0") No corpus uploaded yet.
+                    .panel-heading(ng-show="userCorpora.length == 0") {{ 'SEC_UPLOADED_EMPTY' | translate }}
                     .panel-heading(ng-show="userCorpora.length > 0") {{ 'SEC_UPLOADED_HEADING' | translate }}
                     .panel-body(ng-show="userCorpora.length > 0")
                         table.table.table-bordered.table-striped(st-table="userCorpora")
@@ -51,7 +51,7 @@ include ../mixins.jade
                                 tr
                                     td.text-center(colspan="2")
                                         div(st-pagination="", st-items-by-page="10", st-template="template/smart-table/pagination2.html")
-                                    td: button.btn.btn-xs.btn-danger(ng-click="deleteAllUserCorpora()") Delete all
+                                    td: button.btn.btn-xs.btn-danger(ng-click="deleteAllUserCorpora()") {{ 'SEC_UPLOADED_DELETEALL' | translate }}
 
     +feature('Configuration', 'SEC_CONFIG')
         .row

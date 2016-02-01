@@ -50,7 +50,7 @@ mixin wordList(type, origin)
                         td.text-right {{word.#{type == 'more' ? origin + 'Record.' : ''}relFreq * 1000 | number: 3}} &permil;
                         if type == "more"
                             td.text-right {{word.#{origin == "source" ? "target" : "source"}Record.relFreq * 1000 | number: 3}} &permil;
-                            td.text-right {{word.logRelativeRatio | number: 2}}
+                            td.text-right {{#{origin == "source" ? "" : "-"}word.logRelativeRatio | number: 2}}
                             //td {{word.#{origin}Record.relFreq / word.#{origin == "source" ? "target" : "source"}Record.relFreq | number: 2}}
                         .row
                 tfoot

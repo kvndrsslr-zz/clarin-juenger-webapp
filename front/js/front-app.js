@@ -6,8 +6,8 @@ var dataLoaderRunner = [
 ];
 
 angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
-    'ui.select', 'ui.keypress', 'ui.bootstrap', 'ui.bootstrap.tabs', 'LocalStorageModule', 'smart-table',
-    'pascalprecht.translate','ngFileUpload'])
+        'ui.select', 'ui.keypress', 'ui.bootstrap', 'ui.bootstrap.tabs', 'LocalStorageModule', 'smart-table',
+        'pascalprecht.translate','ngFileUpload'])
     .config(function ($routeProvider, $locationProvider, $translateProvider, localStorageServiceProvider) {
         $routeProvider
             .when('/corpora/', {
@@ -46,12 +46,16 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
             'SEC_UPLOAD_NAME' : 'Name',
             'SEC_UPLOAD_FILESELECT' : 'Select a file on your computer or drop it here.',
             'SEC_UPLOAD_FILETYPE' : 'Filetype',
+            'SEC_UPLOAD_FORMAT_PLAIN' : 'Plaintext',
+            'SEC_UPLOAD_FORMAT_TCF' : 'TCF',
             'SEC_UPLOAD_SEND' : 'Upload',
             'SEC_UPLOAD_VALIDATIONSELECTFILE' : 'Please select a file to upload first!',
             'SEC_UPLOADED_HEADING' : 'Uploaded Corpora',
+            'SEC_UPLOADED_EMPTY' : 'No corpus uploaded yet.',
             'SEC_UPLOADED_NAME' : 'Name',
             'SEC_UPLOADED_SIZE' : 'Size',
             'SEC_UPLOADED_DELETE' : 'Delete',
+            'SEC_UPLOADED_DELETEALL' : 'Delete all',
             'SEC_CONFIG' : 'Configuration',
             'SEC_CONFIG_WORDLISTLENGTH' : 'Maximal number of words considered ({{wordlistLength}})',
             'SEC_CONFIG_REQUESTNAME' : 'Job title',
@@ -123,53 +127,86 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
             'ST_PAGINATION_LAST' : 'Last',
             'ST_PAGINATION_OF' : 'of'
         }).translations('de', {
-            'APP_TITLE' : 'Kookkorpora',
-            'NAV_CORPORA' : 'Ähnlichkeitsmatrix',
-            'NAV_WORDS' : 'Worthäufigkeitsanalyse',
-            'NAV_HELP' : 'Hilfe',
-            'SEC_UPLOAD' : 'Eigenen Korpus hochladen',
-            'SEC_CONFIG' : 'Konfiguration',
-            'SEC_CONFIG_WORDLISTLENGTH' : 'Länge Wortliste ({{wordlistLength}})',
-            'SEC_CONFIG_REQUESTNAME' : 'Anfragebezeichner',
-            'SEC_CONFIG_CORPUSSELECTION_TEXT' : 'Hier zu vergleichende Korpora auswählen, Filterung nach DB-Bez. oder int. Sprachennamen',
-            'SEC_CONFIG_CORPUSSELECTION_FILLIN' : 'Bitte auswählen...',
-            'SEC_CONFIG_SIMMEASURE' : 'Vergleichsmaß',
-            'SEC_CONFIG_SEND' : 'Abschicken',
-            'SEC_CONFIG_USERLANGTYPE' : 'Benutzerdefiniert',
-            'SEC_JOBS' : 'Jobauswahl',
-            'SEC_JOBS_NOJOBS' : 'Bisher wurden keine Anfragen in dieser Session getätigt.',
-            'SEC_JOBS_MORE' : '{{count}} weitere',
-            'SEC_JOBS_RESET' : 'Zurücksetzen',
-            'SEC_VIS' : 'Visualisierung',
-            'SEC_VIS_CLUSTERTHRESHHOLD' : 'Clusterschwellwert ({{threshold}})',
-            'SEC_VIS_COLORSCALE' : 'Farbskala',
-            'SEC_VIS_SORTING' : 'Sortierung',
-            'SEC_STATS' : 'Statistik',
-            'SEC_STATS_TITLEBOTH' : 'Öfter in {{corpus}}',
-            'SEC_STATS_TITLEONLY' : 'Nur in {{corpus}}',
-            'SEC_STATS_WORD' : 'Wort',
-            'SEC_STATS_POS' : 'POS',
-            'SEC_STATS_RATIO' : 'Log. Verhältnis',
-            'SEC_WCONF_WORDSHINT' : '(Mehrere mit Komma trennen)',
-            'SEC_STATS_COUNT' : 'Häufigkeit',
-            'SEC_STATS_COUNTINX' : 'Häufigkeit in {{x}}',
-            'SEC_WCONF_WORDS' : 'Wörter',
-            'SEC_WCONF_FIRSTY' : 'Startjahr ({{year}})',
-            'SEC_WCONF_LASTY' : 'Endjahr ({{year}})',
-            'SEC_WORDS' : 'Liniendiagramm',
-            'SEC_WORDS_LABELGLUE' : '"{{label}}" bei {{corpus}}',
-            'SEC_WORDS_YLABEL' : 'Relative Häufigkeit',
-            'CON_VALIDATIONMSG' : 'Bitte mindestens 2 Korpora auswählen!',
-            'CON_METRIC1' : 'Cosinus - basierend auf Rang',
-            'CON_METRIC2' : 'Cosinus - basierend auf Freq.',
-            'CON_METRIC3' : 'Cosinus - basierend auf Logarithmus d. Freq.',
-            'SORT_ORDER_NAME' : 'Name',
-            'SORT_ORDER_GROUP' : 'Gruppe',
-            'SORT_ORDER_CLUSTER' : 'Cluster',
-            'ST_PAGINATION_FIRST' : 'Erste',
-            'ST_PAGINATION_LAST' : 'Letzte',
-            'ST_PAGINATION_OF' : 'von'
-        })
+                'APP_TITLE' : 'Korpusvergleich',
+                'NAV_CORPORA' : 'Ähnlichkeitsmatrix',
+                'NAV_WORDS' : 'Worthäufigkeitsanalyse',
+                'NAV_HELP' : 'Hilfe',
+                'SEC_UPLOAD' : 'Eigenes Korpus hochladen',
+                'SEC_UPLOAD_CHOOSEFILE' : 'Datei',
+                'SEC_UPLOAD_NAME' : 'Name',
+                'SEC_UPLOAD_FILESELECT' : 'Bitte Datei auswählen oder hinziehen.',
+                'SEC_UPLOAD_FILETYPE' : 'Dateiformat',
+                'SEC_UPLOAD_FORMAT_PLAIN' : 'Klartext',
+                'SEC_UPLOAD_FORMAT_TCF' : 'TCF',
+                'SEC_UPLOAD_SEND' : 'Hochladen',
+                'SEC_UPLOAD_VALIDATIONSELECTFILE' : 'Bitte zuerst eine Datei auswählen!',
+                'SEC_UPLOADED_EMPTY' : 'Noch kein eigener Korpus hochgeladen.',
+                'SEC_UPLOADED_HEADING' : 'Hochgeladene Korpora',
+                'SEC_UPLOADED_NAME' : 'Name',
+                'SEC_UPLOADED_SIZE' : 'Anzahl Wörter',
+                'SEC_UPLOADED_DELETE' : 'Löschen',
+                'SEC_UPLOADED_DELETEALL' : 'Alle löschen',
+                'SEC_CONFIG' : 'Konfiguration',
+                'SEC_CONFIG_WORDLISTLENGTH' : 'Länge Wortliste ({{wordlistLength}})',
+                'SEC_CONFIG_REQUESTNAME' : 'Anfragebezeichner',
+                'SEC_CONFIG_CORPUSSELECTION_TEXT' : 'Hier zu vergleichende Korpora auswählen, Filterung nach DB-Bez. oder int. Sprachennamen',
+                'SEC_CONFIG_CORPUSSELECTION_FILLIN' : 'Bitte auswählen...',
+                'SEC_CONFIG_SIMMEASURE' : 'Vergleichsmaß',
+                'SEC_CONFIG_SEND' : 'Abschicken',
+                'SEC_CONFIG_USERLANGTYPE' : 'Benutzerdefiniert',
+                'SEC_JOBS' : 'Jobauswahl',
+                'SEC_JOBS_NOJOBS' : 'Bisher wurden keine Anfragen in dieser Session getätigt.',
+                'SEC_JOBS_MORE' : '{{count}} weitere',
+                'SEC_JOBS_RESET' : 'Zurücksetzen',
+                'SEC_VIS' : 'Visualisierung',
+                'SEC_VIS_CLUSTERTHRESHHOLD' : 'Clusterschwellwert ({{threshold}})',
+                'SEC_VIS_COLORSCALE' : 'Farbskala',
+                'SEC_VIS_SORTING' : 'Sortierung',
+                'SEC_STATS' : 'Statistik',
+                'SEC_STATS_TITLEBOTH' : 'Häufiger in {{corpus}}',
+                'SEC_STATS_TITLEONLY' : 'Nur in {{corpus}}',
+                'SEC_STATS_WORD' : 'Wort',
+                'SEC_STATS_POS' : 'POS',
+                'SEC_STATS_RATIO' : 'Log. Verhältnis',
+                'SEC_WCONF_WORDSHINT' : '(Mehrere mit Komma trennen)',
+                'SEC_STATS_COUNT' : 'Häufigkeit',
+                'SEC_STATS_COUNTINX' : 'Häufigkeit in {{x}}',
+                'SEC_WCONF_WORDS' : 'Wörter',
+                'SEC_WCONF_FIRSTY' : 'Startjahr ({{year}})',
+                'SEC_WCONF_LASTY' : 'Endjahr ({{year}})',
+                'SEC_WCONF' : 'Konfiguration',
+                'SEC_WCONF_LOGSWITCH' : 'Logarithmische y-Skala.',
+                'SEC_WORDS' : 'Liniendiagramm',
+                'SEC_WORDS_LABELGLUE' : '"{{label}}" bei {{corpus}}',
+                'SEC_WORDS_YLABEL' : 'Relative Häufigkeit',
+                'CON_VALIDATIONMSG' : 'Bitte mindestens 2 Korpora auswählen!',
+                'CON_METRIC1' : 'Cosinus - basierend auf Rang',
+                'CON_METRIC2' : 'Cosinus - basierend auf Freq.',
+                'CON_METRIC3' : 'Cosinus - basierend auf Logarithmus d. Freq.',
+                'SORT_ORDER_NAME' : 'Name',
+                'SORT_ORDER_GROUP' : 'Gruppe',
+                'SORT_ORDER_CLUSTER' : 'Cluster',
+                'ST_PAGINATION_FIRST' : 'Erste',
+                'ST_PAGINATION_LAST' : 'Letzte',
+                'ST_PAGINATION_OF' : 'von',
+                'SEC_STATS_POS_ADJ' : 'Adjektiv',
+                'SEC_STATS_POS_ADP' : 'Adposition',
+                'SEC_STATS_POS_ADV' : 'Adverb',
+                'SEC_STATS_POS_AUX' : 'Hilfsverb',
+                'SEC_STATS_POS_CONJ' : 'Koordinierende Konjunktion',
+                'SEC_STATS_POS_DET' : 'Determinator',
+                'SEC_STATS_POS_INTJ' : 'Interjektion',
+                'SEC_STATS_POS_NOUN' : 'Nomen',
+                'SEC_STATS_POS_NUM' : 'Numeral',
+                'SEC_STATS_POS_PART' : 'Partikel',
+                'SEC_STATS_POS_PRON' : 'Pronomen',
+                'SEC_STATS_POS_PROPN' : 'Eigenname',
+                'SEC_STATS_POS_PUNCT' : 'Interpunktion',
+                'SEC_STATS_POS_SCONJ' : 'Subordinierende Konjunktion',
+                'SEC_STATS_POS_SYM' : 'Symbol',
+                'SEC_STATS_POS_VERB' : 'Verb',
+                'SEC_STATS_POS_X' : 'N/A'
+            })
             .preferredLanguage('en')
             .fallbackLanguage('en');
     })
@@ -305,14 +342,14 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
             return parseFloat(val).toFixed(to || 0);
         }
     }).run(['$templateCache', function ($templateCache) {
-        $templateCache.put('template/smart-table/pagination2.html',
-            '<nav ng-if="pages.length >= 2">' +
-            '<ul class="pagination">' +
-            '<li><a ng-click="selectPage(1)">{{\'ST_PAGINATION_FIRST\' | translate}}</a>' +
-            '</li><li><a ng-click="selectPage(currentPage - 1)">&lt;</a>' +
-            '</li><li><a><page-select></page-select> {{\'ST_PAGINATION_OF\' | translate}} {{numPages}}</a>' +
-            '</li><li><a ng-click="selectPage(currentPage + 1)">&gt;</a>' +
-            '</li><li><a ng-click="selectPage(numPages)">{{\'ST_PAGINATION_LAST\' | translate}}</a></li>' +
-            '</ul>' +
-            '</nav>');
-    }]);
+    $templateCache.put('template/smart-table/pagination2.html',
+        '<nav ng-if="pages.length >= 2">' +
+        '<ul class="pagination">' +
+        '<li><a ng-click="selectPage(1)">{{\'ST_PAGINATION_FIRST\' | translate}}</a>' +
+        '</li><li><a ng-click="selectPage(currentPage - 1)">&lt;</a>' +
+        '</li><li><a><page-select></page-select> {{\'ST_PAGINATION_OF\' | translate}} {{numPages}}</a>' +
+        '</li><li><a ng-click="selectPage(currentPage + 1)">&gt;</a>' +
+        '</li><li><a ng-click="selectPage(numPages)">{{\'ST_PAGINATION_LAST\' | translate}}</a></li>' +
+        '</ul>' +
+        '</nav>');
+}]);
