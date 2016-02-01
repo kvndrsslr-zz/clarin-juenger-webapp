@@ -31,8 +31,8 @@ html(ng-app="ir-matrix-cooc")
                     //li(ng-class="getClass('/manual')")
                         a(href='/manual', translate='NAV_HELP')
                 ul.nav.navbar-nav.navbar-right
-                    li: a: span(ng-click="setLang('en')") en
-                    li: a: span(ng-click="setLang('de')") de
+                    li: a(href="", ng-click="setLang('en')") en
+                    li: a(href="", ng-click="setLang('de')") de
                     img#clarin-d-logo(src="/images/ClarinD-Logo_140.jpg", title="CLARIN-D")
         div(ng-view)
         if preloadHTML
