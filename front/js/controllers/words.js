@@ -72,7 +72,7 @@ angular.module('ir-matrix-cooc')
             });
         };
 
-
+        var svgcounter = 0; //counts active svg
 
         $scope.draw = function (xdata, logSwitch) {
             var formatNumber = d3.format(",.2f");
@@ -85,6 +85,9 @@ angular.module('ir-matrix-cooc')
             var charts = [];
             var dates = [];
             var cdata = [];
+
+
+
             xdata.forEach(function (x, i) {
                 var chartName = $translate.instant('SEC_WORDS_LABELGLUE', {label: x.word, corpus : x.corpus.displayName});
                 var yearDate = new Date(x.year,0,1,1,0);
@@ -117,6 +120,7 @@ angular.module('ir-matrix-cooc')
 
             var color = d3.scale.category10();
 
+            
 
             // domain muss zahl aller combis aus corpoa + wort sein (vorher berechnen!)
             color.domain(charts);
@@ -150,14 +154,45 @@ angular.module('ir-matrix-cooc')
                 .ticks(10)
             .orient("left");
 
+
+            var tip = d3.tip()
+              .attr('class', 'd3-tip')
+              //.offset([0,function(d){console.log( d3.mouse(this)[1]/2);return  d3.mouse(this)[1]/2;}])
+              .offset([500,500])
+              .html(function(d) { 
+tip.offset(function() {
+  return [ this.getBBox().height / 2, -100]
+})
+                /*console.log( d3.mouse(this)[0]-(width/2));/*console.log(d3.event.pageY);/*console.log(d3.mouse(this)[0]);console.log(y.invert(d3.mouse(this)[1]));*/
+                return "<strong>Frequency:</strong> <span style='color:red'>" + y.invert(d3.mouse(this)[1]) + "</span>";
+              });
+              
+
             var line = d3.svg.line()
                 .interpolate("linear")
                 .x(function(d) { return x(d.date); })
                 .y(function(d) { return y(d.relativeFreq); });
 
-            var svg = d3.select("#visualization-words").append("svg")
+
+
+            var svgdiv = d3.select("#visualization-words").append("div")
+                .attr("id",function(){svgcounter++; return "svg"+svgcounter+"div";});
+
+            var svgdivheader = d3.select("#svg"+svgcounter+"div")
+                .append("h3")
+                .text("SVG #"+svgcounter);
+            
+            svgdivheader.append("span")
+                .attr("class","glyphicon glyphicon-chevron-down svgarrow")
+                .attr("id", "svg"+svgcounter+"chevron")
+                .attr("name", "svg"+svgcounter)
+                .style("margin-left","15px");
+
+            
+            var svg = d3.select("#svg"+svgcounter+"div").append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
+                .attr("id",function(){return "svg"+svgcounter;})
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -176,27 +211,89 @@ angular.module('ir-matrix-cooc')
                 .style("text-anchor", "end")
                 .text($translate.instant('SEC_WORDS_YLABEL'));
 
+            svg.call(tip);            
+
             var city = svg.selectAll(".city")
                 .data(cities)
                 .enter().append("g")
-                .attr("class", "city");
+                .attr("class", "city")
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide)
+                ;
 
             city.append("path")
                 .attr("class", "line")
+                .attr("id",function(d,i){return "svg"+svgcounter+"line"+i;})
                 .attr("d", function(d) { return line(d.values); })
+                .attr("name",function(d) { return color(d.name); })
+                .on('mouseover', function(){ d3.select(this).style({"stroke-width":'5'});})
+                .on('mouseout', function(){ d3.select(this).style({"stroke-width":'3'});})
+                .style("stroke-width","3")
                 .style("stroke", function(d) { return color(d.name); });
 
-            city.append("text")
+           /* city.append("text")
                 .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
                 .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(parseFloat(d.value.relativeFreq)+0.0000000001) + ")"; })
                 .attr("x", 3)
                 .attr("dy", ".35em")
-                .text(function(d) { return d.name; });
+                .text(function(d) { return d.name+"bbb";});*/
+
+             var legend = svg.selectAll(".legend")
+                .data(cities)
+                .enter().append("g")
+                .attr("class", "legend");
+
+             legend.append("text")
+             .attr("class","legendtext")
+                    .attr("name",function(d,i){return "svg"+svgcounter+"line"+i;})
+                    .attr("x", width)         
+                    .attr("y", function(d,i){return 40+(i*17);})
+                    .style("font-size", "1.2em")
+                    .style('fill', function(d) { return color(d.name); })
+                    .text(function(d) { return d.name;});
+
+
+                    
+
+            $(".legendtext").mouseover(function(d){
+                $("#"+$(this).attr("name") )
+                    .css("stroke","red")
+                    .css("stroke-width","5")
+                    ; 
+            });
+
+            $(".legendtext").mouseout(function(d){
+                var lcol = $("#"+$(this).attr("name") ).attr("name");
+                $("#"+$(this).attr("name") )
+                    .css("stroke",lcol)
+                    .css("stroke-width","3")
+                    ; 
+            });
+
+         
+
+            $(".svgarrow").click(function(){
+                
+                if( $(this).hasClass("glyphicon-chevron-down") ){
+                    $(this).removeClass("glyphicon-chevron-down")
+                        .addClass("glyphicon-chevron-up");
+                //console.log( $("#"+$(this).attr("name")));
+                    $("#"+$(this).attr("name")).hide();   
+
+                }
+                else{
+                    $(this).removeClass("glyphicon-chevron-up")
+                        .addClass("glyphicon-chevron-down");
+
+                    $("#"+$(this).attr("name")).show();
+                }
+                
+            })
+
+            
         };
 
-
-
-
+    
 
     });
 

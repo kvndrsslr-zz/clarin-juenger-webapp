@@ -1,20 +1,22 @@
-../bower_components/jQuery/dist/jquery.js
-
+../bower_components/d3/d3.js
+../bower_components/d3-tip/index.js
 ../bower_components/angular/angular.js
+../bower_components/angular-route/angular-route.js
+../bower_components/angular-ui-utils/ui-utils.js
+../bower_components/angular-ui-select/dist/select.js
+../bower_components/angular-local-storage/dist/angular-local-storage.js
+../bower_components/jquery/dist/jquery.js
+../bower_components/bootstrap/dist/js/bootstrap.js
+../bower_components/angular-bootstrap/ui-bootstrap-tpls.js
+../bower_components/nsPopover/src/nsPopover.js
+../bower_components/angular-sanitize/angular-sanitize.js
+../bower_components/underscore/underscore.js
+../bower_components/angular-smart-table/dist/smart-table.js
 ../bower_components/ng-file-upload/ng-file-upload.js
 ../bower_components/ng-file-upload-shim/ng-file-upload-shim.js
 ../bower_components/angular-translate/angular-translate.js
-../bower_components/angular-smart-table/dist/smart-table.js
-../bower_components/d3/d3.js
-../bower_components/angular-sanitize/angular-sanitize.js
-../bower_components/bootstrap/dist/js/bootstrap.js
-../bower_components/angular-ui-select/dist/select.js
-../bower_components/angular-ui-utils/ui-utils.js
-../bower_components/angular-route/angular-route.js
-../bower_components/nsPopover/src/nsPopover.js
-../bower_components/angular-local-storage/dist/angular-local-storage.js
-../bower_components/angular-bootstrap/ui-bootstrap-tpls.js
-../bower_components/underscore/underscore.js
+../bower_components/jQuery/dist/jquery.js
+
 ../bower_components/select2/select2.js
 
 
