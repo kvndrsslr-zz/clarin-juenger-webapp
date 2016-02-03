@@ -135,10 +135,10 @@ angular.module('ir-matrix-cooc')
                 d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.relativeFreq; }); })
             ]);
 
-            console.log([
+            /*console.log([
                 Math.max(0.0000000001,d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.relativeFreq; }); })),
                 d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.relativeFreq; }); })
-            ]);
+            ]);*/
 
 
             var xAxis = d3.svg.axis()
@@ -182,8 +182,7 @@ angular.module('ir-matrix-cooc')
 
             var svgdivheader = d3.select("#svg"+svgcounter+"div")
                 .append("h3")
-                .text(function(d){console.log($(this));return "test";})
-                //.text("SVG #"+svgcounter);
+                .text("SVG #"+svgcounter);
             
             svgdivheader.append("span")
                 .attr("class","glyphicon glyphicon-chevron-down svgarrow")
