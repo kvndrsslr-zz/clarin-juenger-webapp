@@ -102,9 +102,9 @@ angular.module('ir-matrix-cooc')
 
             });
 
-            console.log(cdata);
-            console.log(dates);
-            console.log(charts);
+            //console.log(cdata);
+            //console.log(dates);
+            //console.log(charts);
 
             var margin = {top: 20, right: 200, bottom: 30, left: 50},
                 width = 1160 - margin.left - margin.right,
@@ -157,13 +157,11 @@ angular.module('ir-matrix-cooc')
 
             var tip = d3.tip()
               .attr('class', 'd3-tip')
-              //.offset([0,function(d){console.log( d3.mouse(this)[1]/2);return  d3.mouse(this)[1]/2;}])
-              .offset([500,500])
-              .html(function(d) { 
-tip.offset(function() {
-  return [ this.getBBox().height / 2, -100]
-})
-                /*console.log( d3.mouse(this)[0]-(width/2));/*console.log(d3.event.pageY);/*console.log(d3.mouse(this)[0]);console.log(y.invert(d3.mouse(this)[1]));*/
+              .offset([0,0])
+              .html(function(d) { tip.offset[0,0];
+                tip.offset(function() {//console.log(d3.mouse(this)[1]);
+                  return [ d3.mouse(this)[1],d3.mouse(this)[0]-(width/2)]
+                })
                 return "<strong>Frequency:</strong> <span style='color:red'>" + y.invert(d3.mouse(this)[1]) + "</span>";
               });
               
@@ -176,23 +174,54 @@ tip.offset(function() {
 
 
             var svgdiv = d3.select("#visualization-words").append("div")
-                .attr("id",function(){svgcounter++; return "svg"+svgcounter+"div";});
+                .attr("id",function(){
+                    svgcounter++; 
+                    return "svg"+svgcounter+"div";
+                })
+                .style("background-color","whitesmoke");
 
             var svgdivheader = d3.select("#svg"+svgcounter+"div")
                 .append("h3")
-                .text("SVG #"+svgcounter);
+                .text(function(d){console.log($(this));return "test";})
+                //.text("SVG #"+svgcounter);
             
             svgdivheader.append("span")
                 .attr("class","glyphicon glyphicon-chevron-down svgarrow")
                 .attr("id", "svg"+svgcounter+"chevron")
                 .attr("name", "svg"+svgcounter)
-                .style("margin-left","15px");
+                .on("click",function(d){
+                    
+                    if( $(this).hasClass("glyphicon-chevron-down") ){
+                        $("#"+$(this).attr("name")+"content").hide();
+                        $(this).removeClass("glyphicon-chevron-down");
+                        $(this).addClass("glyphicon-chevron-up");
+                    }
+                    else{
+                        $("#"+$(this).attr("name")+"content").show();
+                        $(this).removeClass("glyphicon-chevron-up");
+                        $(this).addClass("glyphicon-chevron-down");
 
+                    }
+                })
+                .style("margin-left","15px")
+                .style("cursor","pointer");
+
+            svgdivheader.append("span")
+                .attr("class","glyphicon glyphicon-remove svgremove")
+                .attr("id", "svg"+svgcounter+"remove")
+                .attr("name", "svg"+svgcounter)
+                .on("click",function(d){ 
+                    $( "#"+$(this).attr("name")+"div").remove(); 
+                })
+                .style("margin-right","5px")
+                .style("color","red")
+                .style("cursor","pointer")
+                .style("float","right");
             
             var svg = d3.select("#svg"+svgcounter+"div").append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
-                .attr("id",function(){return "svg"+svgcounter;})
+                .attr("id",function(){return "svg"+svgcounter+"content";})
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -231,12 +260,6 @@ tip.offset(function() {
                 .style("stroke-width","3")
                 .style("stroke", function(d) { return color(d.name); });
 
-           /* city.append("text")
-                .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
-                .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(parseFloat(d.value.relativeFreq)+0.0000000001) + ")"; })
-                .attr("x", 3)
-                .attr("dy", ".35em")
-                .text(function(d) { return d.name+"bbb";});*/
 
              var legend = svg.selectAll(".legend")
                 .data(cities)
@@ -270,25 +293,6 @@ tip.offset(function() {
                     ; 
             });
 
-         
-
-            $(".svgarrow").click(function(){
-                
-                if( $(this).hasClass("glyphicon-chevron-down") ){
-                    $(this).removeClass("glyphicon-chevron-down")
-                        .addClass("glyphicon-chevron-up");
-                //console.log( $("#"+$(this).attr("name")));
-                    $("#"+$(this).attr("name")).hide();   
-
-                }
-                else{
-                    $(this).removeClass("glyphicon-chevron-up")
-                        .addClass("glyphicon-chevron-down");
-
-                    $("#"+$(this).attr("name")).show();
-                }
-                
-            })
 
             
         };
