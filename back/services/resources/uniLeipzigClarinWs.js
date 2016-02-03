@@ -35,7 +35,7 @@ setInterval(cacheRefresh, cacheRefreshInterval);
  */
 exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
 
-    var baseUrl = 'http://clarinws.informatik.uni-leipzig.de:8080/wordlistwebservice/wordlist';
+    var baseUrl = 'http://clarintest.informatik.uni-leipzig.de:8080/wordlistwebservice/wordlist';
     var resource =
         /*
          Use this interface for new resource adapters
