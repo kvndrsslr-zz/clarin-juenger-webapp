@@ -158,10 +158,10 @@ angular.module('ir-matrix-cooc')
             var tip = d3.tip()
               .attr('class', 'd3-tip')
               .offset([0,0])
-              .html(function(d) { tip.offset[0,0];
+              .html(function(d) { /*tip.offset[0,0];
                 tip.offset(function() {//console.log(d3.mouse(this)[1]);
                   return [ d3.mouse(this)[1],d3.mouse(this)[0]-(width/2)]
-                })
+                })*/
                 return "<strong>Frequency:</strong> <span style='color:red'>" + y.invert(d3.mouse(this)[1]) + "</span>";
               });
               
