@@ -11,6 +11,26 @@ include ../mixins.jade
                         input.form-control(ng-model="words", id="words", type="text")
                     .form-group
                         label.control-label(for="")
+                            | {{ 'SEC_CONFIG_LANGUAGESELECTION_TEXT' | translate }}
+                        ui-select(multiple, searchEnabled="true", close-on-select="false",
+                        theme="bootstrap", ng-model="sel.languages", ng-change="updatecorpbylang()")
+                            ui-select-match(placeholder="{{'SEC_CONFIG_LANGUAGESELECTION_FILLIN' | translate }}") {{$item.language}}
+                            ui-select-choices(
+                            repeat="lang.language as lang in languages | filter: $select.search | orderBy: 'language'"
+                            )
+                                div(ng-bind-html="lang.language | highlight: $select.search")
+                    .form-group
+                        label.control-label(for="")
+                            | {{ 'SEC_CONFIG_GENRESELECTION_TEXT' | translate }}
+                        ui-select(multiple, searchEnabled="true", close-on-select="false",
+                        theme="bootstrap", ng-model="sel.genres", ng-change="updatecorpbygenre()")
+                            ui-select-match(placeholder="{{'SEC_CONFIG_GENRESELECTION_FILLIN' | translate }}") {{$item.genre}}
+                            ui-select-choices(
+                            repeat="genre.genre as genre in genres | filter: $select.search | orderBy: 'genre'"
+                            )
+                                div(ng-bind-html="genre.genre | highlight: $select.search")
+                    .form-group
+                        label.control-label(for="")
                             | {{ 'SEC_CONFIG_CORPUSSELECTION_TEXT' | translate }}
                         ui-select(multiple, searchEnabled="true", close-on-select="false",
                         theme="bootstrap", ng-model="sel.corpora")
@@ -20,6 +40,7 @@ include ../mixins.jade
                             )
                                 div(ng-bind-html="corpus.displayName | highlight: $select.search")
                 .col-xs-12.col-md-4
+                
                     .form-group
                         label.control-label(for="minYear") {{ 'SEC_WCONF_FIRSTY' | translate : {year : minYear} }}
                         input(ng-model="minYear", id="minYear", type="range",
