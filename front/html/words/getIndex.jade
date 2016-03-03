@@ -41,6 +41,10 @@ include ../mixins.jade
                                 div(ng-bind-html="corpus.displayName | highlight: $select.search")
                 .col-xs-12.col-md-4
                 
+                    .checkbox
+                        label.control-label(for="datetype")
+                            input(ng-model="datetype", id="datetypecb", type="checkbox")
+                            b {{ 'SEC_WCONF_DATETYPE' | translate}}
                     .form-group
                         label.control-label(for="minYear") {{ 'SEC_WCONF_FIRSTY' | translate : {year : minYear} }}
                         input(ng-model="minYear", id="minYear", type="range",

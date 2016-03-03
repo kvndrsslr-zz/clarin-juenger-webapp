@@ -36,17 +36,24 @@ exports.getIndex = function (resourceManager) {
                     if( genre.indexOf(d.genre) == -1){
                         genre.push(d.genre);
                     }
-
+                    var dr = d.name.substring(d.name.indexOf("_")+1,d.name.length);
+                    dr =dr.substring(dr.indexOf("_")+1,dr.length);
+                    if(dr.indexOf("_") != -1){
+                        dr = dr.substring(0,dr.indexOf("_"));
+                    }
                     return {
-                        'name' : c,
-                        'displayName' : d.name.substring(d.name.indexOf("_")+1,d.name.lastIndexOf("_")),
+                        //'name' : c,
+                        'name' : d.name,
+                        //'displayName' : d.name.substring(d.name.indexOf("_")+1,d.name.lastIndexOf("_")),
+                        'displayName' : d.name,
                         'shortname' : d.displayName,
                         'description' : d.description,
                         'genre' : d.genre,
                         'resourceId' : d.resourceId,
                         'language' : d.name.substring(0, 3),
                         'date' : d.date,
-                        'datetype' : (d.dateraw.length==4) ? 'year':'week'
+                        'dateraw' : dr,
+                        'datetype' : (d.dateraw.length==4) ? 'year':'day'
                     }
                 }),
                 languages : language.map(function(c){

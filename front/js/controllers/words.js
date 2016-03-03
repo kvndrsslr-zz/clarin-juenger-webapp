@@ -2,6 +2,7 @@ angular.module('ir-matrix-cooc')
     .controller('wordsController', function ($scope, $timeout, $http, $translate, data) {
 
         $scope.logSwitch = false;
+        $scope.datetype = false;
         // feature display toggle
         var showFeature = {'Konfiguration' : false};
         $scope.show = function (id, write) {
@@ -36,23 +37,6 @@ angular.module('ir-matrix-cooc')
         });
 
         $scope.$watch('corpora', function (y) { /*console.log(y.length);*/        });
-        $scope.$watch('sel.genres', function (y) { 
-            var y = $scope.sel.corpora.filter(function(s){
-                if($scope.sel.genres.indexOf(s.genre) != -1 ) {
-                    return s;
-                }
-            });
-            $scope.sel.corpora = y;
-        });
-
-        $scope.$watch('sel.languages', function (y) { 
-            var y = $scope.sel.corpora.filter(function(s){
-                if($scope.sel.languages.indexOf(s.language) != -1 ) {
-                    return s;
-                }
-            });
-            $scope.sel.corpora = y;
-        });
 
         $scope.sel = {corpora : [],languages:[],genres:[]};
 
@@ -323,23 +307,36 @@ angular.module('ir-matrix-cooc')
     $scope.updatecorpbylang = function(){
 
         var y = data.corpora.filter(function(s){ 
-            if($scope.sel.languages.indexOf(s.language) != -1 ) {
-               // console.log(s);
-                return s;
+            if( ($scope.datetype ==false && s.datetype == 'year') || ($scope.datetype ==true && s.datetype == 'day')  ){
+                if($scope.sel.languages.indexOf(s.language) != -1 ) {
+                    console.log(s);
+                    if($scope.sel.genres.indexOf(s.genre) != -1 ) {
+                        return s;
+                    }
+                    
+                }
             }
+            
         });
         $scope.corpora = y;
     }
 
     $scope.updatecorpbygenre = function(){
         var y = data.corpora.filter(function(s){
-            if($scope.sel.genres.indexOf(s.genre) != -1 ) {
-                //console.log(s);
-                return s;
+            if( ($scope.datetype ==false && s.datetype == 'year') || ($scope.datetype ==true && s.datetype == 'day')  ){
+                if($scope.sel.genres.indexOf(s.genre) != -1 ) {
+                    console.log(s);
+                    if($scope.sel.languages.indexOf(s.language) != -1 ) {
+                        return s;
+                    }
+                }
+                
             }
-        });
-        $scope.corpora = y;
-    }
+        
+            
+    });
+    $scope.corpora = y;
+}
 
     });
 
