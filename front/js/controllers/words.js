@@ -18,7 +18,7 @@ angular.module('ir-matrix-cooc')
         $scope.getWords = function () {
             return $scope.words.split(",").map(function (w) {return w.trim()}).filter(function (w) {return w !== ""});
         };
-        $scope.corpora = [];//data.corpora;
+        $scope.corpora = [];
     //console.log(data.corpora);
         $scope.genres = data.genres;
         $scope.languages = data.languages;
@@ -41,7 +41,7 @@ angular.module('ir-matrix-cooc')
         $scope.sel = {corpora : [],languages:[],genres:[]};
 
         $scope.validation = function () {
-            if ($scope.sel.corpora.length < 1) {
+            if ($scope.corpora.length < 1) {
                 return "Bitte mindestens 1 Korpora auswählen!";
             } else if ($scope.getWords().length === 0) {
                 return 'Bitte mindestens 1 Wort zum Vergleichen eingeben!';
@@ -55,15 +55,15 @@ angular.module('ir-matrix-cooc')
             var payload = {
                 words : $scope.getWords(),
                 corpora : $scope.corpora.filter(function (c) {
-                    var filter = false;
-                    $scope.sel.corpora.forEach(function (s) {
-                        if (s === c.name) filter = true;
-                    });
+                    var filter = true;
+                    //if (s === c.name) filter = true;
+                    
                     return filter;
                 }),
                 minYear: $scope.minYear,
                 maxYear: $scope.maxYear
             };
+            //console.log(payload);
             $http({
                 method: 'post',
                 url: '/api/words',
@@ -94,21 +94,40 @@ angular.module('ir-matrix-cooc')
             var cdata = [];
 
 
-
-            xdata.forEach(function (x, i) {
-                var chartName = $translate.instant('SEC_WORDS_LABELGLUE', {label: x.word, corpus : x.corpus.displayName});
+           xdata.forEach(function (x, i) {
+            var abstractname = x.corpus.language+'_'+x.corpus.genre;
+                //var chartName = $translate.instant('SEC_WORDS_LABELGLUE', {label: x.word, corpus : x.corpus.displayName});
+                var chartName = $translate.instant('SEC_WORDS_LABELGLUE', {label: x.word, corpus : abstractname});
                 var yearDate = new Date(x.year,0,1,1,0);
                 if (charts.indexOf(chartName) === -1) {
                     charts.push(chartName);
                     cdata.push({name: chartName, values: []});
                 }
-                if (dates.indexOf(yearDate) === -1)
+                else{
+
+                }
+                if (dates.indexOf(yearDate) === -1){
                     dates.push(yearDate);
-                cdata.filter(function (d) {return d.name === chartName})[0]['values'].push({date: yearDate, relativeFreq: x.freq.relative});
-                //var dPoint = data.filter(function (d) {return d.date === yearDate})[0];
+                }
+                var cchart = cdata.filter(function (d) {return d.name === chartName})[0]['values'];
+                
+
+                var ccle = cchart.filter(function(d){return d.date.getTime() === yearDate.getTime();}).length;
+                
+                if(ccle === 0){
+                    cchart.push({date: yearDate, relativeFreq: x.freq.relative});
+                }
+                else{
+                    for (var i = 0; i < cchart.length; i++){
+                      if (cchart[i].date.getTime() == yearDate.getTime()){
+                         cchart[i].relativeFreq += x.freq.relative;
+                      }
+                    }
+                }
+
 
             });
-
+    
             //console.log(cdata);
             //console.log(dates);
             //console.log(charts);
@@ -309,7 +328,7 @@ angular.module('ir-matrix-cooc')
         var y = data.corpora.filter(function(s){ 
             if( ($scope.datetype ==false && s.datetype == 'year') || ($scope.datetype ==true && s.datetype == 'day')  ){
                 if($scope.sel.languages.indexOf(s.language) != -1 ) {
-                    console.log(s);
+                    //console.log(s);
                     if($scope.sel.genres.indexOf(s.genre) != -1 ) {
                         return s;
                     }
@@ -325,7 +344,7 @@ angular.module('ir-matrix-cooc')
         var y = data.corpora.filter(function(s){
             if( ($scope.datetype ==false && s.datetype == 'year') || ($scope.datetype ==true && s.datetype == 'day')  ){
                 if($scope.sel.genres.indexOf(s.genre) != -1 ) {
-                    console.log(s);
+                    //console.log(s);
                     if($scope.sel.languages.indexOf(s.language) != -1 ) {
                         return s;
                     }

@@ -202,7 +202,6 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                 params.words.forEach(function (word) {
                     //console.log('entering words loop');
                     for (var year = params.minYear; year <= params.maxYear; year++) {
-                        //console.log('entering years loop');
                         queryQ = queryQ.then(getWordFrequency.bind(null, corpus, year, word,corpus.dateraw));
                     }
                 });
@@ -221,6 +220,22 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                 console.log('Got cached wordfrequency for "' + sel+ '"!');
                 words.push(cached);
                 wordRetrieved.resolve();
+            }
+            //if year isn't related to the corpus date, then create dummy reponse. This dummy is needed for continious date->data sets for d3
+            else if(dateraw.length == 4 && year != dateraw){
+            	var w = {
+                    'word' : word,
+                    'corpus' : corpus,
+                    'year' : year,
+                    'pos' : '',
+                    'freq' : {
+                        total: 0,
+                        relative: 0
+                    	}	
+                	}
+                    words.push(w);
+                    wordRetrieved.resolve();
+            
             } else {
                 Q()
                     .then(qRequest.bind(null,
@@ -233,7 +248,7 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                         if (data[0].indexOf('<html>') === 0) {
                             data = [word, 0, 0];
                         }
-                        if(year == dateraw){
+                        
                         	var w = {
                             'word' : data[0],
                             'corpus' : corpus,
@@ -244,20 +259,7 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                                 relative: parseFloat(data[2])
                             	}	
                         	}
-                    	}
-                        else{
-                        	var w = {
-                            'word' : data[0],
-                            'corpus' : corpus,
-                            'year' : year,
-                            'pos' : data[3],
-                            'freq' : {
-                                total: 0,
-                                relative: 0
-                            	}	
-                        	}
-                        
-                        };
+                    	;
                         deep.set(cache.wordFrequency, sel, w);
                         words.push(w);
                         console.log('Retrieved word frequency for"' + sel + '"...');
