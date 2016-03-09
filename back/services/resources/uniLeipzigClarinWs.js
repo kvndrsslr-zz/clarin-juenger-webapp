@@ -201,7 +201,7 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                 if (corpus.resourceId === resource.id)
                 params.words.forEach(function (word) {
                     //console.log('entering words loop');
-                    for (var year = params.minYear; year <= params.maxYear; year++) {
+                    for (var year = params.minYear; year <= params.maxYear; year++) { 
                         queryQ = queryQ.then(getWordFrequency.bind(null, corpus, year, word,corpus.dateraw));
                     }
                 });
@@ -236,7 +236,22 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                     words.push(w);
                     wordRetrieved.resolve();
             
-            } else {
+            } 
+            else if(dateraw.length > 4 && dateraw.substring(0,dateraw.indexOf("-")) !=year ){
+            	var w = {
+                    'word' : word,
+                    'corpus' : corpus,
+                    'year' : year,
+                    'pos' : '',
+                    'freq' : {
+                        total: 0,
+                        relative: 0
+                    	}	
+                	}
+                    words.push(w);
+                    wordRetrieved.resolve();
+            }
+            else {
                 Q()
                     .then(qRequest.bind(null,
                         injectObjectToString(resource.url.wordFrequency, {
@@ -262,6 +277,7 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                     	;
                         deep.set(cache.wordFrequency, sel, w);
                         words.push(w);
+                        //console.log(corpus)
                         console.log('Retrieved word frequency for"' + sel + '"...');
                         wordRetrieved.resolve();
                     })

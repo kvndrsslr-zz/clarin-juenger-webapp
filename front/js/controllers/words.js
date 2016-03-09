@@ -38,7 +38,7 @@ angular.module('ir-matrix-cooc')
 
         $scope.$watch('corpora', function (y) { /*console.log(y.length);*/        });
 
-        $scope.sel = {corpora : [],languages:[],genres:[]};
+        $scope.sel = {languages:[],genres:[]};
 
         $scope.validation = function () {
             if ($scope.corpora.length < 1) {
@@ -156,10 +156,15 @@ angular.module('ir-matrix-cooc')
 
             x.domain([d3.min(dates), d3.max(dates)]);
 
+        
             y.domain([
-                Math.max(0.0000000001, d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.relativeFreq; }); })),
+                
+                Math.max(0.01, d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.relativeFreq; }); })),
                 d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.relativeFreq; }); })
-            ]);
+            ]);    
+        
+            
+            
 
             /*console.log([
                 Math.max(0.0000000001,d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.relativeFreq; }); })),
@@ -176,7 +181,13 @@ angular.module('ir-matrix-cooc')
 
             var yAxis = d3.svg.axis()
                 .scale(y)
-                .tickFormat(function(d) { return "" + logBase + formatPower(Math.round(Math.log(d)/Math.log(logBase))); })
+                .tickFormat(function(d) {  
+                    if(!logSwitch){
+                        return d;
+                    }
+                    else
+                        return "" + logBase + formatPower(Math.round(Math.log(d)/Math.log(logBase))); 
+                    })
                 .ticks(10)
             .orient("left");
 
@@ -322,40 +333,24 @@ angular.module('ir-matrix-cooc')
             
         };
 
-    
-    $scope.updatecorpbylang = function(){
 
-        var y = data.corpora.filter(function(s){ 
-            if( ($scope.datetype ==false && s.datetype == 'year') || ($scope.datetype ==true && s.datetype == 'day')  ){
-                if($scope.sel.languages.indexOf(s.language) != -1 ) {
-                    //console.log(s);
-                    if($scope.sel.genres.indexOf(s.genre) != -1 ) {
-                        return s;
-                    }
-                    
-                }
-            }
-            
-        });
-        $scope.corpora = y;
-    }
 
-    $scope.updatecorpbygenre = function(){
-        var y = data.corpora.filter(function(s){
-            if( ($scope.datetype ==false && s.datetype == 'year') || ($scope.datetype ==true && s.datetype == 'day')  ){
-                if($scope.sel.genres.indexOf(s.genre) != -1 ) {
-                    //console.log(s);
+        $scope.updatecorp = function(){
+
+            var y = data.corpora.filter(function(s){ 
+                if( ($scope.datetype ==false && s.datetype == 'year') || ($scope.datetype ==true && s.datetype == 'day')  ){
                     if($scope.sel.languages.indexOf(s.language) != -1 ) {
-                        return s;
+                        //console.log(s);
+                        if($scope.sel.genres.indexOf(s.genre) != -1 ) {
+                            return s;
+                        }
+                        
                     }
                 }
                 
-            }
-        
-            
-    });
-    $scope.corpora = y;
-}
+            });
+            $scope.corpora = y;
+        }
 
     });
 
