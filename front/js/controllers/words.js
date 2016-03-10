@@ -2,6 +2,7 @@ angular.module('ir-matrix-cooc')
     .controller('wordsController', function ($scope, $timeout, $http, $translate, data) {
 
         $scope.logSwitch = false;
+        $scope.datetype = false;
         // feature display toggle
         var showFeature = {'Konfiguration' : false};
         $scope.show = function (id, write) {
@@ -17,7 +18,10 @@ angular.module('ir-matrix-cooc')
         $scope.getWords = function () {
             return $scope.words.split(",").map(function (w) {return w.trim()}).filter(function (w) {return w !== ""});
         };
-        $scope.corpora = data.corpora;
+        $scope.corpora = [];
+    //console.log(data.corpora);
+        $scope.genres = data.genres;
+        $scope.languages = data.languages;
         $scope.minYearScale = data.minYear;
         $scope.maxYearScale = data.maxYear;
         $scope.minYear = data.minYear;
@@ -31,10 +35,13 @@ angular.module('ir-matrix-cooc')
             if (y < $scope.minYear)
                 $scope.minYear = y;
         });
-        $scope.sel = {corpora : []};
+
+        $scope.$watch('corpora', function (y) { /*console.log(y.length);*/        });
+
+        $scope.sel = {languages:[],genres:[]};
 
         $scope.validation = function () {
-            if ($scope.sel.corpora.length < 1) {
+            if ($scope.corpora.length < 1) {
                 return "Bitte mindestens 1 Korpora auswählen!";
             } else if ($scope.getWords().length === 0) {
                 return 'Bitte mindestens 1 Wort zum Vergleichen eingeben!';
@@ -48,15 +55,15 @@ angular.module('ir-matrix-cooc')
             var payload = {
                 words : $scope.getWords(),
                 corpora : $scope.corpora.filter(function (c) {
-                    var filter = false;
-                    $scope.sel.corpora.forEach(function (s) {
-                        if (s === c.name) filter = true;
-                    });
+                    var filter = true;
+                    //if (s === c.name) filter = true;
+                    
                     return filter;
                 }),
                 minYear: $scope.minYear,
                 maxYear: $scope.maxYear
             };
+            //console.log(payload);
             $http({
                 method: 'post',
                 url: '/api/words',
@@ -64,7 +71,7 @@ angular.module('ir-matrix-cooc')
                 data: payload
             }).success(function (data) {
                 console.log('success!');
-                console.log(data);
+                //console.log(data);
                 showFeature.Visualisierung = false;
                 $scope.draw(data, $scope.logSwitch);
             }).error(function (data, status, header) {
@@ -87,21 +94,40 @@ angular.module('ir-matrix-cooc')
             var cdata = [];
 
 
-
-            xdata.forEach(function (x, i) {
-                var chartName = $translate.instant('SEC_WORDS_LABELGLUE', {label: x.word, corpus : x.corpus.displayName});
+           xdata.forEach(function (x, i) {
+            var abstractname = x.corpus.language+'_'+x.corpus.genre;
+                //var chartName = $translate.instant('SEC_WORDS_LABELGLUE', {label: x.word, corpus : x.corpus.displayName});
+                var chartName = $translate.instant('SEC_WORDS_LABELGLUE', {label: x.word, corpus : abstractname});
                 var yearDate = new Date(x.year,0,1,1,0);
                 if (charts.indexOf(chartName) === -1) {
                     charts.push(chartName);
                     cdata.push({name: chartName, values: []});
                 }
-                if (dates.indexOf(yearDate) === -1)
+                else{
+
+                }
+                if (dates.indexOf(yearDate) === -1){
                     dates.push(yearDate);
-                cdata.filter(function (d) {return d.name === chartName})[0]['values'].push({date: yearDate, relativeFreq: x.freq.relative});
-                //var dPoint = data.filter(function (d) {return d.date === yearDate})[0];
+                }
+                var cchart = cdata.filter(function (d) {return d.name === chartName})[0]['values'];
+                
+
+                var ccle = cchart.filter(function(d){return d.date.getTime() === yearDate.getTime();}).length;
+                
+                if(ccle === 0){
+                    cchart.push({date: yearDate, relativeFreq: x.freq.relative});
+                }
+                else{
+                    for (var i = 0; i < cchart.length; i++){
+                      if (cchart[i].date.getTime() == yearDate.getTime()){
+                         cchart[i].relativeFreq += x.freq.relative;
+                      }
+                    }
+                }
+
 
             });
-
+    
             //console.log(cdata);
             //console.log(dates);
             //console.log(charts);
@@ -130,10 +156,15 @@ angular.module('ir-matrix-cooc')
 
             x.domain([d3.min(dates), d3.max(dates)]);
 
+        
             y.domain([
-                Math.max(0.0000000001, d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.relativeFreq; }); })),
+                
+                Math.max(0.01, d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.relativeFreq; }); })),
                 d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.relativeFreq; }); })
-            ]);
+            ]);    
+        
+            
+            
 
             /*console.log([
                 Math.max(0.0000000001,d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.relativeFreq; }); })),
@@ -150,7 +181,13 @@ angular.module('ir-matrix-cooc')
 
             var yAxis = d3.svg.axis()
                 .scale(y)
-                .tickFormat(function(d) { return "" + logBase + formatPower(Math.round(Math.log(d)/Math.log(logBase))); })
+                .tickFormat(function(d) {  
+                    if(!logSwitch){
+                        return d;
+                    }
+                    else
+                        return "" + logBase + formatPower(Math.round(Math.log(d)/Math.log(logBase))); 
+                    })
                 .ticks(10)
             .orient("left");
 
@@ -158,10 +195,10 @@ angular.module('ir-matrix-cooc')
             var tip = d3.tip()
               .attr('class', 'd3-tip')
               .offset([0,0])
-              .html(function(d) { tip.offset[0,0];
+              .html(function(d) { /*tip.offset[0,0];
                 tip.offset(function() {//console.log(d3.mouse(this)[1]);
                   return [ d3.mouse(this)[1],d3.mouse(this)[0]-(width/2)]
-                })
+                })*/
                 return "<strong>Frequency:</strong> <span style='color:red'>" + y.invert(d3.mouse(this)[1]) + "</span>";
               });
               
@@ -296,7 +333,24 @@ angular.module('ir-matrix-cooc')
             
         };
 
-    
+
+
+        $scope.updatecorp = function(){
+
+            var y = data.corpora.filter(function(s){ 
+                if( ($scope.datetype ==false && s.datetype == 'year') || ($scope.datetype ==true && s.datetype == 'day')  ){
+                    if($scope.sel.languages.indexOf(s.language) != -1 ) {
+                        //console.log(s);
+                        if($scope.sel.genres.indexOf(s.genre) != -1 ) {
+                            return s;
+                        }
+                        
+                    }
+                }
+                
+            });
+            $scope.corpora = y;
+        }
 
     });
 

@@ -78,6 +78,7 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                                 'displayName': fields[1].trim(),
                                 'description': fields[2].trim(),
                                 'date': new Date(Date.parse(fields[3].trim())),
+                                'dateraw' : fields[3].trim(),
                                 'genre': fields[4].trim(),
                                 'resourceId': resource.id
                             });
@@ -200,9 +201,8 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                 if (corpus.resourceId === resource.id)
                 params.words.forEach(function (word) {
                     //console.log('entering words loop');
-                    for (var year = params.minYear; year <= params.maxYear; year++) {
-                        //console.log('entering years loop');
-                        queryQ = queryQ.then(getWordFrequency.bind(null, corpus, year, word));
+                    for (var year = params.minYear; year <= params.maxYear; year++) { 
+                        queryQ = queryQ.then(getWordFrequency.bind(null, corpus, year, word,corpus.dateraw));
                     }
                 });
             }))
@@ -212,7 +212,7 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                     .then(function () { return words;});
             });
 
-        function getWordFrequency(corpus, year, word) {
+        function getWordFrequency(corpus, year, word,dateraw) {
             var wordRetrieved = Q.defer();
             var sel = [corpus.name, year, word].join(".");
             var cached = deep.get(cache.wordFrequency, sel);
@@ -220,18 +220,51 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                 console.log('Got cached wordfrequency for "' + sel+ '"!');
                 words.push(cached);
                 wordRetrieved.resolve();
-            } else {
+            }
+            //if year isn't related to the corpus date, then create dummy reponse. This dummy is needed for continious date->data sets for d3
+            else if(dateraw.length == 4 && year != dateraw){
+            	var w = {
+                    'word' : word,
+                    'corpus' : corpus,
+                    'year' : year,
+                    'pos' : '',
+                    'freq' : {
+                        total: 0,
+                        relative: 0
+                    	}	
+                	}
+                    words.push(w);
+                    wordRetrieved.resolve();
+            
+            } 
+            else if(dateraw.length > 4 && dateraw.substring(0,dateraw.indexOf("-")) !=year ){
+            	var w = {
+                    'word' : word,
+                    'corpus' : corpus,
+                    'year' : year,
+                    'pos' : '',
+                    'freq' : {
+                        total: 0,
+                        relative: 0
+                    	}	
+                	}
+                    words.push(w);
+                    wordRetrieved.resolve();
+            }
+            else {
                 Q()
                     .then(qRequest.bind(null,
                         injectObjectToString(resource.url.wordFrequency, {
-                            'corpusId' : corpus.name + '_' + year , 'word' : word
+                            //'corpusId' : corpus.name + '_' + year , 'word' : word
+                            'corpusId' : corpus.name , 'word' : word
                         })))
                     .then(function (response) {
                         var data = response.split('\t');
                         if (data[0].indexOf('<html>') === 0) {
                             data = [word, 0, 0];
                         }
-                        var w = {
+                        
+                        	var w = {
                             'word' : data[0],
                             'corpus' : corpus,
                             'year' : year,
@@ -239,10 +272,12 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                             'freq' : {
                                 total: parseFloat(data[1]),
                                 relative: parseFloat(data[2])
-                            }
-                        };
+                            	}	
+                        	}
+                    	;
                         deep.set(cache.wordFrequency, sel, w);
                         words.push(w);
+                        //console.log(corpus)
                         console.log('Retrieved word frequency for"' + sel + '"...');
                         wordRetrieved.resolve();
                     })

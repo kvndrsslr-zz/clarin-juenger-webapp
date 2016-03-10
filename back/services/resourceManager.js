@@ -14,7 +14,7 @@ exports.resourceManager = function (uniLeipzigClarinWs,userDefinedFromClient) {
     return resourceManager;
 
     function register (resource) {
-        if (resources.filter(function (r) {return r.id === resource.id}).length == 0) {
+        if (resources.filter(function (r) {return r.id === resource.id}).length || resources.length === 0){
             console.log('Registered resource: ' + resource.id);
             resources.push(resource);
         }
