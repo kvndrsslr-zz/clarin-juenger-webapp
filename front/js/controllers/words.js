@@ -353,4 +353,3 @@ angular.module('ir-matrix-cooc')
         }
 
     });
-

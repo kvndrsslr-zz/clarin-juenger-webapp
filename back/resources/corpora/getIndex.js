@@ -11,8 +11,41 @@ exports.getIndex = function (resourceManager) {
     return Q()
         .then(resourceManager.action('corpora'))
         .then(function (corpora) {
-            return {corpora : corpora};
-        });
+            var language = [];
+            var genre = [];
+            var corporä = [];
+
+            corpora.forEach(function (c) { 
+                var n = c.name;
+                 if (corporä.filter(function (corpys) {return corpys === n}).length === 0 /*&& y < 2000 && y > 999*/)
+                    corporä.push(n); 
+            });
+            return {corpora : corpora,
+                corp : corporä.map(function (c) {
+                    var d = corpora.filter(function (d) { /*console.log( d.name);*/  return d.name.indexOf(c) !== -1})[0];
+                    if( language.indexOf(d.name.substring(0, 3))  == -1 ){
+                        language.push( d.name.substring(0, 3));
+                    }
+
+                    if( genre.indexOf(d.genre) == -1){
+                        genre.push(d.genre); 
+                    }
+                }),
+                languages : language.map(function(c){
+                    return {
+                        'language' : c
+                    }
+                }),
+                genres : genre.map(function(g){
+                    return{
+                        'genre' : g
+                    }
+                }),
+
+            };
+        })
+        //.then(function (language) { return language;   })
+        ;
 };
 
 exports.post = function (workloadManager, matrixWorkload) {

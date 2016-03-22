@@ -43,6 +43,8 @@ angular.module('ir-matrix-cooc')
         $scope.wordCount = 10000;
         $scope.sel = {
             corpora: [],
+            genres: [],
+            languages: [],
             metric: 3,
             colors: 'REDDISH',
             sorting: 'sortOrder',
@@ -51,6 +53,12 @@ angular.module('ir-matrix-cooc')
             wordListType: 'BOTH',
             wordListOrigin: 'source'
         };
+        $scope.genres = data.genres;
+        $scope.languages = data.languages;
+
+        console.log(data.corpora);
+      //  console.log(data.genres);
+      //  console.log(data.languages);
 
         $scope.selectWordlist = function (name) {
             $scope.sel.wordList = name;
@@ -75,7 +83,7 @@ angular.module('ir-matrix-cooc')
         };
 
         function updateCorpora() {
-            $scope.corpora = data.corpora.concat(userCorpora.list()).map(function(c) {
+            /*$scope.corpora = data.corpora.concat(userCorpora.list()).map(function(c) {
                 if (c.name.substring(0,3) === "usr")
                     c['language'] = $translate.instant('SEC_CONFIG_USERLANGTYPE');
                 else
@@ -86,15 +94,15 @@ angular.module('ir-matrix-cooc')
                 return $scope.corpora.filter(function (d) {
                     return c === d.name;
                 }).length > 0;
-            })
+            })*/
         }
 
         $scope.deleteAllUserCorpora = function () {
             userCorpora.clear();
         };
 
-        updateCorpora();
-
+        //updateCorpora();
+/*
         $scope.languages = $scope.corpora.reduce(function (prev, curr, i) {
             if (i == 0) {
                 return prev.concat([curr.language]);
@@ -103,7 +111,7 @@ angular.module('ir-matrix-cooc')
             } else {
                 return prev;
             }
-        }, []);
+        }, []);*/
 
         function assignTranslations () {
             $scope.metrics = [
@@ -304,5 +312,24 @@ angular.module('ir-matrix-cooc')
                 $scope.selectJob(j);
             }
         });
+
+        $scope.updatecorp = function(){
+
+            var y = data.corpora.filter(function(s){  console.log(s);
+                //if( ($scope.datetype ==false && s.datetype == 'year') || ($scope.datetype ==true && s.datetype == 'day')  ){
+                    if($scope.sel.languages.indexOf(s.language) != -1 ) {
+                        console.log(s);
+                        if($scope.sel.genres.indexOf(s.genre) != -1 ) {
+                            return s;
+                        }
+                        
+                    }
+               //}
+                
+            });
+            $scope.corpora = y;
+            console.log(y);
+        }
+
     });
 

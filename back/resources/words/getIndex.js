@@ -69,9 +69,7 @@ exports.getIndex = function (resourceManager) {
                 minYear : minYear,
                 maxYear : maxYear};
         })
-    .then(function (language) { return language;
-
-    })
+    .then(function (language) { return language;   })
  };
 
 
