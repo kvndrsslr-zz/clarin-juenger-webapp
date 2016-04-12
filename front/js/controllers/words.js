@@ -83,7 +83,6 @@ angular.module('ir-matrix-cooc')
 
         $scope.draw = function (xdata, logSwitch) {
             var formatNumber = d3.format(",.2f");
-//var formatNumber = d3.format(".2s");
 
             var tickFormatForLogScale = function(d) { return "$" + formatNumber(d) };
 
@@ -129,10 +128,14 @@ angular.module('ir-matrix-cooc')
             });
     
             //adding sample data 
-            //cdata[0]['values'][90].relativeFreq = 25;
-            //cdata[1]['values'][90].relativeFreq = 28;
-            //cdata[1]['values'][91].relativeFreq = 33;
-            //cdata[1]['values'][92].relativeFreq = 3;
+            /*cdata[0]['values'][93].relativeFreq = 25;
+            cdata[0]['values'][90].relativeFreq = 28;
+            cdata[0]['values'][91].relativeFreq = 33;
+            cdata[0]['values'][92].relativeFreq = 3;
+            cdata[0]['values'][82].relativeFreq = 3;
+            cdata[1]['values'][83].relativeFreq = 13;
+            cdata[1]['values'][84].relativeFreq = 23;*/
+            //console.log(cdata);
             //console.log(cdata);
             //console.log(dates);
             //console.log(charts);
@@ -188,24 +191,13 @@ angular.module('ir-matrix-cooc')
                     })
                 .ticks(10)
             .orient("left");
-
-
-            var tip = d3.tip()
-              .attr('class', 'd3-tip')
-              .offset([0,0])
-              .html(function(d) { /*tip.offset[0,0];
-                tip.offset(function() {//console.log(d3.mouse(this)[1]);
-                  return [ d3.mouse(this)[1],d3.mouse(this)[0]-(width/2)]
-                })*/
-                return "<strong>Frequency:</strong> <span style='color:red'>" + y.invert(d3.mouse(this)[1]) + "</span>";
-              });
               
 
             var line = d3.svg.line()
                 .interpolate("linear")
                 .x(function(d) { return x(d.date); })
                 .y(function(d) { return y(d.relativeFreq); })
-                .defined(function(d){console.log(d.relativeFreq);return d.relativeFreq>=0;});
+                .defined(function(d){return d.relativeFreq>=0;});
 
 
 
@@ -273,33 +265,29 @@ angular.module('ir-matrix-cooc')
                 .attr("y", 6)
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
-                .text($translate.instant('SEC_WORDS_YLABEL'));
-
-            svg.call(tip);            
+                .text($translate.instant('SEC_WORDS_YLABEL'));        
 
             var city = svg.selectAll(".city")
                 .data(cities)
                 .enter().append("g")
                 .attr("id",function(d,i){return "svg"+svgcounter+"city"+i;})
                 .attr("class", "city")
-                .on('mouseover', tip.show)
-                .on('mouseout', tip.hide)
                 ;
 
             city.append("path")
                 .attr("class", "line")
                 .attr("id",function(d,i){return "svg"+svgcounter+"line"+i;})
                 .attr("d", function(d) {return line(d.values); })
-                .attr("name",function(d) { return color(d.name); })
-                .on('mouseover', function(){ d3.select(this).style({"stroke-width":'5'});})
-                .on('mouseout', function(){ d3.select(this).style({"stroke-width":'3'});})
-                .style("stroke-width","3")
+                //.attr("name",function(d) { return color(d.name); })
+                .on('mouseover', function(){ d3.select(this).style({"stroke-width":'4'});})
+                .on('mouseout', function(){ d3.select(this).style({"stroke-width":'2'});})
+                .style("stroke-width","2")
                 .style("stroke", function(d) { return color(d.name); })
                 ;
 
 
           
-            city.each(function(d,i,j){console.log(j);
+            city.each(function(d,i,j){
                 d['values'].forEach( function(e){
                     if ( e.relativeFreq >= 0 ) {
                         d3.select('#svg'+svgcounter+"city"+i)
@@ -308,6 +296,7 @@ angular.module('ir-matrix-cooc')
                         .attr("cx", line.x())
                         .attr("cy", line.y())
                         .attr("title",e.relativeFreq)
+                        .attr("class",function(d){return $(this).attr("class") + " "+"svg"+svgcounter+"line"+i;})
                         .attr("r", 3.5).style("fill", color(d.name));
                     }
                 });
@@ -330,18 +319,27 @@ angular.module('ir-matrix-cooc')
 
 
             $(".legendtext").mouseover(function(d){
+                $('.line').css("opacity", 0.2);
+                $('.dot').css("opacity", 0.2);
                 $("#"+$(this).attr("name") )
-                    .css("stroke","red")
-                    .css("stroke-width","5")
+                    .css("stroke-width","4")
+                    .css("opacity", 1.0)
                     ; 
+                 $("."+$(this).attr("name") )
+                    .attr("r", 4.75)
+                    .css("opacity", 1.0);
             });
 
             $(".legendtext").mouseout(function(d){
-                var lcol = $("#"+$(this).attr("name") ).attr("name");
+                $('.line').css("opacity", 1.0);
+                $('.dot').css("opacity", 1.0).attr("r", 3.5);
+                //var lcol = $("#"+$(this).attr("name") ).attr("name");
                 $("#"+$(this).attr("name") )
-                    .css("stroke",lcol)
-                    .css("stroke-width","3")
+                  //  .css("stroke",lcol)
+                    .css("stroke-width","2")
                     ; 
+
+
             });
 
 
