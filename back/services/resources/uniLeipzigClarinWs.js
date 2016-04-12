@@ -213,6 +213,7 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
             });
 
         function getWordFrequency(corpus, year, word,dateraw) {
+
             var wordRetrieved = Q.defer();
             var sel = [corpus.name, year, word].join(".");
             var cached = deep.get(cache.wordFrequency, sel);
@@ -223,19 +224,18 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
             }
             //if year isn't related to the corpus date, then create dummy reponse. This dummy is needed for continious date->data sets for d3
             else if(dateraw.length == 4 && year != dateraw){
-            	var w = {
+                var w = {
                     'word' : word,
                     'corpus' : corpus,
                     'year' : year,
                     'pos' : '',
                     'freq' : {
                         total: 0,
-                        relative: 0
+                        relative: -1
                     	}	
                 	}
                     words.push(w);
-                    wordRetrieved.resolve();
-            
+                    wordRetrieved.resolve();  
             } 
             else if(dateraw.length > 4 && dateraw.substring(0,dateraw.indexOf("-")) !=year ){
             	var w = {
@@ -245,7 +245,7 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                     'pos' : '',
                     'freq' : {
                         total: 0,
-                        relative: 0
+                        relative: -1
                     	}	
                 	}
                     words.push(w);

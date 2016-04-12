@@ -115,11 +115,11 @@ angular.module('ir-matrix-cooc')
                 var ccle = cchart.filter(function(d){return d.date.getTime() === yearDate.getTime();}).length;
                 
                 if(ccle === 0){
-                    cchart.push({date: yearDate, relativeFreq: x.freq.relative});
+                    cchart.push({date: yearDate, relativeFreq: x.freq.relative});    
                 }
                 else{
                     for (var i = 0; i < cchart.length; i++){
-                      if (cchart[i].date.getTime() == yearDate.getTime()){
+                      if (cchart[i].date.getTime() == yearDate.getTime() && x.freq.relative >= 0 ){
                          cchart[i].relativeFreq += x.freq.relative;
                       }
                     }
@@ -128,6 +128,11 @@ angular.module('ir-matrix-cooc')
 
             });
     
+            //adding sample data 
+            //cdata[0]['values'][90].relativeFreq = 25;
+            //cdata[1]['values'][90].relativeFreq = 28;
+            //cdata[1]['values'][91].relativeFreq = 33;
+            //cdata[1]['values'][92].relativeFreq = 3;
             //console.log(cdata);
             //console.log(dates);
             //console.log(charts);
@@ -146,14 +151,10 @@ angular.module('ir-matrix-cooc')
 
             var color = d3.scale.category10();
 
-            
-
             // domain muss zahl aller combis aus corpoa + wort sein (vorher berechnen!)
             color.domain(charts);
 
-            //
             var cities = cdata;
-
             x.domain([d3.min(dates), d3.max(dates)]);
 
         
@@ -161,10 +162,7 @@ angular.module('ir-matrix-cooc')
                 
                 Math.max(0.01, d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.relativeFreq; }); })),
                 d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.relativeFreq; }); })
-            ]);    
-        
-            
-            
+            ]);              
 
             /*console.log([
                 Math.max(0.0000000001,d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.relativeFreq; }); })),
@@ -206,7 +204,8 @@ angular.module('ir-matrix-cooc')
             var line = d3.svg.line()
                 .interpolate("linear")
                 .x(function(d) { return x(d.date); })
-                .y(function(d) { return y(d.relativeFreq); });
+                .y(function(d) { return y(d.relativeFreq); })
+                .defined(function(d){console.log(d.relativeFreq);return d.relativeFreq>=0;});
 
 
 
@@ -281,6 +280,7 @@ angular.module('ir-matrix-cooc')
             var city = svg.selectAll(".city")
                 .data(cities)
                 .enter().append("g")
+                .attr("id",function(d,i){return "svg"+svgcounter+"city"+i;})
                 .attr("class", "city")
                 .on('mouseover', tip.show)
                 .on('mouseout', tip.hide)
@@ -289,20 +289,36 @@ angular.module('ir-matrix-cooc')
             city.append("path")
                 .attr("class", "line")
                 .attr("id",function(d,i){return "svg"+svgcounter+"line"+i;})
-                .attr("d", function(d) { return line(d.values); })
+                .attr("d", function(d) {return line(d.values); })
                 .attr("name",function(d) { return color(d.name); })
                 .on('mouseover', function(){ d3.select(this).style({"stroke-width":'5'});})
                 .on('mouseout', function(){ d3.select(this).style({"stroke-width":'3'});})
                 .style("stroke-width","3")
-                .style("stroke", function(d) { return color(d.name); });
+                .style("stroke", function(d) { return color(d.name); })
+                ;
 
 
-             var legend = svg.selectAll(".legend")
+          
+            city.each(function(d,i,j){console.log(j);
+                d['values'].forEach( function(e){
+                    if ( e.relativeFreq >= 0 ) {
+                        d3.select('#svg'+svgcounter+"city"+i)
+                        .datum(e)
+                        .append("circle").attr("class", "dot")
+                        .attr("cx", line.x())
+                        .attr("cy", line.y())
+                        .attr("title",e.relativeFreq)
+                        .attr("r", 3.5).style("fill", color(d.name));
+                    }
+                });
+            });
+
+            var legend = svg.selectAll(".legend")
                 .data(cities)
                 .enter().append("g")
                 .attr("class", "legend");
 
-             legend.append("text")
+            legend.append("text")
              .attr("class","legendtext")
                     .attr("name",function(d,i){return "svg"+svgcounter+"line"+i;})
                     .attr("x", width)         
@@ -312,7 +328,6 @@ angular.module('ir-matrix-cooc')
                     .text(function(d) { return d.name;});
 
 
-                    
 
             $(".legendtext").mouseover(function(d){
                 $("#"+$(this).attr("name") )
