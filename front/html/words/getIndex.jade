@@ -3,14 +3,15 @@ include ../mixins.jade
 .container
     +feature('Konfiguration', 'SEC_WCONF')
         .row
-            form(ng-submit="submit()")
+            form(ng-submit="submit()").form
                 .col-xs-12.col-md-8
                     .form-group
-                        label.control-label(for="words") {{ 'SEC_WCONF_WORDS' | translate }}
-                            small  {{ 'SEC_WCONF_WORDSHINT' | translate }}
-                        input.form-control(ng-model="words", id="words", type="text")
+                        .col-xs-12.col-md-12
+                            label.control-label(for="words") {{ 'SEC_WCONF_WORDS' | translate }}
+                                small  {{ 'SEC_WCONF_WORDSHINT' | translate }}
+                            input.form-control(ng-model="words", id="words", type="text")
                     .form-group
-                        .col-xs-6.col-md-6
+                        .col-xs-6.col-md-6.marginTop15
                             label.control-label(for="")
                                 | {{ 'SEC_CONFIG_LANGUAGESELECTION_TEXT' | translate }}
                             ui-select(multiple, searchEnabled="true", close-on-select="false",
@@ -20,7 +21,7 @@ include ../mixins.jade
                                 repeat="lang.language as lang in languages | filter: $select.search | orderBy: 'language'"
                                 )
                                     div(ng-bind-html="lang.language | highlight: $select.search")
-                        .col-xs-6.col-md-6
+                        .col-xs-6.col-md-6.marginTop15
                             label.control-label(for="")
                                 | {{ 'SEC_CONFIG_GENRESELECTION_TEXT' | translate }}
                             ui-select(multiple, searchEnabled="true", close-on-select="false",
