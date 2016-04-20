@@ -21,7 +21,7 @@ exports.getIndex = function (resourceManager) {
                     corporä.push(n); 
             });
             return {corpora : corpora,
-                corp : corporä.map(function (c) {
+                corp : corporä.map(function (c) { 
                     var d = corpora.filter(function (d) { /*console.log( d.name);*/  return d.name.indexOf(c) !== -1})[0];
                     if( language.indexOf(d.name.substring(0, 3))  == -1 ){
                         language.push( d.name.substring(0, 3));

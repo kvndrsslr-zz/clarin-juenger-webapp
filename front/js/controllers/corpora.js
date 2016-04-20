@@ -38,6 +38,7 @@ angular.module('ir-matrix-cooc')
             updateCorpora();
         },1000);
 
+        $scope.$watch('corpora', function (y) { /*console.log(y.length);*/        });
 
         $scope.requestName = "";
         $scope.wordCount = 10000;
@@ -56,7 +57,7 @@ angular.module('ir-matrix-cooc')
         $scope.genres = data.genres;
         $scope.languages = data.languages;
 
-        console.log(data.corpora);
+        //console.log(data.corpora);
       //  console.log(data.genres);
       //  console.log(data.languages);
 
@@ -133,6 +134,7 @@ angular.module('ir-matrix-cooc')
             // validation function for form
             $scope.validation = function () {
                 if ($scope.sel.corpora.length < 2) {
+                //if ($scope.corpora.length < 2) {
                     return $translate.instant('CON_VALIDATIONMSG');
                 } else {
                     return '';
@@ -189,6 +191,7 @@ angular.module('ir-matrix-cooc')
 
         $scope.$watch('sel.PosTags', function(val) {
             var elem = angular.element('.st-global-search');
+            //var elem = angular.element(document).find('.st-global-search');
             elem.val(val || '');
             angular.element(elem).trigger('input');
 
@@ -315,10 +318,10 @@ angular.module('ir-matrix-cooc')
 
         $scope.updatecorp = function(){
 
-            var y = data.corpora.filter(function(s){  console.log(s);
+            var y = data.corpora.filter(function(s){  
                 //if( ($scope.datetype ==false && s.datetype == 'year') || ($scope.datetype ==true && s.datetype == 'day')  ){
                     if($scope.sel.languages.indexOf(s.language) != -1 ) {
-                        console.log(s);
+                        
                         if($scope.sel.genres.indexOf(s.genre) != -1 ) {
                             return s;
                         }
@@ -328,7 +331,7 @@ angular.module('ir-matrix-cooc')
                 
             });
             $scope.corpora = y;
-            console.log(y);
+            //console.log(y);
         }
 
     });

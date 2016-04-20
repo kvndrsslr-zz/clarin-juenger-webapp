@@ -80,7 +80,8 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                                 'date': new Date(Date.parse(fields[3].trim())),
                                 'dateraw' : fields[3].trim(),
                                 'genre': fields[4].trim(),
-                                'resourceId': resource.id
+                                'resourceId': resource.id,
+                                'language': fields[0].trim().substring(0,3)
                             });
                     }
                 });
