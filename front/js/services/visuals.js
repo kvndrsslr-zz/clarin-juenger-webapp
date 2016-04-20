@@ -339,12 +339,15 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
         function treeSearch (stack, cb) {
             while (stack.length > 0) {
                 var node = stack.pop();
-                var leaf = typeof node.children === "undefined";
-                if (cb(node, leaf, stack) && !leaf) {
-                    node.children.forEach(function (child) {
-                        stack.push(child);
-                    });
+                if (typeof node !== 'undefined'){
+                    var leaf = typeof node.children === "undefined";
+                    if (cb(node, leaf, stack) && !leaf) {
+                        node.children.forEach(function (child) {
+                            stack.push(child);
+                        });
+                    }    
                 }
+                
             }
         }
 
