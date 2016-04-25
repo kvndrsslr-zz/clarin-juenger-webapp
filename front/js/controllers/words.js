@@ -93,11 +93,25 @@ angular.module('ir-matrix-cooc')
             var cdata = [];
 
 
+
+
            xdata.forEach(function (x, i) {
             var abstractname = x.corpus.language+'_'+x.corpus.genre;
                 //var chartName = $translate.instant('SEC_WORDS_LABELGLUE', {label: x.word, corpus : x.corpus.displayName});
                 var chartName = $translate.instant('SEC_WORDS_LABELGLUE', {label: x.word, corpus : abstractname});
-                var yearDate = new Date(x.year,0,1,1,0);
+                
+                
+
+                var yearDate = new Date(x.year,0,1,1,0); 
+                
+                if( x.corpus.dateraw.indexOf("-") != -1){
+                    var tmp = x.corpus.dateraw.split("-");
+                    yearDate = new Date(tmp[0],tmp[1]-1,tmp[2],1,0); 
+
+                } 
+
+                
+                
                 if (charts.indexOf(chartName) === -1) {
                     charts.push(chartName);
                     cdata.push({name: chartName, values: []});
@@ -159,6 +173,7 @@ angular.module('ir-matrix-cooc')
 
             var cities = cdata;
             x.domain([d3.min(dates), d3.max(dates)]);
+            
 
         
             y.domain([
