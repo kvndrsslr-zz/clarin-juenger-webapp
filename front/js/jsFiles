@@ -25,6 +25,7 @@ front-app.js
 controllers/corpora.js
 controllers/header.js
 controllers/words.js
+controllers/cooc.js
 services/jobs.js
 services/visuals.js
 services/usercorpora.js

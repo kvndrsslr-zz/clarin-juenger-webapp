@@ -31,6 +31,13 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
                     data: dataLoaderRunner
                 }
             })
+            .when('/cooc/', {
+                templateUrl: '/html/cooc/getIndex.html',
+                controller: 'coocController',
+                resolve: {
+                    data: dataLoaderRunner
+                }
+            })
             .otherwise({
                 redirectTo: '/corpora/'
             });
@@ -41,6 +48,7 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
             'NAV_CORPORA' : 'Similarity Matrix',
             'NAV_WORDS' : 'Word Frequency Analysis',
             'NAV_HELP' : 'Help',
+            'NAV_COOC' : 'CooccurGraph',
             'SEC_UPLOAD' : 'Upload Own Corpus',
             'SEC_UPLOAD_CHOOSEFILE' : 'File',
             'SEC_UPLOAD_NAME' : 'Name',
@@ -137,6 +145,7 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
                 'NAV_CORPORA' : 'Ähnlichkeitsmatrix',
                 'NAV_WORDS' : 'Worthäufigkeitsanalyse',
                 'NAV_HELP' : 'Hilfe',
+                'NAV_COOC' : 'Kookkurrenzgraph',
                 'SEC_UPLOAD' : 'Eigenes Korpus hochladen',
                 'SEC_UPLOAD_CHOOSEFILE' : 'Datei',
                 'SEC_UPLOAD_NAME' : 'Name',

@@ -12,7 +12,8 @@ var cacheRefresh = function () {
     cache = {
        'corpora' : [],
        'wordList' : [],
-       'wordFrequency' : {}
+       'wordFrequency' : {},
+       'cooccurrencesgraphtext' : {}
     };
 };
 cacheRefresh();
@@ -46,12 +47,14 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
         'url' : {
             'corpora' : baseUrl + '/availableWordlists',
             'wordList' : baseUrl + '/{{corpusId}}/wordlisttext?limit={{wordCount}}',
-            'wordFrequency' : baseUrl + '/{{corpusId}}/wordfrequencytext/{{word}}'
+            'wordFrequency' : baseUrl + '/{{corpusId}}/wordfrequencytext/{{word}}',
+            'cooccurrencesgraphtext' : baseUrl + '/{{corpusId}}/cooccurrencesgraphtext/{{word}}?limit25'
         },
         'action' : {
             'corpora' : corpora,
             'wordList' : wordList,
-            'wordFrequency' : wordFrequency
+            'wordFrequency' : wordFrequency,
+            'cooccurrencesgraphtext' : cooccurrencesgraphtext
         }
     };
 
@@ -290,6 +293,116 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
 
             }
             return wordRetrieved.promise;
-        }
+        } 
     }
+
+
+    /**
+     * Return the cooccurrencesgraphtext as specified by request params
+     */
+    function cooccurrencesgraphtext (params) {
+        var words = [];
+        var queryQ = Q();
+        //console.log('entering wf');
+        //console.log(JSON.stringify(params));
+        return Q()
+            .then(params.corpora.forEach.bind(params.corpora, function (corpus) {
+                //console.log('entering corpora loop');
+                if (corpus.resourceId === resource.id)
+                params.words.forEach(function (word) {
+                    //console.log('entering words loop');
+                    for (var year = params.minYear; year <= params.maxYear; year++) { 
+                        queryQ = queryQ.then(getCooccurrencesgraphtext.bind(null, corpus, year, word,corpus.dateraw));
+                    }
+                });
+            }))
+            .then(function () {
+                return queryQ
+                    .then(console.log.bind(console, "Resource retrieval finished."))
+                    .then(function () { return words;});
+            });
+
+        function getCooccurrencesgraphtext(corpus, year, word,dateraw) {
+
+            var wordRetrieved = Q.defer();
+            var sel = [corpus.name, year, word].join(".");
+            var cached = deep.get(cache.cooccurrencesgraphtext, sel);
+            if (typeof cached !== 'undefined') {
+                console.log('Got cached cooccurrencesgraphtext for "' + sel+ '"!');
+                words.push(cached);
+                wordRetrieved.resolve();
+            }
+            //if year isn't related to the corpus date, then create dummy reponse. This dummy is needed for continious date->data sets for d3
+            else if(dateraw.length == 4 && year != dateraw){
+                var w = {
+                    'word' : word,
+                    'corpus' : corpus,
+                    'year' : year,
+                    'pairs' : []   
+                    }
+                    words.push(w);
+                    wordRetrieved.resolve();  
+            } 
+            else if(dateraw.length > 4 && dateraw.substring(0,dateraw.indexOf("-")) !=year ){
+                var w = {
+                    'word' : word,
+                    'corpus' : corpus,
+                    'year' : year,
+                    'pairs' : []
+                    }
+                    words.push(w);
+                    wordRetrieved.resolve();
+            }
+            else {
+                Q()
+                    .then(qRequest.bind(null,
+                        injectObjectToString(resource.url.cooccurrencesgraphtext, {
+                            //'corpusId' : corpus.name + '_' + year , 'word' : word
+                            'corpusId' : corpus.name , 'word' : word
+                        })))
+                    .then(function (response) {
+                var data = response.split('\t');
+                        var rows = response.split('\n');
+                        var pairs = [];
+                        for(row in rows){
+                            var tmp = rows[row].split('\t');
+                            var t = {
+                                'word1' : tmp[0],
+                                'word2' : tmp[1],
+                                'absoluteFreq' : parseFloat(tmp[2]),
+                                'significance' : parseFloat(tmp[3])
+                            };
+                            pairs.push(t);
+                        }
+                        /*if (data[0].indexOf('<html>') === 0) {
+                            data = [word, 0, 0];
+                        }*/
+                        
+                            var w = {
+                            'word' : word,
+                            'corpus' : corpus,
+                            'year' : year,
+                            'pairs' : pairs   
+                            }
+                        ;
+                        deep.set(cache.cooccurrencesgraphtext, sel, w);
+                        words.push(w);
+                        //console.log(corpus)
+                        console.log('Retrieved cooccurrencesgraphtext for"' + sel + '"...');
+                        wordRetrieved.resolve();
+                    })
+                    .fail(function (error) {
+                        console.log('Failed to retrieve cooccurrencesgraphtext for"' + sel + '"...');
+                        console.log(error);
+                        wordRetrieved.resolve();
+                    });
+
+            }
+            return wordRetrieved.promise;
+        } 
+    }
+
+
+
+
 };
