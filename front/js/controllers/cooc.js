@@ -108,7 +108,7 @@ angular.module('ir-matrix-cooc')
 	        						var node1 = {"name":""+pairs[p].word1+"","group":1};
 	        					}
 	        					else{
-	        						var node1 = {"name":""+pairs[p].word1+"","group":10};	
+	        						var node1 = {"name":""+pairs[p].word1+"","group":3};	
 	        					}
 	        					
 	        					nodes.push(node1);
@@ -120,7 +120,7 @@ angular.module('ir-matrix-cooc')
 	        				if( wordset.indexOf(pairs[p].word2) == -1){
 	        					w2id = wordset.length;
 	        					wordset[wordset.length] = pairs[p].word2;
-	        					var node2 = {"name":""+pairs[p].word2+"","group":10};
+								var node2 = {"name":""+pairs[p].word2+"","group":4};
 	        					nodes.push(node2);
 	        				}
 	        				else{
@@ -150,9 +150,9 @@ angular.module('ir-matrix-cooc')
 			var margin = {top: 20, right: 200, bottom: 30, left: 50},
                 width = 1160 - margin.left - margin.right,
                 height = 500 - margin.top - margin.bottom,
-                 fill = d3.scale.category20();
+                 fill = d3.scale.category10();
 
-			var color = d3.scale.category20();
+			var color = d3.scale.category10();
 
 			var force = d3.layout.force()
 			    .charge(-60)
@@ -221,7 +221,7 @@ angular.module('ir-matrix-cooc')
 			d3.json("", function(error ) {
 			  if (error) throw error;
 
-			  force
+			  /*force
 			      .nodes(nodes)
 			      .links(links)
 			      .start();
@@ -255,10 +255,124 @@ angular.module('ir-matrix-cooc')
 			  });
 			});
 
+*/
+
+var force = self.force = d3.layout.force()
+        .nodes(nodes)
+        .links(links)
+        .gravity(.05)
+        .distance(height/2)
+        .charge(-30)
+        .size([width, height])
+        .start();
+
+    var link = svg.selectAll("line.link")
+        .data(links)
+        .enter().append("svg:line")
+        .style("stroke-width", function(d) { return d.value/4/*Math.sqrt(d.value)*/; })
+        //.style("stroke","gray")
+        .style("stroke",function(d){ if(d.source.name === startword){return "blue"}else{ return "gray";}})
+        .attr("class", "link")
+        .attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    var node_drag = d3.behavior.drag()
+        .on("dragstart", dragstart)
+        .on("drag", dragmove)
+        .on("dragend", dragend);
+
+    function dragstart(d, i) {
+        force.stop() // stops the force auto positioning before you start dragging
+    }
+
+    function dragmove(d, i) {
+        d.px += d3.event.dx;
+        d.py += d3.event.dy;
+        d.x += d3.event.dx;
+        d.y += d3.event.dy; 
+        tick(); // this is the key to make it work together with updating both px,py,x,y on d !
+    }
+
+    function dragend(d, i) {
+        d.fixed = true; // of course set the node to fixed so the force doesn't include the node in its auto positioning stuff
+        tick();
+        force.resume();
+    }
+
+    var linkedByIndex = {};
+	links.forEach(function(d) {
+		linkedByIndex[d.source.index + "," + d.target.index] = 1;
+		linkedByIndex[d.target.index + "," + d.source.index] = 1;
+	});
+
+	function neighboring(a, b){ 
+		if(a.index===b.index) return 1;
+	  return linkedByIndex[b.index + "," + a.index]; 
+	}
+	function neighboringlinks(a,b){ 
+		return (a.index==b.source.index) ? (a.index==b.source.index) : a.index==b.target.index;
+	}
 
 
 
+    var node = svg.selectAll("g.node")
+        .data(nodes)
+      .enter().append("svg:g")
+        .attr("class", "node")     
+        .call(node_drag)
+        .on("mouseover", fade(.1)).on("mouseout", fade(1));
 
+     node.append("circle")
+	  .attr("class", "node")
+	  .attr("r", 5)
+	  .style("fill", function(d) { return fill(d.group); })
+	  ;
+
+   node.append("svg:title")
+       .text(function(d) { return d.name; });
+
+    node.append("svg:text")
+        .attr("class", "nodetext text")
+        .attr("dx", 12)
+        .attr("dy", ".35em")
+        .style("fill",function(d) { return fill(d.group); })
+        //.append("a")
+    		//.attr("xlink:href", function(d) {return "hlink_book"+d.group;})
+    		//.attr("xlink:href", update("blub"))
+        .text(function(d) { return d.name })
+        .on({
+          "mouseover": function() { /* do stuff */ },
+          "mouseout":  function() { /* do stuff */ }, 
+          "click":  function(d) { update(d.name) }, 
+        });
+
+
+    force.on("tick", tick);
+
+    function tick() {
+      link.attr("x1", function(d) { return d.source.x; })
+          .attr("y1", function(d) { return d.source.y; })
+          .attr("x2", function(d) { return d.target.x; })
+          .attr("y2", function(d) { return d.target.y; });
+
+      node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+    };
+
+function fade(opacity) { 
+    return function(d, i){
+    	node.style("opacity", function(o) {
+    		if(opacity==1) return opacity;
+  			return neighboring(d, o) ? 1 : opacity;
+		});
+		link.style("opacity", function(o) {
+			if(opacity==1) return opacity;
+  			return neighboringlinks(d,o) ?   1:opacity;
+		});
+    }
+}
+});
 
 
         }
@@ -291,8 +405,38 @@ angular.module('ir-matrix-cooc')
             $scope.corpora = y;
         }
 
-        
+        function update(word){
+        	//console.log("##"+word);
 
+       		var words = [];
+       		words.push(word);
+            var payload = {
+                words : words,
+                corpora : $scope.corpora.filter(function (c) {
+                    var filter = true;
+                    //if (s === c.name) filter = true;
+                    
+                    return filter;
+                }),
+                minYear: $scope.minYear,
+                maxYear: $scope.maxYear
+            };
+            console.log(payload);
+            $http({
+                method: 'post',
+                url: '/api/cooc',
+                timeout: 9999999999,
+                data: payload
+            }).success(function (data) {
+                console.log('success!');
+                //console.log(data);
+                showFeature.Visualisierung = false;
+                $scope.draw(data);
+            }).error(function (data, status, header) {
+                console.log('error retrieving wordfrequencies!');
+            });
+        
+        }
 
 
     });
