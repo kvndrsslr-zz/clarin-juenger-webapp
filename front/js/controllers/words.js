@@ -348,17 +348,9 @@ angular.module('ir-matrix-cooc')
             $(".legendtext").mouseout(function(d){
                 $('.line').css("opacity", 1.0);
                 $('.dot').css("opacity", 1.0).attr("r", 3.5);
-                //var lcol = $("#"+$(this).attr("name") ).attr("name");
-                $("#"+$(this).attr("name") )
-                  //  .css("stroke",lcol)
-                    .css("stroke-width","2")
-                    ; 
-
-
+                $("#"+$(this).attr("name") ).css("stroke-width","2"); 
             });
 
-
-            
         };
 
 
