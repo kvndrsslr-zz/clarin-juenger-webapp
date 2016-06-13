@@ -19,7 +19,7 @@ angular.module('ir-matrix-cooc')
             return $scope.words.split(",").map(function (w) {return w.trim()}).filter(function (w) {return w !== ""});
         };
         $scope.corpora = [];
-    //console.log(data.corpora);
+        //console.log(data.corpora);
         $scope.genres = data.genres;
         $scope.languages = data.languages;
         $scope.minYearScale = data.minYear;
@@ -93,38 +93,26 @@ angular.module('ir-matrix-cooc')
             var cdata = [];
 
 
-
-
-           xdata.forEach(function (x, i) {
-            var abstractname = x.corpus.language+'_'+x.corpus.genre;
-                //var chartName = $translate.instant('SEC_WORDS_LABELGLUE', {label: x.word, corpus : x.corpus.displayName});
+            xdata.forEach(function (x, i) {
+                
+                var abstractname = x.corpus.language+'_'+x.corpus.genre;
                 var chartName = $translate.instant('SEC_WORDS_LABELGLUE', {label: x.word, corpus : abstractname});
-                
-                
-
                 var yearDate = new Date(x.year,0,1,1,0); 
                 
                 if( x.corpus.dateraw.indexOf("-") != -1){
                     var tmp = x.corpus.dateraw.split("-");
                     yearDate = new Date(tmp[0],tmp[1]-1,tmp[2],1,0); 
-
                 } 
 
-                
                 
                 if (charts.indexOf(chartName) === -1) {
                     charts.push(chartName);
                     cdata.push({name: chartName, values: []});
                 }
-                else{
-
-                }
                 if (dates.indexOf(yearDate) === -1){
                     dates.push(yearDate);
                 }
                 var cchart = cdata.filter(function (d) {return d.name === chartName})[0]['values'];
-                
-
                 var ccle = cchart.filter(function(d){return d.date.getTime() === yearDate.getTime();}).length;
                 
                 if(ccle === 0){
@@ -141,14 +129,6 @@ angular.module('ir-matrix-cooc')
 
             });
     
-            //adding sample data 
-            /*cdata[0]['values'][93].relativeFreq = 25;
-            cdata[0]['values'][90].relativeFreq = 28;
-            cdata[0]['values'][91].relativeFreq = 33;
-            cdata[0]['values'][92].relativeFreq = 3;
-            cdata[0]['values'][82].relativeFreq = 3;
-            cdata[1]['values'][83].relativeFreq = 13;
-            cdata[1]['values'][84].relativeFreq = 23;*/
             //console.log(cdata);
             //console.log(cdata);
             //console.log(dates);
@@ -168,7 +148,7 @@ angular.module('ir-matrix-cooc')
 
             var color = d3.scale.category10();
 
-            // domain muss zahl aller combis aus corpoa + wort sein (vorher berechnen!)
+            // domain muss zahl aller combis aus corpora + wort sein (vorher berechnen!)
             color.domain(charts);
 
             var cities = cdata;
@@ -212,7 +192,10 @@ angular.module('ir-matrix-cooc')
                 .interpolate("linear")
                 .x(function(d) { return x(d.date); })
                 .y(function(d) { return y(d.relativeFreq); })
-                .defined(function(d){return d.relativeFreq>=0;});
+                .defined(function(d){ 
+                    if( ($scope.datetype ==true ) ) return false;
+                    return d.relativeFreq>=0;
+                });
 
 
 
@@ -300,8 +283,7 @@ angular.module('ir-matrix-cooc')
                 .style("stroke", function(d) { return color(d.name); })
                 ;
 
-
-          
+  
             city.each(function(d,i,j){
                 d['values'].forEach( function(e){
                     if ( e.relativeFreq >= 0 ) {
@@ -350,7 +332,6 @@ angular.module('ir-matrix-cooc')
                 $('.dot').css("opacity", 1.0).attr("r", 3.5);
                 $("#"+$(this).attr("name") ).css("stroke-width","2"); 
             });
-
         };
 
 
@@ -364,12 +345,9 @@ angular.module('ir-matrix-cooc')
                         if($scope.sel.genres.indexOf(s.genre) != -1 ) {
                             return s;
                         }
-                        
                     }
                 }
-                
             });
             $scope.corpora = y;
         }
-
     });
