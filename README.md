@@ -1,5 +1,5 @@
 install:
-1) npm install -g synth
+1) sudo npm install -g synth@0.6.0
 2) clone repository
 3) cd clarin-juenger-webapp
 4) synth install -b
