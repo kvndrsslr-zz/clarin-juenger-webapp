@@ -56,12 +56,14 @@ include ../mixins.jade
                         popover-placement="left"
                     ) {{ 'SEC_CONFIG_SEND' | translate }}
 
-    +feature('Visualisierung', 'SEC_WORDS')
+    +feature('Visualisierung', 'SEC_COOC')
         .row
             form
                 .col-xs-12.col-md-4
             #visualization-words
-
+    +feature('CoocTable', 'SEC_COOC_TABLE')
+        .row
+            #cooctable
     // Padding nach unten
     .row
         p

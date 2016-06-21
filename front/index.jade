@@ -28,9 +28,9 @@ html(ng-app="ir-matrix-cooc")
                         a(href='/corpora', translate='NAV_CORPORA')
                     li(ng-class="getClass('/words')")
                         a(href='/words', translate='NAV_WORDS')
-                    //li(ng-class="getClass('/manual')")
+                    li(ng-class="getClass('/manual')")
                         a(href='/manual', translate='NAV_HELP')
-                    //li(ng-class="getClass('/cooc')")
+                    li(ng-class="getClass('/cooc')")
                         a(href='/cooc', translate='NAV_COOC')
                 ul.nav.navbar-nav.navbar-right
                     li: a: span(ng-click="setLang('en')") en

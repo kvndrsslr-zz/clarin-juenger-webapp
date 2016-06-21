@@ -65,7 +65,7 @@ angular.module('ir-matrix-cooc')
                 minYear: $scope.minYear,
                 maxYear: $scope.maxYear
             };
-            console.log(payload);
+            //console.log(payload);
             $http({
                 method: 'post',
                 url: '/api/cooc',
@@ -86,10 +86,13 @@ angular.module('ir-matrix-cooc')
 
         $scope.draw = function (xdata) {
 
+        	addTable(xdata);
+
         	var startword = "";
         	var wordset = [];
         	var nodes = [];
         	var links = [];
+
 
         	for(d in xdata){
 
@@ -139,7 +142,6 @@ angular.module('ir-matrix-cooc')
 
         				
         			}
-        			
         		}
         	}
         	//console.log(wordset);
@@ -159,17 +161,18 @@ angular.module('ir-matrix-cooc')
 			    .linkDistance(120)
 			    .size([width, height]);
 
-
+                $('#visualization-words').empty();
             var svgdiv = d3.select("#visualization-words").append("div")
                 .attr("id",function(){
-                    svgcounter++; 
+                    //svgcounter++; 
                     return "svg"+svgcounter+"div";
                 })
                 .style("background-color","whitesmoke");
 
             var svgdivheader = d3.select("#svg"+svgcounter+"div")
                 .append("h3")
-                .text("SVG #"+svgcounter);
+                //.text("SVG #"+svgcounter)
+                ;
             
             svgdivheader.append("span")
                 .attr("class","glyphicon glyphicon-chevron-down svgarrow")
@@ -229,7 +232,7 @@ angular.module('ir-matrix-cooc')
 			    var link = svg.selectAll("line.link")
 			        .data(links)
 			        .enter().append("svg:line")
-			        .style("stroke-width", function(d) { return d.value/4/*Math.sqrt(d.value)*/; })
+			        .style("stroke-width", function(d) { return d.value/2/*Math.sqrt(d.value)*/; })
 			        //.style("stroke","gray")
 			        .style("stroke",function(d){ if(d.source.name === startword){return "blue"}else{ return "gray";}})
 			        .attr("class", "link")
@@ -284,14 +287,14 @@ angular.module('ir-matrix-cooc')
 				        .call(node_drag)
 				        .on("mouseover", fade(.1)).on("mouseout", fade(1));
 
-			     node.append("circle")
-				  .attr("class", "node")
-				  .attr("r", 5)
-				  .style("fill", function(d) { return fill(d.group); })
-				  ;
+			    node.append("circle")
+				  	.attr("class", "node")
+				  	.attr("r", 5)
+					.style("fill", function(d) { return fill(d.group); })
+				;
 
-			   node.append("svg:title")
-			       .text(function(d) { return d.name; });
+			    node.append("svg:title")
+			        .text(function(d) { return d.name; });
 
 			    node.append("svg:text")
 			        .attr("class", "nodetext text")
@@ -365,7 +368,7 @@ angular.module('ir-matrix-cooc')
                 minYear: $scope.minYear,
                 maxYear: $scope.maxYear
             };
-            console.log(payload);
+            //console.log(payload);
             $http({
                 method: 'post',
                 url: '/api/cooc',
@@ -382,5 +385,56 @@ angular.module('ir-matrix-cooc')
         
         }
 
+
+        function addTable(data){    	
+            //cooctable
+            $('#cooctable').empty();
+            var table = $('<table class="table table-bordered table-striped" />').css('border',"black 1px solid").css("padding","3px");
+            var thead = $('<thead />');
+            var tbody = $('<tbody />');
+
+            var theadtr = $('<tr />');
+            theadtr.append('<th style="border:1px black solid;padding:3px">corpus</th>')
+                    .append('<th class="col-xs-4 " style="border:1px black solid;padding:3px">word1</th>')
+                    .append('<th class="col-xs-4 " style="border:1px black solid;padding:3px">word2</th>')
+                    .append('<th class="col-xs-4 " style="border:1px black solid;padding:3px">ABSOLUTE_FREQUENCY</th>')
+                    .append('<th class="col-xs-4 " style="border:1px black solid;padding:3px">significance</th>');            
+
+            thead.append(theadtr);
+
+        	for(d in data){
+        		if(data[d].pairs.length>0){
+
+                    corpname = data[d].corpus.name;
+                    for(e in data[d].pairs){
+                        //console.log( corpname+": "+data[d].pairs[e].word1);
+                        var tr = $('<tr />');
+                        var cn = $('<td/>').css('border',"black 1px solid").css("padding","3px").text(corpname);
+                        var w1 = $('<div name="'+data[d].pairs[e].word1+'">')
+                        .attr("name",data[d].pairs[e].word1)
+                        .text(data[d].pairs[e].word1)
+                        .click(function(){update($(this).attr("name"));})
+                        ;
+                        //var wa = $('<td />').css('border',"black 1px solid").css("padding","3px").text(data[d].pairs[e].word1);
+                        var wa = $('<td />').css('border',"black 1px solid").css("padding","3px").append(w1);
+
+                        var w2 = $('<div name="'+data[d].pairs[e].word2+'">')
+                        .attr("name",data[d].pairs[e].word2)
+                        .text(data[d].pairs[e].word2)
+                        .click(function(){update($(this).attr("name"));})
+                        ;
+                        var wb = $('<td />').css('border',"black 1px solid").css("padding","3px").append(w2);
+                        var af = $('<td />').css('border',"black 1px solid").css("padding","3px").text(data[d].pairs[e].absoluteFreq);
+                        var si = $('<td />').css('border',"black 1px solid").css("padding","3px").text(data[d].pairs[e].significance);
+
+                        tr.append(cn).append(wa).append(wb).append(af).append(si);
+                        tbody.append(tr);
+                    }
+                } 
+        	}
+
+            table.append(thead).append(tbody);
+            $('#cooctable').append(table);
+        }
 
     });
