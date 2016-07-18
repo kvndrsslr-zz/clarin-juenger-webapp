@@ -6,6 +6,21 @@ angular.module('ir-matrix-cooc')
     	$scope.logSwitch = false;
         $scope.datetype = false;
 
+      
+
+        $scope.paginationSize = 10;
+        $scope.setPaginationSize = function (s) {
+            $scope.paginationSize = s;
+        };
+        window.setPaginationSize = $scope.setPaginationSize;
+
+        $scope.statistic = {
+            files: [],
+            resultLists : [],
+            safe : {}
+        };
+        $scope.parseFloat = parseFloat;
+
     	var showFeature = {'Konfiguration' : false};
         $scope.show = function (id, write) {
             if (typeof showFeature[id] === 'undefined') {
@@ -52,6 +67,10 @@ angular.module('ir-matrix-cooc')
             }
 
         };
+        $scope.minlinksig = 0;
+        $scope.$watch('minlinksig', function(y){console.log('#');});
+
+        
 
         $scope.submit = function () {
             var payload = {
@@ -82,17 +101,33 @@ angular.module('ir-matrix-cooc')
         };
 
 
+        $scope.selectCooclist = function (name) {
+            $scope.sel.wordList = name;
+            switch (name) {
+                case 'normal':
+                    $scope.sel.wordListType = 'normal';
+                    $scope.sel.wordListOrigin = 'normal';
+                    break;
+                case 'normal2':
+                    $scope.sel.wordListType = 'normal2';
+                    $scope.sel.wordListOrigin = 'normal2';
+                    break;
+            }
+        };
+
+
         var svgcounter = 0; //counts active svg
 
         $scope.draw = function (xdata) {
 
         	addTable(xdata);
-
+$scope.statistic.safe = [];
         	var startword = "";
         	var wordset = [];
         	var nodes = [];
         	var links = [];
-
+            var linksigmin = 0;
+            var linksigmax = 0;
 
         	for(d in xdata){
 
@@ -115,6 +150,7 @@ angular.module('ir-matrix-cooc')
 	        					}
 	        					
 	        					nodes.push(node1);
+                                
 	        				}
 	        				else{
 	        					w1id = wordset.indexOf(pairs[p].word1);
@@ -134,13 +170,12 @@ angular.module('ir-matrix-cooc')
 	        				var linksweight = 0;
 	        				if(pairs[p].significance != null){linksweight=pairs[p].significance;}
 	        				var link = {"source":w1id,"target":w2id,"value":linksweight};
-	        				
+	        				if(linksigmax<(linksweight/2)){linksigmax = (linksweight/2)+1;}
 	        				
 	        				links.push(link);
-
+                            $scope.statistic.safe.push(link);
         				}
 
-        				
         			}
         		}
         	}
@@ -173,6 +208,34 @@ angular.module('ir-matrix-cooc')
                 .append("h3")
                 //.text("SVG #"+svgcounter)
                 ;
+
+
+             //var svgdivslider = d3.select("#visualization-words");
+             $(' <input ng-model="svgcounter" type="range" min="0" value="0"  class="slider"></input>')
+             .attr("max",linksigmax)
+             .attr("id","slider-range").css("width","150px")
+             .change(function(e){
+                $('#sliderlabel').text($(this).val());
+                $scope.minlinksig = $(this).val();
+               
+
+                svg.selectAll("line.link")
+                    .style("stroke-width", function(d) { 
+                        var linksig =  (d.value/2)-$scope.minlinksig;
+                        if(linksig < 0) {return 0;}
+                        else{return (d.value/2);}
+                    })
+
+            })
+             .appendTo("#visualization-words");
+
+            $('<div/>').text("min significance").appendTo("#visualization-words");
+             
+            $('<div id="sliderlabel" />')
+                .text(0)
+                .appendTo("#visualization-words");
+
+             
             
             svgdivheader.append("span")
                 .attr("class","glyphicon glyphicon-chevron-down svgarrow")
@@ -300,6 +363,7 @@ angular.module('ir-matrix-cooc')
 			        .attr("class", "nodetext text")
 			        .attr("dx", 12)
 			        .attr("dy", ".35em")
+                    .style("font-size","15px")
 			        .style("fill",function(d) { return fill(d.group); })
 			        .style("cursor","pointer")
 			        .text(function(d) { return d.name })
@@ -379,6 +443,7 @@ angular.module('ir-matrix-cooc')
                 //console.log(data);
                 showFeature.Visualisierung = false;
                 $scope.draw(data);
+              //  $scope.statistic.resultLists(data);
             }).error(function (data, status, header) {
                 console.log('error retrieving wordfrequencies!');
             });
@@ -407,7 +472,7 @@ angular.module('ir-matrix-cooc')
 
                     corpname = data[d].corpus.name;
                     for(e in data[d].pairs){
-                        //console.log( corpname+": "+data[d].pairs[e].word1);
+
                         var tr = $('<tr />');
                         var cn = $('<td/>').css('border',"black 1px solid").css("padding","3px").text(corpname);
                         var w1 = $('<div name="'+data[d].pairs[e].word1+'">')
@@ -415,7 +480,6 @@ angular.module('ir-matrix-cooc')
                         .text(data[d].pairs[e].word1)
                         .click(function(){update($(this).attr("name"));})
                         ;
-                        //var wa = $('<td />').css('border',"black 1px solid").css("padding","3px").text(data[d].pairs[e].word1);
                         var wa = $('<td />').css('border',"black 1px solid").css("padding","3px").append(w1);
 
                         var w2 = $('<div name="'+data[d].pairs[e].word2+'">')
@@ -438,3 +502,6 @@ angular.module('ir-matrix-cooc')
         }
 
     });
+
+
+ 

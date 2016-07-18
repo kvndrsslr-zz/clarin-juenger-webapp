@@ -64,6 +64,28 @@ include ../mixins.jade
     +feature('CoocTable', 'SEC_COOC_TABLE')
         .row
             #cooctable
+    +feature('Statistik', 'SEC_STATS')
+        .row(ng-hide="statsEmpty")
+            .col-xs-12
+                form
+                    .col-xs-4
+                        .form-group
+                            .btn-group(dropdown)
+                                button.btn.btn-primary.btn-lg.dropdown-toggle(id="visiblelist", type="button", dropdown-toggle)
+                                    | {{ 'SEC_STATS' | translate: '' }}&nbsp;
+                                    span.caret
+                                ul.dropdown-menu(role="menu", aria-labelledby="visiblelist")
+                                    li(role="menuitem", ng-click="selectCooclist('normal')"): a normal
+                                    li(role="menuitem", ng-click="selectCooclist('normal2')"): a normal2
+                    .col-xs-4
+                        .form-group
+                            label.control-label(for="paginationSize")
+                                | {{ 'SEC_STATS_PAGINATIONSIZE' | translate : { x : paginationSize} }}
+                            input.form-control(ng-model="paginationSize", id="paginationSize",
+                            type="range", min=10, max=100, step=5)
+        .row(ng-hide="statsEmpty")
+            +coocList("normal")
+            +coocList("normal2")
     // Padding nach unten
     .row
         p
