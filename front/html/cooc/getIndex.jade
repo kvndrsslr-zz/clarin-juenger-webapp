@@ -76,7 +76,7 @@ include ../mixins.jade
                                     span.caret
                                 ul.dropdown-menu(role="menu", aria-labelledby="visiblelist")
                                     li(role="menuitem", ng-click="selectCooclist('normal')"): a normal
-                                    li(role="menuitem", ng-click="selectCooclist('normal2')"): a normal2
+                                    li(role="menuitem", ng-click="selectCooclist( corpus )", ng-repeat="corpus in statistic.safe['corporas']"): a {{ corpus }}
                     .col-xs-4
                         .form-group
                             label.control-label(for="paginationSize")
@@ -85,7 +85,7 @@ include ../mixins.jade
                             type="range", min=10, max=100, step=5)
         .row(ng-hide="statsEmpty")
             +coocList("normal")
-            +coocList("normal2")
+            span(ng-repeat="corpus in statistic.safe['corporas']"): +coocList('{{ corpus }}')
     // Padding nach unten
     .row
         p

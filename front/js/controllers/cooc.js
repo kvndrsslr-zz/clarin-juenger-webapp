@@ -68,7 +68,7 @@ angular.module('ir-matrix-cooc')
 
         };
         $scope.minlinksig = 0;
-        $scope.$watch('minlinksig', function(y){console.log('#');});
+        $scope.$watch('minlinksig', function(y){ /*console.log('#');*/ });
 
         
 
@@ -101,34 +101,24 @@ angular.module('ir-matrix-cooc')
         };
 
 
-        $scope.selectCooclist = function (name) {
-            $scope.sel.wordList = name;
-            switch (name) {
-                case 'normal':
-                    $scope.sel.wordListType = 'normal';
-                    $scope.sel.wordListOrigin = 'normal';
-                    break;
-                case 'normal2':
-                    $scope.sel.wordListType = 'normal2';
-                    $scope.sel.wordListOrigin = 'normal2';
-                    break;
-            }
-        };
+ 
 
 
         var svgcounter = 0; //counts active svg
 
-        $scope.draw = function (xdata) {
+        $scope.draw = function (xdata) { /*console.log(xdata);*/
 
         	addTable(xdata);
 $scope.statistic.safe = [];
+$scope.statistic.safe['normal'] = [];
+$scope.statistic.safe['corporas'] = [];
         	var startword = "";
         	var wordset = [];
         	var nodes = [];
         	var links = [];
             var linksigmin = 0;
             var linksigmax = 0;
-
+            var statcorp = [];
         	for(d in xdata){
 
         		if(startword == ""){startword = xdata[d].word;}
@@ -173,12 +163,37 @@ $scope.statistic.safe = [];
 	        				if(linksigmax<(linksweight/2)){linksigmax = (linksweight/2)+1;}
 	        				
 	        				links.push(link);
-                            $scope.statistic.safe.push(link);
+                            $scope.statistic.safe['normal'].push(link);
+                            
         				}
 
         			}
         		}
+
+                //generate data for statistic table
+                
+                var cname = "";
+                //console.log(xdata[d].corpus.name);
+                if(  xdata[d].pairs.length >0 ){
+                    cname = xdata[d].corpus.name;
+                    $scope.statistic.safe[cname] = [];
+                    
+                    
+                    for(p in pairs){
+                        var l = {"source":pairs[p].word1,"target":pairs[p].word2,"value":pairs[p].significance};
+                        $scope.statistic.safe[cname].push(l);
+                    }
+                    
+
+                }
+                //console.log(scorp);
+
+                if($scope.statistic.safe['corporas'].indexOf(cname) === -1 && cname !== ''){
+                    $scope.statistic.safe['corporas'].push(cname);
+                }
+                
         	}
+ console.log($scope.statistic.safe);
         	//console.log(wordset);
         	//console.log(nodes);
         	//console.log(links);
@@ -398,6 +413,14 @@ $scope.statistic.safe = [];
 				    }
 				}
 			});
+
+
+        $scope.selectCooclist = function (name) {
+            $scope.sel.wordList = name;
+            console.log(name);
+            console.log($scope.statistic.safe);
+        };
+
 
         }
 
