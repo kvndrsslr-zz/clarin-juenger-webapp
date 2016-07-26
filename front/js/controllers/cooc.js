@@ -109,9 +109,9 @@ angular.module('ir-matrix-cooc')
         $scope.draw = function (xdata) { /*console.log(xdata);*/
 
         	addTable(xdata);
-$scope.statistic.safe = [];
-$scope.statistic.safe['normal'] = [];
-$scope.statistic.safe['corporas'] = [];
+            $scope.statistic.safe = [];
+            $scope.statistic.safe['normal'] = [];
+            $scope.statistic.safe['corporas'] = [];
         	var startword = "";
         	var wordset = [];
         	var nodes = [];
@@ -180,6 +180,7 @@ $scope.statistic.safe['corporas'] = [];
                     
                     
                     for(p in pairs){
+                        if(pairs[p].word1 == '' || pairs[p].word2 == '' || pairs[p].word1 == null || pairs[p].word2 == null){continue;}
                         var l = {"source":pairs[p].word1,"target":pairs[p].word2,"value":pairs[p].significance};
                         $scope.statistic.safe[cname].push(l);
                     }
@@ -219,71 +220,40 @@ $scope.statistic.safe['corporas'] = [];
                 })
                 .style("background-color","whitesmoke");
 
-            var svgdivheader = d3.select("#svg"+svgcounter+"div")
-                .append("h3")
-                //.text("SVG #"+svgcounter)
-                ;
+            var svgdivheader = d3.select("#svg"+svgcounter+"div");
+            var sliderdiv = $('<div id="sliderdiv" ></div>').appendTo(svgdivheader);
 
+            $('<div/>').text("min significance")
+                .appendTo(sliderdiv)
+                .css("float","left")
+                .css("margin-right","5px");
+             
+            $('<div id="sliderlabel" />')
+                .text(0)
+                .css("float","left")
+                .appendTo(sliderdiv);
 
              //var svgdivslider = d3.select("#visualization-words");
-             $(' <input ng-model="svgcounter" type="range" min="0" value="0"  class="slider"></input>')
+             var slider = $(' <input ng-model="svgcounter" type="range" min="0" value="0" class="slider"></input>')
              .attr("max",linksigmax)
-             .attr("id","slider-range").css("width","150px")
+             .attr("id","slider-range").css("width","150px").css("float","left")
              .change(function(e){
                 $('#sliderlabel').text($(this).val());
                 $scope.minlinksig = $(this).val();
                
-
                 svg.selectAll("line.link")
                     .style("stroke-width", function(d) { 
                         var linksig =  (d.value/2)-$scope.minlinksig;
                         if(linksig < 0) {return 0;}
                         else{return (d.value/2);}
                     })
-
             })
-             .appendTo("#visualization-words");
+            // .appendTo("#visualization-words");
+            .appendTo(sliderdiv);
 
-            $('<div/>').text("min significance").appendTo("#visualization-words");
-             
-            $('<div id="sliderlabel" />')
-                .text(0)
-                .appendTo("#visualization-words");
-
-             
             
-            svgdivheader.append("span")
-                .attr("class","glyphicon glyphicon-chevron-down svgarrow")
-                .attr("id", "svg"+svgcounter+"chevron")
-                .attr("name", "svg"+svgcounter)
-                .on("click",function(d){
-                    
-                    if( $(this).hasClass("glyphicon-chevron-down") ){
-                        $("#"+$(this).attr("name")+"content").hide();
-                        $(this).removeClass("glyphicon-chevron-down");
-                        $(this).addClass("glyphicon-chevron-up");
-                    }
-                    else{
-                        $("#"+$(this).attr("name")+"content").show();
-                        $(this).removeClass("glyphicon-chevron-up");
-                        $(this).addClass("glyphicon-chevron-down");
 
-                    }
-                })
-                .style("margin-left","15px")
-                .style("cursor","pointer");
-
-            svgdivheader.append("span")
-                .attr("class","glyphicon glyphicon-remove svgremove")
-                .attr("id", "svg"+svgcounter+"remove")
-                .attr("name", "svg"+svgcounter)
-                .on("click",function(d){ 
-                    $( "#"+$(this).attr("name")+"div").remove(); 
-                })
-                .style("margin-right","5px")
-                .style("color","red")
-                .style("cursor","pointer")
-                .style("float","right");
+                
             
             var svg = d3.select("#svg"+svgcounter+"div").append("svg")
                 .attr("width", width + margin.left + margin.right)
