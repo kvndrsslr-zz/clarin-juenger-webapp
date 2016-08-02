@@ -66,7 +66,7 @@ include ../mixins.jade
             #cooctable
     +feature('Statistik', 'SEC_STATS')
         .row(ng-hide="statsEmpty")
-            .col-xs-12
+            .col-xs-6
                 form
                     .col-xs-4
                         .form-group
@@ -83,9 +83,28 @@ include ../mixins.jade
                                 | {{ 'SEC_STATS_PAGINATIONSIZE' | translate : { x : paginationSize} }}
                             input.form-control(ng-model="paginationSize", id="paginationSize",
                             type="range", min=10, max=100, step=5)
+            .col-xs-6
+                form
+                    .col-xs-4
+                        .form-group
+                            .btn-group(dropdown)
+                                button.btn.btn-primary.btn-lg.dropdown-toggle(id="visiblelist2", type="button", dropdown-toggle)
+                                    | {{ 'SEC_STATS' | translate: '' }}&nbsp;
+                                    span.caret
+                                ul.dropdown-menu(role="menu", aria-labelledby="visiblelist2")
+                                    li(role="menuitem", ng-click="selectCooclist2('normal')"): a normal
+                                    li(role="menuitem", ng-click="selectCooclist2( corpus )", ng-repeat="corpus in statistic.safe['corporas']"): a {{ corpus }}
+                    .col-xs-4
+                        .form-group
+                            label.control-label(for="paginationSize")
+                                | {{ 'SEC_STATS_PAGINATIONSIZE' | translate : { x : paginationSize} }}
+                            input.form-control(ng-model="paginationSize", id="paginationSize2",
+                            type="range", min=10, max=100, step=5)
         .row(ng-hide="statsEmpty")
             +coocList("normal")
             span(ng-repeat="corpus in statistic.safe['corporas']"): +coocList('{{ corpus }}')
+            +coocList2("normal")
+            span(ng-repeat="corpus in statistic.safe['corporas']"): +coocList2('{{ corpus }}')
     // Padding nach unten
     .row
         p

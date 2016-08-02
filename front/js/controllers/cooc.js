@@ -387,8 +387,13 @@ angular.module('ir-matrix-cooc')
 
         $scope.selectCooclist = function (name) {
             $scope.sel.wordList = name;
-            console.log(name);
-            console.log($scope.statistic.safe);
+            //console.log(name);
+            //console.log($scope.statistic.safe);
+        };
+        $scope.selectCooclist2 = function (name) {
+            $scope.sel.wordList2 = name;
+            //console.log(name);
+            //console.log($scope.statistic.safe);
         };
 
 
