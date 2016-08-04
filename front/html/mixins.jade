@@ -60,7 +60,7 @@ mixin wordList(type, origin)
 
 mixin coocList(corpus)
         div.col-xs-6(ng-show="sel.wordList === '#{corpus}'")
-            table.table.table-bordered.table-striped()
+            table.table.table-bordered.table-striped(st-table="statistic.safe[corpus]")
                 thead
                     tr
                         th.col-xs-3() {{ 'SEC_STATS_WORD1' | translate }}
@@ -82,10 +82,11 @@ mixin coocList(corpus)
                 tfoot
                     tr
                         td.text-center(colspan="3")
+                            div(st-pagination="a", st-items-by-page="parseFloat(paginationSize)", st-template="template/smart-table/pagination2.html")
 
 mixin coocList2(corpus)
         div.col-xs-6(ng-show="sel.wordList2 === '#{corpus}'")
-            table.table.table-bordered.table-striped()
+            table.table.table-bordered.table-striped(st-table="statistic.safe[corpus]")
                 thead
                     tr
                         th.col-xs-3() {{ 'SEC_STATS_WORD1' | translate }}
@@ -107,4 +108,5 @@ mixin coocList2(corpus)
                 tfoot
                     tr
                         td.text-center(colspan="3")
+                            div(st-pagination="b", st-items-by-page="parseFloat(paginationSize2)", st-template="template/smart-table/pagination2.html")
                             

@@ -75,7 +75,6 @@ include ../mixins.jade
                                     | {{ 'SEC_STATS' | translate: '' }}&nbsp;
                                     span.caret
                                 ul.dropdown-menu(role="menu", aria-labelledby="visiblelist")
-                                    li(role="menuitem", ng-click="selectCooclist('normal')"): a normal
                                     li(role="menuitem", ng-click="selectCooclist( corpus )", ng-repeat="corpus in statistic.safe['corporas']"): a {{ corpus }}
                     .col-xs-4
                         .form-group
@@ -92,18 +91,15 @@ include ../mixins.jade
                                     | {{ 'SEC_STATS' | translate: '' }}&nbsp;
                                     span.caret
                                 ul.dropdown-menu(role="menu", aria-labelledby="visiblelist2")
-                                    li(role="menuitem", ng-click="selectCooclist2('normal')"): a normal
                                     li(role="menuitem", ng-click="selectCooclist2( corpus )", ng-repeat="corpus in statistic.safe['corporas']"): a {{ corpus }}
                     .col-xs-4
                         .form-group
-                            label.control-label(for="paginationSize")
-                                | {{ 'SEC_STATS_PAGINATIONSIZE' | translate : { x : paginationSize} }}
-                            input.form-control(ng-model="paginationSize", id="paginationSize2",
+                            label.control-label(for="paginationSize2")
+                                | {{ 'SEC_STATS_PAGINATIONSIZE' | translate : { x : paginationSize2} }}
+                            input.form-control(ng-model="paginationSize2", id="paginationSize2",
                             type="range", min=10, max=100, step=5)
         .row(ng-hide="statsEmpty")
-            +coocList("normal")
             span(ng-repeat="corpus in statistic.safe['corporas']"): +coocList('{{ corpus }}')
-            +coocList2("normal")
             span(ng-repeat="corpus in statistic.safe['corporas']"): +coocList2('{{ corpus }}')
     // Padding nach unten
     .row

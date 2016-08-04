@@ -7,12 +7,16 @@ angular.module('ir-matrix-cooc')
         $scope.datetype = false;
 
       
-
         $scope.paginationSize = 10;
+        $scope.paginationSize2 = 10;
         $scope.setPaginationSize = function (s) {
             $scope.paginationSize = s;
         };
+        $scope.setPaginationSize2 = function (s) {
+            $scope.paginationSize2 = s;
+        };
         window.setPaginationSize = $scope.setPaginationSize;
+        window.setPaginationSize2 = $scope.setPaginationSize2;
 
         $scope.statistic = {
             files: [],
@@ -163,7 +167,8 @@ angular.module('ir-matrix-cooc')
 	        				if(linksigmax<(linksweight/2)){linksigmax = (linksweight/2)+1;}
 	        				
 	        				links.push(link);
-                            $scope.statistic.safe['normal'].push(link);
+                            var l = {"source":pairs[p].word1,"target":pairs[p].word2,"value":pairs[p].significance};
+                            $scope.statistic.safe['normal'].push(l);
                             
         				}
 
@@ -193,7 +198,7 @@ angular.module('ir-matrix-cooc')
                     $scope.statistic.safe['corporas'].push(cname);
                 }
                 
-        	}
+        	}$scope.statistic.safe['corporas'].push('normal');
  console.log($scope.statistic.safe);
         	//console.log(wordset);
         	//console.log(nodes);
