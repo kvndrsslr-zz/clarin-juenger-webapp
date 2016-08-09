@@ -61,10 +61,7 @@ include ../mixins.jade
             form
                 .col-xs-12.col-md-4
             #visualization-words
-    +feature('CoocTable', 'SEC_COOC_TABLE')
-        .row
-            #cooctable
-    +feature('Statistik', 'SEC_STATS')
+    +feature('Statistik', 'SEC_STATS_COOC')
         .row(ng-hide="statsEmpty")
             .col-xs-6
                 form
@@ -72,7 +69,7 @@ include ../mixins.jade
                         .form-group
                             .btn-group(dropdown)
                                 button.btn.btn-primary.btn-lg.dropdown-toggle(id="visiblelist", type="button", dropdown-toggle)
-                                    | {{ 'SEC_STATS' | translate: '' }}&nbsp;
+                                    | {{ 'SEC_STATS_COOC' | translate: '' }}&nbsp;
                                     span.caret
                                 ul.dropdown-menu(role="menu", aria-labelledby="visiblelist")
                                     li(role="menuitem", ng-click="selectCooclist( corpus )", ng-repeat="corpus in statistic.safe['corporas']"): a {{ corpus }}
@@ -88,7 +85,7 @@ include ../mixins.jade
                         .form-group
                             .btn-group(dropdown)
                                 button.btn.btn-primary.btn-lg.dropdown-toggle(id="visiblelist2", type="button", dropdown-toggle)
-                                    | {{ 'SEC_STATS' | translate: '' }}&nbsp;
+                                    | {{ 'SEC_STATS_COOC' | translate: '' }}&nbsp;
                                     span.caret
                                 ul.dropdown-menu(role="menu", aria-labelledby="visiblelist2")
                                     li(role="menuitem", ng-click="selectCooclist2( corpus )", ng-repeat="corpus in statistic.safe['corporas']"): a {{ corpus }}

@@ -112,7 +112,7 @@ angular.module('ir-matrix-cooc')
 
         $scope.draw = function (xdata) { /*console.log(xdata);*/
 
-        	addTable(xdata);
+
             $scope.statistic.safe = [];
             $scope.statistic.safe['normal'] = [];
             $scope.statistic.safe['corporas'] = [];
@@ -178,11 +178,10 @@ angular.module('ir-matrix-cooc')
                 //generate data for statistic table
                 
                 var cname = "";
-                //console.log(xdata[d].corpus.name);
                 if(  xdata[d].pairs.length >0 ){
                     cname = xdata[d].corpus.name;
                     $scope.statistic.safe[cname] = [];
-                    
+                     
                     
                     for(p in pairs){
                         if(pairs[p].word1 == '' || pairs[p].word2 == '' || pairs[p].word1 == null || pairs[p].word2 == null){continue;}
@@ -192,14 +191,14 @@ angular.module('ir-matrix-cooc')
                     
 
                 }
-                //console.log(scorp);
-
+            
                 if($scope.statistic.safe['corporas'].indexOf(cname) === -1 && cname !== ''){
                     $scope.statistic.safe['corporas'].push(cname);
                 }
                 
-        	}$scope.statistic.safe['corporas'].push('normal');
- console.log($scope.statistic.safe);
+        	}
+            $scope.statistic.safe['corporas'].push('normal');
+ //console.log($scope.statistic.safe);
         	//console.log(wordset);
         	//console.log(nodes);
         	//console.log(links);
@@ -389,7 +388,8 @@ angular.module('ir-matrix-cooc')
 				}
 			});
 
-
+        showFeature['Statistik'] = false;
+        
         $scope.selectCooclist = function (name) {
             $scope.sel.wordList = name;
             //console.log(name);
@@ -446,63 +446,12 @@ angular.module('ir-matrix-cooc')
                 //console.log(data);
                 showFeature.Visualisierung = false;
                 $scope.draw(data);
-              //  $scope.statistic.resultLists(data);
             }).error(function (data, status, header) {
                 console.log('error retrieving wordfrequencies!');
             });
         
         }
 
-
-        function addTable(data){    	
-            //cooctable
-            $('#cooctable').empty();
-            var table = $('<table class="table table-bordered table-striped" />').css('border',"black 1px solid").css("padding","3px");
-            var thead = $('<thead />');
-            var tbody = $('<tbody />');
-
-            var theadtr = $('<tr />');
-            theadtr.append('<th style="border:1px black solid;padding:3px">corpus</th>')
-                    .append('<th class="col-xs-4 " style="border:1px black solid;padding:3px">word1</th>')
-                    .append('<th class="col-xs-4 " style="border:1px black solid;padding:3px">word2</th>')
-                    .append('<th class="col-xs-4 " style="border:1px black solid;padding:3px">ABSOLUTE_FREQUENCY</th>')
-                    .append('<th class="col-xs-4 " style="border:1px black solid;padding:3px">significance</th>');            
-
-            thead.append(theadtr);
-
-        	for(d in data){
-        		if(data[d].pairs.length>0){
-
-                    corpname = data[d].corpus.name;
-                    for(e in data[d].pairs){
-
-                        var tr = $('<tr />');
-                        var cn = $('<td/>').css('border',"black 1px solid").css("padding","3px").text(corpname);
-                        var w1 = $('<div name="'+data[d].pairs[e].word1+'">')
-                        .attr("name",data[d].pairs[e].word1)
-                        .text(data[d].pairs[e].word1)
-                        .click(function(){update($(this).attr("name"));})
-                        ;
-                        var wa = $('<td />').css('border',"black 1px solid").css("padding","3px").append(w1);
-
-                        var w2 = $('<div name="'+data[d].pairs[e].word2+'">')
-                        .attr("name",data[d].pairs[e].word2)
-                        .text(data[d].pairs[e].word2)
-                        .click(function(){update($(this).attr("name"));})
-                        ;
-                        var wb = $('<td />').css('border',"black 1px solid").css("padding","3px").append(w2);
-                        var af = $('<td />').css('border',"black 1px solid").css("padding","3px").text(data[d].pairs[e].absoluteFreq);
-                        var si = $('<td />').css('border',"black 1px solid").css("padding","3px").text(data[d].pairs[e].significance);
-
-                        tr.append(cn).append(wa).append(wb).append(af).append(si);
-                        tbody.append(tr);
-                    }
-                } 
-        	}
-
-            table.append(thead).append(tbody);
-            $('#cooctable').append(table);
-        }
 
     });
 

@@ -67,18 +67,11 @@ mixin coocList(corpus)
                         th.col-xs-3() {{ 'SEC_STATS_WORD2' | translate }}
                         th.col-xs-3() {{ 'SEC_STATS_SIGNIFICANCE' | translate }}
                 tbody
-                    if corpus == "normal"
-                        tr(ng-repeat="link in statistic.safe.normal")
-                            td {{link.source.name}}
-                            td {{link.target.name}}
-                            td {{link.value}}
-                            .row
-                    else
-                        tr(ng-repeat="link in statistic.safe[corpus]")
-                            td {{link.source}}
-                            td {{link.target}}
-                            td {{link.value}}
-                            .row
+                    tr(ng-repeat="link in statistic.safe[corpus]")
+                        td {{link.source}}
+                        td {{link.target}}
+                        td {{link.value}}
+                        .row
                 tfoot
                     tr
                         td.text-center(colspan="3")
@@ -93,18 +86,11 @@ mixin coocList2(corpus)
                         th.col-xs-3() {{ 'SEC_STATS_WORD2' | translate }}
                         th.col-xs-3() {{ 'SEC_STATS_SIGNIFICANCE' | translate }}
                 tbody
-                    if corpus == "normal"
-                        tr(ng-repeat="link in statistic.safe.normal")
-                            td {{link.source.name}}
-                            td {{link.target.name}}
-                            td {{link.value}}
-                            .row
-                    else
-                        tr(ng-repeat="link in statistic.safe[corpus]")
-                            td {{link.source}}
-                            td {{link.target}}
-                            td {{link.value}}
-                            .row
+                    tr(ng-repeat="link in statistic.safe[corpus]")
+                        td {{link.source}}
+                        td {{link.target}}
+                        td {{link.value}}
+                        .row
                 tfoot
                     tr
                         td.text-center(colspan="3")
