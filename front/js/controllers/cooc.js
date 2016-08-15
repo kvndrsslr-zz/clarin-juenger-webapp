@@ -21,7 +21,7 @@ angular.module('ir-matrix-cooc')
         $scope.statistic = {
             files: [],
             resultLists : [],
-            safe : {}
+            safe : []
         };
         $scope.parseFloat = parseFloat;
 
@@ -389,7 +389,7 @@ angular.module('ir-matrix-cooc')
 			});
 
         showFeature['Statistik'] = false;
-        
+
         $scope.selectCooclist = function (name) {
             $scope.sel.wordList = name;
             //console.log(name);
