@@ -198,6 +198,16 @@ angular.module('ir-matrix-cooc')
                 
         	}
             $scope.statistic.safe['corporas'].push('normal');
+
+            for(e in $scope.statistic.safe){
+                if( e.indexOf('corporas') == -1){
+                    $scope.statistic.resultLists[e]=$scope.statistic.safe[e];    
+                    
+                }
+                
+                
+            }
+            
  //console.log($scope.statistic.safe);
         	//console.log(wordset);
         	//console.log(nodes);

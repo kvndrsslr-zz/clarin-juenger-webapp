@@ -60,7 +60,7 @@ mixin wordList(type, origin)
 
 mixin coocList(corpus)
         div.col-xs-6(ng-show="sel.wordList === '#{corpus}'")
-            table.table.table-bordered.table-striped( st-table="statistic.safe[corpus]" )
+            table.table.table-bordered.table-striped( st-safe-src="statistic.resultLists[corpus]" st-table="statistic.safe[corpus]" )
                 thead
                     tr
                         th.col-xs-3(st-sort="source") {{ 'SEC_STATS_WORD1' | translate }}
@@ -79,7 +79,7 @@ mixin coocList(corpus)
 
 mixin coocList2(corpus)
         div.col-xs-6(ng-show="sel.wordList2 === '#{corpus}'")
-            table.table.table-bordered.table-striped(st-table="statistic.safe[corpus]" )
+            table.table.table-bordered.table-striped(st-safe-src="statistic.resultLists[corpus]" st-table="statistic.safe[corpus]" )
                 thead
                     tr
                         th.col-xs-3(st-sort="source") {{ 'SEC_STATS_WORD1' | translate }}
