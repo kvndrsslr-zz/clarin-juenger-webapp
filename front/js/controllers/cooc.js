@@ -1,6 +1,5 @@
 angular.module('ir-matrix-cooc')
     .controller('coocController', function ($scope, $timeout, $http, $translate, data) {
-    	//$scope.alert = window.alert.bind(window);
     	
 
     	$scope.logSwitch = false;
@@ -142,9 +141,7 @@ angular.module('ir-matrix-cooc')
 	        					else{
 	        						var node1 = {"name":""+pairs[p].word1+"","group":3};	
 	        					}
-	        					
 	        					nodes.push(node1);
-                                
 	        				}
 	        				else{
 	        					w1id = wordset.indexOf(pairs[p].word1);
@@ -159,7 +156,6 @@ angular.module('ir-matrix-cooc')
 	        				else{
 	        					w2id = wordset.indexOf(pairs[p].word2);
 	        				}
-	        				//{"name":"Child1","group":10},
 	        				
 	        				var linksweight = 0;
 	        				if(pairs[p].significance != null){linksweight=pairs[p].significance;}
@@ -168,15 +164,12 @@ angular.module('ir-matrix-cooc')
 	        				
 	        				links.push(link);
                             var l = {"source":pairs[p].word1,"target":pairs[p].word2,"value":pairs[p].significance};
-                            $scope.statistic.safe['normal'].push(l);
-                            
+                            $scope.statistic.safe['normal'].push(l); 
         				}
-
         			}
         		}
 
                 //generate data for statistic table
-                
                 var cname = "";
                 if(  xdata[d].pairs.length >0 ){
                     cname = xdata[d].corpus.name;
@@ -188,27 +181,21 @@ angular.module('ir-matrix-cooc')
                         var l = {"source":pairs[p].word1,"target":pairs[p].word2,"value":pairs[p].significance};
                         $scope.statistic.safe[cname].push(l);
                     }
-                    
-
                 }
             
                 if($scope.statistic.safe['corporas'].indexOf(cname) === -1 && cname !== ''){
                     if($scope.statistic.safe[cname].length >0){
                         $scope.statistic.safe['corporas'].push(cname);    
                     }
-                    
                 }
-                
         	}
+
             $scope.statistic.safe['corporas'].push('normal');
 
             for(e in $scope.statistic.safe){
                 if( e.indexOf('corporas') == -1){
                     $scope.statistic.resultLists[e]=$scope.statistic.safe[e];    
-                    
                 }
-                
-                
             }
             
  //console.log($scope.statistic.safe);
@@ -250,7 +237,7 @@ angular.module('ir-matrix-cooc')
                 .css("float","left")
                 .appendTo(sliderdiv);
 
-             //var svgdivslider = d3.select("#visualization-words");
+
              var slider = $(' <input ng-model="svgcounter" type="range" min="0" value="0" class="slider"></input>')
              .attr("max",linksigmax)
              .attr("id","slider-range").css("width","150px").css("float","left")
@@ -265,12 +252,10 @@ angular.module('ir-matrix-cooc')
                         else{return (d.value/2);}
                     })
             })
-            // .appendTo("#visualization-words");
             .appendTo(sliderdiv);
 
             
-
-                
+     
             
             var svg = d3.select("#svg"+svgcounter+"div").append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -282,7 +267,6 @@ angular.module('ir-matrix-cooc')
 
 			d3.json("", function(error ) {
 			  if (error) throw error;
-
 
 
 				var force = self.force = d3.layout.force()
@@ -298,7 +282,6 @@ angular.module('ir-matrix-cooc')
 			        .data(links)
 			        .enter().append("svg:line")
 			        .style("stroke-width", function(d) { return d.value/2/*Math.sqrt(d.value)*/; })
-			        //.style("stroke","gray")
 			        .style("stroke",function(d){ if(d.source.name === startword){return "blue"}else{ return "gray";}})
 			        .attr("class", "link")
 			        .attr("x1", function(d) { return d.source.x; })
@@ -401,18 +384,14 @@ angular.module('ir-matrix-cooc')
 				}
 			});
 
-        showFeature['Statistik'] = false;
+            showFeature['Statistik'] = false;
 
-        $scope.selectCooclist = function (name) {
-            $scope.sel.wordList = name;
-            //console.log(name);
-            //console.log($scope.statistic.safe);
-        };
-        $scope.selectCooclist2 = function (name) {
-            $scope.sel.wordList2 = name;
-            //console.log(name);
-            //console.log($scope.statistic.safe);
-        };
+            $scope.selectCooclist = function (name) {
+                $scope.sel.wordList = name;
+            };
+            $scope.selectCooclist2 = function (name) {
+                $scope.sel.wordList2 = name;
+            };
 
 
         }
@@ -432,8 +411,8 @@ angular.module('ir-matrix-cooc')
             $scope.corpora = y;
         }
 
+        
         function update(word){
-        	//console.log("##"+word);
 
        		var words = [];
        		words.push(word);
@@ -441,7 +420,6 @@ angular.module('ir-matrix-cooc')
                 words : words,
                 corpora : $scope.corpora.filter(function (c) {
                     var filter = true;
-                    //if (s === c.name) filter = true;
                     
                     return filter;
                 }),
@@ -462,7 +440,6 @@ angular.module('ir-matrix-cooc')
             }).error(function (data, status, header) {
                 console.log('error retrieving wordfrequencies!');
             });
-        
         }
 
 
