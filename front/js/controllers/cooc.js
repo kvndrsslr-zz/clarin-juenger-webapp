@@ -193,7 +193,10 @@ angular.module('ir-matrix-cooc')
                 }
             
                 if($scope.statistic.safe['corporas'].indexOf(cname) === -1 && cname !== ''){
-                    $scope.statistic.safe['corporas'].push(cname);
+                    if($scope.statistic.safe[cname].length >0){
+                        $scope.statistic.safe['corporas'].push(cname);    
+                    }
+                    
                 }
                 
         	}
