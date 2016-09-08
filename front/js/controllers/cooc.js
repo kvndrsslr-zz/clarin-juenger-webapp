@@ -119,17 +119,21 @@ angular.module('ir-matrix-cooc')
         	var wordset = [];
         	var nodes = [];
         	var links = [];
+            var corporaview=[];
             var linksigmin = 0;
             var linksigmax = 0;
             var statcorp = [];
+            var corpset = [];
+            corpset.push('all');
         	for(d in xdata){
 
         		if(startword == ""){startword = xdata[d].word;}
 
+
         		if(  xdata[d].pairs.length >0 ){
         			var pairs = xdata[d].pairs;
         			for(p in pairs){
-        				if(pairs[p].word1 != undefined && pairs[p].word1 != "" && pairs[p].word2 != undefined && pairs[p].word1 != "" ){
+        				if(pairs[p].word1 != undefined && pairs[p].word1 != "" && pairs[p].word2 != undefined && pairs[p].word1 != "" ) {
         					var w1id=-1;
 	        				var w2id=-1;
 	        				if(  wordset.indexOf(pairs[p].word1) == -1){
@@ -164,10 +168,84 @@ angular.module('ir-matrix-cooc')
 	        				
 	        				links.push(link);
                             var l = {"source":pairs[p].word1,"target":pairs[p].word2,"value":pairs[p].significance};
-                            $scope.statistic.safe['normal'].push(l); 
+                            if(pairs[p].word1==startword || pairs[p].word2==startword ){
+                                $scope.statistic.safe['normal'].push(l);     
+                            }
+                            
         				}
         			}
         		}
+                //generate d3 data for each corpora
+                var wset = [];
+               
+                var currentcorp = xdata[d].corpus.name;
+                if( corpset.indexOf(currentcorp) == -1){
+                    corpset.push(currentcorp);
+                }
+
+
+                if(  xdata[d].pairs.length >0 ){
+
+                    var pairs = xdata[d].pairs;
+                    
+                    for(p in pairs){
+                        if(pairs[p].word1 != undefined && pairs[p].word1 != "" && pairs[p].word2 != undefined && pairs[p].word1 != "" ) {
+                            var w1id=-1;
+                            var w2id=-1;
+                            if(  wset.indexOf(pairs[p].word1) == -1){
+                                w1id = wset.length;
+                                wset[wset.length] = pairs[p].word1;
+                                if(pairs[p].word1 === startword){
+                                    var node1 = {"name":""+pairs[p].word1+"","group":1};
+                                }
+                                else{
+                                    var node1 = {"name":""+pairs[p].word1+"","group":3};    
+                                }
+                                //if(corporaview.indexOf(currentcorp)==-1){
+                                if($.isArray(corporaview[currentcorp]) ==false ){
+                                    corporaview[currentcorp] = [];
+                                    corporaview[currentcorp]['nodes'] = [];
+                                    corporaview[currentcorp]['links'] = [];
+
+                                }
+                                corporaview[currentcorp]['nodes'].push(node1);
+                            }
+                            else{
+                                w1id = wset.indexOf(pairs[p].word1);
+                            }
+
+                            if( wset.indexOf(pairs[p].word2) == -1){
+                                w2id = wset.length;
+                                wset[wset.length] = pairs[p].word2;
+                                var node2 = {"name":""+pairs[p].word2+"","group":4};
+                                //if(corporaview.indexOf(currentcorp)==-1){
+                                if($.isArray(corporaview[currentcorp]) ==false ){
+
+                                    corporaview[currentcorp] = [];
+                                    corporaview[currentcorp]['nodes'] = [];
+                                    corporaview[currentcorp]['links'] = [];
+                                }
+                                
+                                corporaview[currentcorp]['nodes'].push(node2);
+                                
+                            }
+                            else{
+                                w2id = wset.indexOf(pairs[p].word2);
+                            }
+
+                            var linksweight = 0;
+                            if(pairs[p].significance != null){linksweight=pairs[p].significance;}
+                            var link = {"source":w1id,"target":w2id,"value":linksweight};
+                            if(linksigmax<(linksweight/2)){linksigmax = (linksweight/2)+1;}
+                            
+                            corporaview[currentcorp]['links'].push(link);
+                            //links.push(link);
+                            
+                            
+                        }
+                    }                
+                }
+
 
                 //generate data for statistic table
                 var cname = "";
@@ -177,9 +255,12 @@ angular.module('ir-matrix-cooc')
                      
                     
                     for(p in pairs){
-                        if(pairs[p].word1 == '' || pairs[p].word2 == '' || pairs[p].word1 == null || pairs[p].word2 == null){continue;}
-                        var l = {"source":pairs[p].word1,"target":pairs[p].word2,"value":pairs[p].significance};
-                        $scope.statistic.safe[cname].push(l);
+                        if(pairs[p].word1 == '' || pairs[p].word2 == '' || pairs[p].word1 == null || pairs[p].word2 == null  ){continue;}
+                        if(pairs[p].word1==xdata[d].word || pairs[p].word2==xdata[d].word ){
+                            var l = {"source":pairs[p].word1,"target":pairs[p].word2,"value":pairs[p].significance};
+                            $scope.statistic.safe[cname].push(l);
+                        }
+                        
                     }
                 }
             
@@ -197,7 +278,7 @@ angular.module('ir-matrix-cooc')
                     $scope.statistic.resultLists[e]=$scope.statistic.safe[e];    
                 }
             }
-            
+            console.log(corporaview);
  //console.log($scope.statistic.safe);
         	//console.log(wordset);
         	//console.log(nodes);
@@ -238,7 +319,9 @@ angular.module('ir-matrix-cooc')
                 .appendTo(sliderdiv);
 
 
-             var slider = $(' <input ng-model="svgcounter" type="range" min="0" value="0" class="slider"></input>')
+
+
+            var slider = $(' <input ng-model="svgcounter" type="range" min="0" value="0" class="slider"></input>')
              .attr("max",linksigmax)
              .attr("id","slider-range").css("width","150px").css("float","left")
              .change(function(e){
