@@ -78,7 +78,7 @@ exports.uniLeipzigClarinWs = function (qRequest, injectObjectToString, deep) {
                              */
                             {
                                 'name': fields[0].trim(),
-                                //'displayName': fields[1].trim(),
+                                'displayDescription': fields[1].trim(),
                                 'displayName': fields[0].trim(),
                                 'description': fields[2].trim(),
                                 'date': new Date(Date.parse(fields[3].trim())),

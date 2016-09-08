@@ -98,6 +98,7 @@ exports.userDefinedFromClient = function (qRequest, injectObjectToString, deep) 
                     var wordListTask = {
                         'name' : corpus.name,
                         'displayName' : corpus.displayName,
+                        'displayDescription' :corpus.displayDescription,
                         'description' : corpus.description,
                         'date' : corpus.date,
                         'genre' : corpus.genre,

@@ -202,7 +202,8 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
             .attr("class", "label")
             .attr("text-anchor", "start")
             .text(function (d, i) {
-                return nodes[i].displayName;
+                return nodes[i].description;
+                //return nodes[i].displayName;
             });
         //wrap(labels, 100);
         var column = svg.selectAll(".column")
@@ -225,7 +226,8 @@ angular.module('ir-matrix-cooc').factory('matrixVisualization', function (jobMan
             .attr("text-anchor", "start")
             .attr("class", "label")
             .text(function (d, i) {
-                return nodes[i].displayName;
+                return nodes[i].description;
+                //return nodes[i].displayName;
             });
         //wrap(labels, 100);
         function row(row) {

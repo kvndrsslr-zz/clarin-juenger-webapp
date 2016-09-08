@@ -29,13 +29,13 @@ mixin wordList(type, origin)
                         th.col-xs-3(st-sort="word") {{ 'SEC_STATS_WORD' | translate }}
                         th.col-xs-4(st-sort="pos") {{ 'SEC_STATS_POS' | translate }}
                         th.col-xs-1(st-sort!="#{(type == 'more' ? origin + 'Record.' : '') + 'absFreq' + (type == 'more' ? '' : '\", st-sort-default=\'reverse\'')}")
-                            | {{ 'SEC_STATS_COUNTINX' | translate : {x: statistic.resultLists["#{origin == "source" ? "source" : "target"}"].displayName} }}
+                            | {{ 'SEC_STATS_COUNTINX' | translate : {x: statistic.resultLists["#{origin == "source" ? "source" : "target"}"].description} }}
                         if type == "more"
-                            th.col-xs-1(st-sort="#{origin == 'source' ? 'target' : 'source'}Record.absFreq") {{ 'SEC_STATS_COUNTINX' | translate : {x: statistic.resultLists["#{origin == "target" ? "source" : "target"}"].displayName} }}
+                            th.col-xs-1(st-sort="#{origin == 'source' ? 'target' : 'source'}Record.absFreq") {{ 'SEC_STATS_COUNTINX' | translate : {x: statistic.resultLists["#{origin == "target" ? "source" : "target"}"].description} }}
                         th.col-xs-1(st-sort!="#{(type == 'more' ? origin + 'Record.' : '') + 'relFreq' + (type == 'more' ? '' : '\", st-sort-default=\'reverse\'')}")
-                            | {{ 'SEC_STATS_RELCOUNTINX' | translate : {x: statistic.resultLists["#{origin == "source" ? "source" : "target"}"].displayName} }}
+                            | {{ 'SEC_STATS_RELCOUNTINX' | translate : {x: statistic.resultLists["#{origin == "source" ? "source" : "target"}"].description} }}
                         if type == "more"
-                            th.col-xs-1(st-sort="#{origin == 'source' ? 'target' : 'source'}Record.relFreq") {{ 'SEC_STATS_RELCOUNTINX' | translate : {x: statistic.resultLists["#{origin == "target" ? "source" : "target"}"].displayName} }}
+                            th.col-xs-1(st-sort="#{origin == 'source' ? 'target' : 'source'}Record.relFreq") {{ 'SEC_STATS_RELCOUNTINX' | translate : {x: statistic.resultLists["#{origin == "target" ? "source" : "target"}"].description} }}
                             th.col-xs-1(st-sort="#{origin == 'source' ? '' : '-'}logRelativeRatio", st-sort-default="reverse") {{ 'SEC_STATS_RATIO' | translate }}
                     tr
                         th(colspan="#{type == 'more' ? '7' : '4'}"): input.input-sm.form-control(st-search="word", placeholder="Search word...", type="search")
