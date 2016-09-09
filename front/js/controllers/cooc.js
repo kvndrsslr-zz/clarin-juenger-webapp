@@ -111,7 +111,6 @@ angular.module('ir-matrix-cooc')
 
         $scope.draw = function (xdata) { /*console.log(xdata);*/
 
-
             $scope.statistic.safe = [];
             $scope.statistic.safe['normal'] = [];
             $scope.statistic.safe['corporas'] = [];
@@ -123,12 +122,10 @@ angular.module('ir-matrix-cooc')
             var linksigmin = 0;
             var linksigmax = 0;
             var statcorp = [];
-            var corpset = [];
-            corpset.push('all');
+
         	for(d in xdata){
 
         		if(startword == ""){startword = xdata[d].word;}
-
 
         		if(  xdata[d].pairs.length >0 ){
         			var pairs = xdata[d].pairs;
@@ -170,18 +167,13 @@ angular.module('ir-matrix-cooc')
                             var l = {"source":pairs[p].word1,"target":pairs[p].word2,"value":pairs[p].significance};
                             if(pairs[p].word1==startword || pairs[p].word2==startword ){
                                 $scope.statistic.safe['normal'].push(l);     
-                            }
-                            
+                            }       
         				}
         			}
         		}
                 //generate d3 data for each corpora
                 var wset = [];
-               
                 var currentcorp = xdata[d].corpus.name;
-                if( corpset.indexOf(currentcorp) == -1){
-                    corpset.push(currentcorp);
-                }
 
 
                 if(  xdata[d].pairs.length >0 ){
@@ -201,7 +193,7 @@ angular.module('ir-matrix-cooc')
                                 else{
                                     var node1 = {"name":""+pairs[p].word1+"","group":3};    
                                 }
-                                //if(corporaview.indexOf(currentcorp)==-1){
+                                
                                 if($.isArray(corporaview[currentcorp]) ==false ){
                                     corporaview[currentcorp] = [];
                                     corporaview[currentcorp]['nodes'] = [];
@@ -218,16 +210,14 @@ angular.module('ir-matrix-cooc')
                                 w2id = wset.length;
                                 wset[wset.length] = pairs[p].word2;
                                 var node2 = {"name":""+pairs[p].word2+"","group":4};
-                                //if(corporaview.indexOf(currentcorp)==-1){
+                                
                                 if($.isArray(corporaview[currentcorp]) ==false ){
 
                                     corporaview[currentcorp] = [];
                                     corporaview[currentcorp]['nodes'] = [];
                                     corporaview[currentcorp]['links'] = [];
-                                }
-                                
+                                }   
                                 corporaview[currentcorp]['nodes'].push(node2);
-                                
                             }
                             else{
                                 w2id = wset.indexOf(pairs[p].word2);
@@ -239,9 +229,6 @@ angular.module('ir-matrix-cooc')
                             if(linksigmax<(linksweight/2)){linksigmax = (linksweight/2)+1;}
                             
                             corporaview[currentcorp]['links'].push(link);
-                            //links.push(link);
-                            
-                            
                         }
                     }                
                 }
@@ -253,14 +240,12 @@ angular.module('ir-matrix-cooc')
                     cname = xdata[d].corpus.name;
                     $scope.statistic.safe[cname] = [];
                      
-                    
                     for(p in pairs){
                         if(pairs[p].word1 == '' || pairs[p].word2 == '' || pairs[p].word1 == null || pairs[p].word2 == null  ){continue;}
                         if(pairs[p].word1==xdata[d].word || pairs[p].word2==xdata[d].word ){
                             var l = {"source":pairs[p].word1,"target":pairs[p].word2,"value":pairs[p].significance};
                             $scope.statistic.safe[cname].push(l);
-                        }
-                        
+                        } 
                     }
                 }
             
@@ -278,205 +263,14 @@ angular.module('ir-matrix-cooc')
                     $scope.statistic.resultLists[e]=$scope.statistic.safe[e];    
                 }
             }
-            console.log(corporaview);
- //console.log($scope.statistic.safe);
-        	//console.log(wordset);
-        	//console.log(nodes);
-        	//console.log(links);
 
+            var corpset = [];
+            corpset.push('all');
+            for(corp in corporaview){
+                corpset.push(corp);
+            }
 
-			var margin = {top: 20, right: 200, bottom: 30, left: 50},
-                width = 1160 - margin.left - margin.right,
-                height = 500 - margin.top - margin.bottom,
-                 fill = d3.scale.category10();
-
-			var color = d3.scale.category10();
-
-			var force = d3.layout.force()
-			    .charge(-60)
-			    .linkDistance(120)
-			    .size([width, height]);
-
-                $('#visualization-words').empty();
-            var svgdiv = d3.select("#visualization-words").append("div")
-                .attr("id",function(){
-                    //svgcounter++; 
-                    return "svg"+svgcounter+"div";
-                })
-                .style("background-color","whitesmoke");
-
-            var svgdivheader = d3.select("#svg"+svgcounter+"div");
-            var sliderdiv = $('<div id="sliderdiv" ></div>').appendTo(svgdivheader);
-
-            $('<div/>').text("min significance")
-                .appendTo(sliderdiv)
-                .css("float","left")
-                .css("margin-right","5px");
-             
-            $('<div id="sliderlabel" />')
-                .text(0)
-                .css("float","left")
-                .appendTo(sliderdiv);
-
-
-
-
-            var slider = $(' <input ng-model="svgcounter" type="range" min="0" value="0" class="slider"></input>')
-             .attr("max",linksigmax)
-             .attr("id","slider-range").css("width","150px").css("float","left")
-             .change(function(e){
-                $('#sliderlabel').text($(this).val());
-                $scope.minlinksig = $(this).val();
-               
-                svg.selectAll("line.link")
-                    .style("stroke-width", function(d) { 
-                        var linksig =  (d.value/2)-$scope.minlinksig;
-                        if(linksig < 0) {return 0;}
-                        else{return (d.value/2);}
-                    })
-            })
-            .appendTo(sliderdiv);
-
-            
-     
-            
-            var svg = d3.select("#svg"+svgcounter+"div").append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .attr("id",function(){return "svg"+svgcounter+"content";})
-                .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
-			d3.json("", function(error ) {
-			  if (error) throw error;
-
-
-				var force = self.force = d3.layout.force()
-				        .nodes(nodes)
-				        .links(links)
-				        .gravity(.05)
-				        .distance(height/2)
-				        .charge(-30)
-				        .size([width, height])
-				        .start();
-
-			    var link = svg.selectAll("line.link")
-			        .data(links)
-			        .enter().append("svg:line")
-			        .style("stroke-width", function(d) { return d.value/2/*Math.sqrt(d.value)*/; })
-			        .style("stroke",function(d){ if(d.source.name === startword){return "blue"}else{ return "gray";}})
-			        .attr("class", "link")
-			        .attr("x1", function(d) { return d.source.x; })
-			        .attr("y1", function(d) { return d.source.y; })
-			        .attr("x2", function(d) { return d.target.x; })
-			        .attr("y2", function(d) { return d.target.y; });
-
-			    var node_drag = d3.behavior.drag()
-			        .on("dragstart", dragstart)
-			        .on("drag", dragmove)
-			        .on("dragend", dragend);
-
-			    function dragstart(d, i) {
-			        force.stop() // stops the force auto positioning before you start dragging
-			    }
-
-			    function dragmove(d, i) {
-			        d.px += d3.event.dx;
-			        d.py += d3.event.dy;
-			        d.x += d3.event.dx;
-			        d.y += d3.event.dy; 
-			        tick(); // this is the key to make it work together with updating both px,py,x,y on d !
-			    }
-
-			    function dragend(d, i) {
-			        d.fixed = true; // of course set the node to fixed so the force doesn't include the node in its auto positioning stuff
-			        tick();
-			        force.resume();
-			    }
-
-			    var linkedByIndex = {};
-				links.forEach(function(d) {
-					linkedByIndex[d.source.index + "," + d.target.index] = 1;
-					linkedByIndex[d.target.index + "," + d.source.index] = 1;
-				});
-
-				function neighboring(a, b){ 
-					if(a.index===b.index) return 1;
-				  return linkedByIndex[b.index + "," + a.index]; 
-				}
-				function neighboringlinks(a,b){ 
-					return (a.index==b.source.index) ? (a.index==b.source.index) : a.index==b.target.index;
-				}
-
-
-
-			    var node = svg.selectAll("g.node")
-			        .data(nodes)
-				      .enter().append("svg:g")
-				        .attr("class", "node")     
-				        .call(node_drag)
-				        .on("mouseover", fade(.1)).on("mouseout", fade(1));
-
-			    node.append("circle")
-				  	.attr("class", "node")
-				  	.attr("r", 5)
-					.style("fill", function(d) { return fill(d.group); })
-				;
-
-			    node.append("svg:title")
-			        .text(function(d) { return d.name; });
-
-			    node.append("svg:text")
-			        .attr("class", "nodetext text")
-			        .attr("dx", 12)
-			        .attr("dy", ".35em")
-                    .style("font-size","15px")
-			        .style("fill",function(d) { return fill(d.group); })
-			        .style("cursor","pointer")
-			        .text(function(d) { return d.name })
-			        .on({
-			          "mouseover": function() { /* do stuff */ },
-			          "mouseout":  function() { /* do stuff */ }, 
-			          "click":  function(d) { update(d.name) }, 
-			        });
-
-
-			    force.on("tick", tick);
-
-			    function tick() {
-			      link.attr("x1", function(d) { return d.source.x; })
-			          .attr("y1", function(d) { return d.source.y; })
-			          .attr("x2", function(d) { return d.target.x; })
-			          .attr("y2", function(d) { return d.target.y; });
-
-			      node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-			    };
-
-				function fade(opacity) { 
-				    return function(d, i){
-				    	node.style("opacity", function(o) {
-				    		if(opacity==1) return opacity;
-				  			return neighboring(d, o) ? 1 : opacity;
-						});
-						link.style("opacity", function(o) {
-							if(opacity==1) return opacity;
-				  			return neighboringlinks(d,o) ?   1:opacity;
-						});
-				    }
-				}
-			});
-
-            showFeature['Statistik'] = false;
-
-            $scope.selectCooclist = function (name) {
-                $scope.sel.wordList = name;
-            };
-            $scope.selectCooclist2 = function (name) {
-                $scope.sel.wordList2 = name;
-            };
-
-
+            drawsvg(linksigmax,nodes,links,startword,corpset,corporaview,nodes,links,'');
         }
 
 
@@ -526,6 +320,211 @@ angular.module('ir-matrix-cooc')
         }
 
 
+        function drawsvg(linksigmax, nodes, links,startword,corpset,corporaview,allnodes,alllinks,currentcorpname){
+
+            var margin = {top: 20, right: 200, bottom: 30, left: 50},
+                width = 1160 - margin.left - margin.right,
+                height = 500 - margin.top - margin.bottom,
+                 fill = d3.scale.category10();
+
+            var color = d3.scale.category10();
+
+            var force = d3.layout.force()
+                .charge(-60)
+                .linkDistance(120)
+                .size([width, height]);
+
+                $('#visualization-words').empty();
+            var svgdiv = d3.select("#visualization-words").append("div")
+                .attr("id",function(){
+                    //svgcounter++; 
+                    return "svg"+svgcounter+"div";
+                })
+                .style("background-color","whitesmoke");
+
+            var svgdivheader = d3.select("#svg"+svgcounter+"div");
+            var sliderdiv = $('<div id="sliderdiv" ></div>').appendTo(svgdivheader);
+
+            $('<span/>').text(currentcorpname).appendTo(svgdivheader);
+
+            $('<div/>').text($translate.instant('COOC_MIN_SIG'))
+                .appendTo(sliderdiv)
+                .css("float","left")
+                .css("margin-right","5px");
+             
+            $('<div id="sliderlabel" />')
+                .text(0)
+                .css("float","left")
+                .appendTo(sliderdiv);
+
+
+            var dropdown = $('<select id="corpselect" />');
+            for(co in corpset){
+                dropdown.append(' <option value="'+co+'">'+corpset[co]+'</option>');
+            }
+            dropdown.appendTo(sliderdiv);
+
+            var slider = $(' <input ng-model="svgcounter" type="range" min="0" value="0" class="slider"></input>')
+             .attr("max",linksigmax)
+             .attr("id","slider-range").css("width","150px").css("float","left")
+             .change(function(e){
+                $('#sliderlabel').text($(this).val());
+                $scope.minlinksig = $(this).val();
+               
+                svg.selectAll("line.link")
+                    .style("stroke-width", function(d) { 
+                        var linksig =  (d.value/2)-$scope.minlinksig;
+                        if(linksig < 0) {return 0;}
+                        else{return (d.value/2);}
+                    })
+            })
+            .appendTo(sliderdiv);
+
+            var svg = d3.select("#svg"+svgcounter+"div").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .attr("id",function(){return "svg"+svgcounter+"content";})
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+            d3.json("", function(error ) {
+              if (error) throw error;
+
+
+                var force = self.force = d3.layout.force()
+                        .nodes(nodes)
+                        .links(links)
+                        .gravity(.05)
+                        .distance(height/2)
+                        .charge(-30)
+                        .size([width, height])
+                        .start();
+
+                var link = svg.selectAll("line.link")
+                    .data(links)
+                    .enter().append("svg:line")
+                    .style("stroke-width", function(d) { return d.value/2/*Math.sqrt(d.value)*/; })
+                    .style("stroke",function(d){ if(d.source.name === startword){return "blue"}else{ return "gray";}})
+                    .attr("class", "link")
+                    .attr("x1", function(d) { return d.source.x; })
+                    .attr("y1", function(d) { return d.source.y; })
+                    .attr("x2", function(d) { return d.target.x; })
+                    .attr("y2", function(d) { return d.target.y; });
+
+                var node_drag = d3.behavior.drag()
+                    .on("dragstart", dragstart)
+                    .on("drag", dragmove)
+                    .on("dragend", dragend);
+
+                function dragstart(d, i) {
+                    force.stop() // stops the force auto positioning before you start dragging
+                }
+
+                function dragmove(d, i) {
+                    d.px += d3.event.dx;
+                    d.py += d3.event.dy;
+                    d.x += d3.event.dx;
+                    d.y += d3.event.dy; 
+                    tick(); // this is the key to make it work together with updating both px,py,x,y on d !
+                }
+
+                function dragend(d, i) {
+                    d.fixed = true;
+                    tick();
+                    force.resume();
+                }
+
+                var linkedByIndex = {};
+                links.forEach(function(d) {
+                    linkedByIndex[d.source.index + "," + d.target.index] = 1;
+                    linkedByIndex[d.target.index + "," + d.source.index] = 1;
+                });
+
+                function neighboring(a, b){ 
+                    if(a.index===b.index) return 1;
+                  return linkedByIndex[b.index + "," + a.index]; 
+                }
+                function neighboringlinks(a,b){ 
+                    return (a.index==b.source.index) ? (a.index==b.source.index) : a.index==b.target.index;
+                }
+
+                var node = svg.selectAll("g.node")
+                    .data(nodes)
+                      .enter().append("svg:g")
+                        .attr("class", "node")     
+                        .call(node_drag)
+                        .on("mouseover", fade(.1)).on("mouseout", fade(1));
+
+                node.append("circle")
+                    .attr("class", "node")
+                    .attr("r", 5)
+                    .style("fill", function(d) { return fill(d.group); })
+                ;
+
+                node.append("svg:title")
+                    .text(function(d) { return d.name; });
+
+                node.append("svg:text")
+                    .attr("class", "nodetext text")
+                    .attr("dx", 12)
+                    .attr("dy", ".35em")
+                    .style("font-size","15px")
+                    .style("fill",function(d) { return fill(d.group); })
+                    .style("cursor","pointer")
+                    .text(function(d) { return d.name })
+                    .on({
+                      "mouseover": function() { /* do stuff */ },
+                      "mouseout":  function() { /* do stuff */ }, 
+                      "click":  function(d) { update(d.name) }, 
+                    });
+
+
+                force.on("tick", tick);
+
+                $('#corpselect').change(function(){
+                    
+                    if($(this).val() === 0){
+                        drawsvg(linksigmax, allnodes, alllinks,startword,corpset,corporaview,allnodes,alllinks,'');
+                    }
+                    else{
+                        drawsvg(linksigmax, corporaview[corpset[$(this).val()]]['nodes'], corporaview[corpset[$(this).val()]]['links'],startword,corpset,corporaview,allnodes,alllinks,corpset[$(this).val()]);   
+                    }
+                })
+
+                function tick() {
+                  link.attr("x1", function(d) { return d.source.x; })
+                      .attr("y1", function(d) { return d.source.y; })
+                      .attr("x2", function(d) { return d.target.x; })
+                      .attr("y2", function(d) { return d.target.y; });
+
+                  node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+                };
+
+                function fade(opacity) { 
+                    return function(d, i){
+                        node.style("opacity", function(o) {
+                            if(opacity==1) return opacity;
+                            return neighboring(d, o) ? 1 : opacity;
+                        });
+                        link.style("opacity", function(o) {
+                            if(opacity==1) return opacity;
+                            return neighboringlinks(d,o) ?   1:opacity;
+                        });
+                    }
+                }
+            });
+
+            showFeature['Statistik'] = false;
+
+            $scope.selectCooclist = function (name) {
+                $scope.sel.wordList = name;
+            };
+            $scope.selectCooclist2 = function (name) {
+                $scope.sel.wordList2 = name;
+            };
+
+        }
     });
 
 

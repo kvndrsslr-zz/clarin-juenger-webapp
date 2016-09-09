@@ -146,7 +146,8 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
             'SORT_ORDER_CLUSTER' : 'Cluster',
             'ST_PAGINATION_FIRST' : 'First',
             'ST_PAGINATION_LAST' : 'Last',
-            'ST_PAGINATION_OF' : 'of'
+            'ST_PAGINATION_OF' : 'of',
+            'COOC_MIN_SIG' : 'least significance'
         }).translations('de', {
                 'APP_TITLE' : 'Korpusvergleich',
                 'NAV_CORPORA' : 'Ähnlichkeitsmatrix',
@@ -239,7 +240,8 @@ angular.module('ir-matrix-cooc', ['ngRoute', 'ngSanitize', 'nsPopover',
                 'SEC_STATS_POS_SCONJ' : 'Subordinierende Konjunktion',
                 'SEC_STATS_POS_SYM' : 'Symbol',
                 'SEC_STATS_POS_VERB' : 'Verb',
-                'SEC_STATS_POS_X' : 'N/A'
+                'SEC_STATS_POS_X' : 'N/A',
+                'COOC_MIN_SIG' : 'mindest Signifikanz'
             })
             .preferredLanguage('en')
             .fallbackLanguage('en');
